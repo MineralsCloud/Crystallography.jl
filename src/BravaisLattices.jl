@@ -12,13 +12,13 @@ julia>
 module BravaisLattices
 
 export CrystalSystem,
-    TriclinicSystem,
-    MonoclinicSystem,
-    OrthorhombicSystem,
-    TetragonalSystem,
-    CubicSystem,
-    TrigonalSystem,
-    HexagonalSystem,
+    Triclinic,
+    Monoclinic,
+    Orthorhombic,
+    Tetragonal,
+    Cubic,
+    Trigonal,
+    Hexagonal,
     CenteringType,
     BaseCentered,
     Primitive,
@@ -32,13 +32,13 @@ export CrystalSystem,
     nomenclature
 
 abstract type CrystalSystem end
-struct TriclinicSystem <: CrystalSystem end
-struct MonoclinicSystem <: CrystalSystem end
-struct OrthorhombicSystem <: CrystalSystem end
-struct TetragonalSystem <: CrystalSystem end
-struct CubicSystem <: CrystalSystem end
-struct TrigonalSystem <: CrystalSystem end
-struct HexagonalSystem <: CrystalSystem end
+struct Triclinic <: CrystalSystem end
+struct Monoclinic <: CrystalSystem end
+struct Orthorhombic <: CrystalSystem end
+struct Tetragonal <: CrystalSystem end
+struct Cubic <: CrystalSystem end
+struct Trigonal <: CrystalSystem end
+struct Hexagonal <: CrystalSystem end
 
 abstract type CenteringType end
 abstract type BaseCentered <: CenteringType end
@@ -52,13 +52,13 @@ struct RhombohedralCentered <: CenteringType end
 
 abstract type BravaisLattice{B,C} end
 
-nomenclature(::Type{TriclinicSystem}) = "a"
-nomenclature(::Type{MonoclinicSystem}) = "m"
-nomenclature(::Type{OrthorhombicSystem}) = "o"
-nomenclature(::Type{TetragonalSystem}) = "t"
-nomenclature(::Type{CubicSystem}) = "c"
-nomenclature(::Type{HexagonalSystem}) = "h"
-nomenclature(::Type{TrigonalSystem}) = "h"
+nomenclature(::Type{Triclinic}) = "a"
+nomenclature(::Type{Monoclinic}) = "m"
+nomenclature(::Type{Orthorhombic}) = "o"
+nomenclature(::Type{Tetragonal}) = "t"
+nomenclature(::Type{Cubic}) = "c"
+nomenclature(::Type{Hexagonal}) = "h"
+nomenclature(::Type{Trigonal}) = "h"
 nomenclature(::Type{Primitive}) = "P"
 nomenclature(::Type{ACentered}) = "A"
 nomenclature(::Type{BCentered}) = "B"
