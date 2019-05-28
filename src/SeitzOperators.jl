@@ -15,12 +15,12 @@ using LinearAlgebra: diagm, I
 
 using CoordinateTransformations: Translation, LinearMap
 using LuxurySparse: IMatrix
-using StaticArrays: Size
 
 export SeitzOperator,
     IdentityOperator,
     TranslationOperator,
-    PointSymmetryOperator
+    PointSymmetryOperator,
+    eltype
 
 abstract type SeitzOperator{T <: AbstractMatrix} end
 
@@ -43,10 +43,10 @@ struct TranslationOperator{T} <: SeitzOperator{T}
     end
 end
 TranslationOperator(m::T) where {T} = TranslationOperator{T}(m)
-function TranslationOperator(t::AbstractVector{T}) where {T}
-    TranslationOperator(vcat(hcat(diagm(0 => ones(T, 3)), t), lastrow(T)))
+function TranslationOperator(t::Translation)
+    T = eltype(t)
+    TranslationOperator(vcat(hcat(diagm(0 => ones(T, 3)), t.translation), lastrow(T)))
 end
-TranslationOperator(t::Translation) = TranslationOperator(t.translation)
 
 struct PointSymmetryOperator{T} <: SeitzOperator{T}
     m::T
@@ -55,12 +55,15 @@ struct PointSymmetryOperator{T} <: SeitzOperator{T}
         new(m)
     end
 end
-PointSymmetryOperator(m::T, ::Size{(4, 4)}) where {T} = PointSymmetryOperator{T}(m)
-function PointSymmetryOperator(sym::AbstractMatrix{T}) where {T}
-    PointSymmetryOperator(vcat(hcat(sym, zeros(T, 3)), lastrow(T)), Size(4, 4))
+PointSymmetryOperator(m::T) where {T} = PointSymmetryOperator{T}(m)
+function PointSymmetryOperator(m::LinearMap)
+    T = eltype(m)
+    PointSymmetryOperator(vcat(hcat(m.linear, zeros(T, 3)), lastrow(T)))
 end
-PointSymmetryOperator(sym::LinearMap) = PointSymmetryOperator(sym.linear)
 
 lastrow(T::Type{<: Real}) = [zeros(T, 3)... ones(T, 1)]
+
+Base.eltype(t::Translation) = eltype(t.translation)
+Base.eltype(m::LinearMap) = eltype(m.linear)
 
 end
