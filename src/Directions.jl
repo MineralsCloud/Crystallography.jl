@@ -34,8 +34,7 @@ struct MillerIndices{S,T}
     function MillerIndices{S,T}(v) where {S <: SpaceType,T}
         length(v) == 3 || throw(DimensionMismatch("The Miller indices must be of length 3!"))
         eltype(v) <: Integer || error("The Miller indices must be a vector of integers!")
-        iszero(collect(v)) && error("The Miller indices must be a non-zero vector!")
-        new(v ./ gcd(v...))
+        (x->iszero(x) ? new(x) : new(x ./ gcd(x)))(collect(v))
     end
 end
 MillerIndices{S}(v::T) where {S,T} = MillerIndices{S,T}(v)
@@ -69,7 +68,7 @@ MetricTensor{RealSpace}(::Type{Tetragonal}, a, c) = MetricTensor{RealSpace}(a, a
 MetricTensor{RealSpace}(::Type{Tetragonal}, a) = MetricTensor{RealSpace}(a, a, a, π / 2, π / 2, π / 2)
 MetricTensor{RealSpace}(::Type{Hexagonal}, a, c) = MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, 2π / 3)
 MetricTensor{RealSpace}(::Type{Trigonal}, a, c) = MetricTensor{RealSpace}(Hexagonal, a, c)
-MetricTensor{RealSpace}(::Type{BravaisLattice{RhombohedralCentered, Hexagonal}}, a, α) = MetricTensor{RealSpace}(a, a, a, α, α, α)
+MetricTensor{RealSpace}(::Type{BravaisLattice{RhombohedralCentered,Hexagonal}}, a, α) = MetricTensor{RealSpace}(a, a, a, α, α, α)
 MetricTensor{ReciprocalSpace}(args...) = inv(MetricTensor{RealSpace}(args...))
 
 function directioncosine(a::Translation, g::MetricTensor, b::Translation)
