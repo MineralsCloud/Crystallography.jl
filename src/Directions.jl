@@ -14,6 +14,7 @@ module Directions
 using LinearAlgebra
 
 using CoordinateTransformations: Translation
+using StaticArrays: FieldVector
 
 using Crystallography.BravaisLattices
 
@@ -29,15 +30,14 @@ abstract type SpaceType end
 struct RealSpace <: SpaceType end
 struct ReciprocalSpace <: SpaceType end
 
-struct MillerIndices{S,T}
-    v::T
-    function MillerIndices{S,T}(v) where {S <: SpaceType,T}
-        length(v) == 3 || throw(DimensionMismatch("The Miller indices must be of length 3!"))
-        eltype(v) <: Integer || error("The Miller indices must be a vector of integers!")
-        (x->iszero(x) ? new{S, Vector}(x) : new{S, Vector}(x ./ gcd(x)))(collect(v))
+struct MillerIndices{S} <: FieldVector{3,Integer}
+    i::Integer
+    j::Integer
+    k::Integer
+    function MillerIndices{S}(i, j, k) where {S <: SpaceType}
+        (x->iszero(x) ? new(x) : new(x .÷ gcd(x)))([i, j, k])
     end
 end
-MillerIndices{S}(v::T) where {S,T} = MillerIndices{S,T}(v)
 
 struct MetricTensor{S,T}
     m::T
@@ -85,5 +85,12 @@ Base.inv(::Type{RealSpace}) = ReciprocalSpace
 Base.inv(::Type{ReciprocalSpace}) = RealSpace
 Base.inv(T::Type{<: MetricTensor}) = MetricTensor{inv(first(T.parameters))}
 Base.inv(g::MetricTensor) = inv(typeof(g))(inv(g.m))
+
+function Base.getproperty(x::MillerIndices{RealSpace}, name::Symbol)
+    getfield(x, Dict(:u => :i, :v => :j, :w => :k)[name])
+end
+function Base.getproperty(x::MillerIndices{ReciprocalSpace}, name::Symbol)
+    getfield(x, Dict(:h => :i, :k => :j, :l => :k)[name])
+end
 
 end
