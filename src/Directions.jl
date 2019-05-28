@@ -120,5 +120,9 @@ function Base.getproperty(x::MillerBravaisIndices{ReciprocalSpace}, name::Symbol
     getfield(x, Dict(:h => :i, :k => :j, :i => :k, :l => :l)[name])
 end
 
+Base.convert(::Type{MillerIndices{RealSpace,T}}, mb::MillerBravaisIndices{RealSpace,T}) where {T <: Integer} = MillerIndices{RealSpace,T}(2mb.u + mb.v, 2mb.v + mb.u, mb.w)
+Base.convert(::Type{MillerIndices{ReciprocalSpace,T}}, mb::MillerBravaisIndices{ReciprocalSpace,T}) where {T <: Integer} = MillerIndices{ReciprocalSpace,T}(mb.h, mb.k, mb.l)
+Base.convert(::Type{MillerBravaisIndices{RealSpace,T}}, m::MillerIndices{RealSpace,T}) where {T <: Integer} = MillerBravaisIndices{RealSpace,T}(2m.u - m.v, 2m.v - m.u, -(m.u + m.v), 3m.w)
+Base.convert(::Type{MillerBravaisIndices{ReciprocalSpace,T}}, m::MillerIndices{ReciprocalSpace,T}) where {T <: Integer} = MillerBravaisIndices{ReciprocalSpace,T}(m.h, m.k, -(m.h + m.k), m.l)
 
 end
