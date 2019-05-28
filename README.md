@@ -9,4 +9,5 @@
 
 TODO:
 
-- [ ] Add 3D and 4D Seitz operator representations
+- [x] Add 4D Seitz operator representations
+- [ ] Add matrices representation of the rigid motion operators
