@@ -15,6 +15,8 @@ using LinearAlgebra
 
 using CoordinateTransformations: Translation
 
+using Crystallography.BravaisLattices
+
 export SpaceType,
     RealSpace,
     ReciprocalSpace,
@@ -61,6 +63,16 @@ function MetricTensor{RealSpace}(a, b, c, α, β, γ)
     ])
 end
 MetricTensor{ReciprocalSpace}(a, b, c, α, β, γ) = inv(MetricTensor{RealSpace}(a, b, c, α, β, γ))
+MetricTensor{RealSpace}(Triclinic, args...) = MetricTensor{RealSpace}(args...)
+MetricTensor{RealSpace}(Monoclinic, a, b, c, γ) = MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, γ)
+MetricTensor{RealSpace}(Orthorhombic, a, b, c) = MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, π / 2)
+MetricTensor{RealSpace}(Tetragonal, a, c) = MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, π / 2)
+MetricTensor{RealSpace}(Tetragonal, a) = MetricTensor{RealSpace}(a, a, a, π / 2, π / 2, π / 2)
+MetricTensor{RealSpace}(Hexagonal, a, c) = MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, 2π / 3)
+MetricTensor{RealSpace}(Trigonal, a, c) = MetricTensor{RealSpace}(Hexagonal, a, c)
+MetricTensor{RealSpace}(BravaisLattice{RhombohedralCentered, Hexagonal}, a, α) = MetricTensor{RealSpace}(a, a, a, α, α, α)
+MetricTensor{ReciprocalSpace}(T::Type{<: CrystalSystem}, args...) = inv(MetricTensor{RealSpace}(T, args...))
+MetricTensor{ReciprocalSpace}(T::Type{<: BravaisLattice}, args...) = inv(MetricTensor{RealSpace}(T, args...))
 
 function directioncosine(a::Translation, g::MetricTensor, b::Translation)
     dot(a, g, b) / (length(a, g) * length(b, g))
