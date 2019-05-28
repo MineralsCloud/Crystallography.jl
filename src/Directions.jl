@@ -22,6 +22,7 @@ export SpaceType,
     RealSpace,
     ReciprocalSpace,
     MillerIndices,
+    MillerBravaisIndices,
     MetricTensor,
     directioncosine,
     directionangle
@@ -43,6 +44,21 @@ end
 MillerIndices{S}(i::T, j::T, k::T) where {S <: SpaceType,T <: Integer} = MillerIndices{S,T}(i, j, k)
 MillerIndices{S}(x::AbstractVector{T}) where {S <: SpaceType,T <: Integer} = MillerIndices{S}(x...)
 MillerIndices{S}(x::Tuple) where {S} = MillerIndices{S}(collect(x))
+
+struct MillerBravaisIndices{S,T <: Integer} <: FieldVector{4,T}
+    i::T
+    j::T
+    k::T
+    l::T
+    function MillerBravaisIndices{S,T}(i, j, k, l) where {S <: SpaceType,T <: Integer}
+        x = [i, j, k, l]
+        i, j, k, l = iszero(x) ? x : x .÷ gcd(x)
+        new(i, j, k, l)
+    end
+end
+MillerBravaisIndices{S}(i::T, j::T, k::T, l::T) where {S <: SpaceType,T <: Integer} = MillerBravaisIndices{S,T}(i, j, k, l)
+MillerBravaisIndices{S}(x::AbstractVector{T}) where {S <: SpaceType,T <: Integer} = MillerBravaisIndices{S}(x...)
+MillerBravaisIndices{S}(x::Tuple) where {S} = MillerBravaisIndices{S}(collect(x))
 
 struct MetricTensor{S,T}
     m::T
@@ -97,5 +113,12 @@ end
 function Base.getproperty(x::MillerIndices{ReciprocalSpace}, name::Symbol)
     getfield(x, Dict(:h => :i, :k => :j, :l => :k)[name])
 end
+function Base.getproperty(x::MillerBravaisIndices{RealSpace}, name::Symbol)
+    getfield(x, Dict(:u => :i, :v => :j, :t => :k, :w => :l)[name])
+end
+function Base.getproperty(x::MillerBravaisIndices{ReciprocalSpace}, name::Symbol)
+    getfield(x, Dict(:h => :i, :k => :j, :i => :k, :l => :l)[name])
+end
+
 
 end
