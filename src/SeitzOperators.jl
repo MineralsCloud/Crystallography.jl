@@ -15,6 +15,7 @@ using LinearAlgebra: diagm, I
 
 using CoordinateTransformations: Translation, LinearMap
 using LuxurySparse: IMatrix
+using StaticArrays: Size
 
 export SeitzOperator,
     IdentityOperator,
@@ -54,10 +55,9 @@ struct PointSymmetryOperator{T} <: SeitzOperator{T}
         new(m)
     end
 end
-PointSymmetryOperator(m::T) where {T} = PointSymmetryOperator{T}(m)
+PointSymmetryOperator(m::T, ::Size{(4, 4)}) where {T} = PointSymmetryOperator{T}(m)
 function PointSymmetryOperator(sym::AbstractMatrix{T}) where {T}
-    x = vcat(hcat(sym, zeros(T, 3)), lastrow(T))
-    PointSymmetryOperator{typeof(x)}(x)
+    PointSymmetryOperator(vcat(hcat(sym, zeros(T, 3)), lastrow(T)), Size(4, 4))
 end
 PointSymmetryOperator(sym::LinearMap) = PointSymmetryOperator(sym.linear)
 
