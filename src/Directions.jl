@@ -30,14 +30,19 @@ abstract type SpaceType end
 struct RealSpace <: SpaceType end
 struct ReciprocalSpace <: SpaceType end
 
-struct MillerIndices{S} <: FieldVector{3,Integer}
-    i::Integer
-    j::Integer
-    k::Integer
-    function MillerIndices{S}(i, j, k) where {S <: SpaceType}
-        (x->iszero(x) ? new(x) : new(x .÷ gcd(x)))([i, j, k])
+struct MillerIndices{S,T <: Integer} <: FieldVector{3,T}
+    i::T
+    j::T
+    k::T
+    function MillerIndices{S,T}(i, j, k) where {S <: SpaceType,T <: Integer}
+        x = [i, j, k]
+        i, j, k = iszero(x) ? x : x .÷ gcd(x)
+        new(i, j, k)
     end
 end
+MillerIndices{S}(i::T, j::T, k::T) where {S <: SpaceType,T <: Integer} = MillerIndices{S,T}(i, j, k)
+MillerIndices{S}(x::AbstractVector{T}) where {S <: SpaceType,T <: Integer} = MillerIndices{S}(x...)
+MillerIndices{S}(x::Tuple) where {S} = MillerIndices{S}(collect(x))
 
 struct MetricTensor{S,T}
     m::T
