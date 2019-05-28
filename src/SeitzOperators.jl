@@ -19,8 +19,7 @@ using LuxurySparse: IMatrix
 export SeitzOperator,
     IdentityOperator,
     TranslationOperator,
-    PointSymmetryOperator,
-    eltype
+    PointSymmetryOperator
 
 abstract type SeitzOperator{T <: AbstractMatrix} end
 
