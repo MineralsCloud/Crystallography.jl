@@ -34,7 +34,7 @@ struct MillerIndices{S,T}
     function MillerIndices{S,T}(v) where {S <: SpaceType,T}
         length(v) == 3 || throw(DimensionMismatch("The Miller indices must be of length 3!"))
         eltype(v) <: Integer || error("The Miller indices must be a vector of integers!")
-        (x->iszero(x) ? new(x) : new(x ./ gcd(x)))(collect(v))
+        (x->iszero(x) ? new{S, Vector}(x) : new{S, Vector}(x ./ gcd(x)))(collect(v))
     end
 end
 MillerIndices{S}(v::T) where {S,T} = MillerIndices{S,T}(v)
