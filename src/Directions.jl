@@ -62,7 +62,6 @@ function MetricTensor{RealSpace}(a, b, c, α, β, γ)
         g13 g23 c^2
     ])
 end
-MetricTensor{ReciprocalSpace}(a, b, c, α, β, γ) = inv(MetricTensor{RealSpace}(a, b, c, α, β, γ))
 MetricTensor{RealSpace}(::Type{Triclinic}, args...) = MetricTensor{RealSpace}(args...)
 MetricTensor{RealSpace}(::Type{Monoclinic}, a, b, c, γ) = MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, γ)
 MetricTensor{RealSpace}(::Type{Orthorhombic}, a, b, c) = MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, π / 2)
@@ -71,8 +70,7 @@ MetricTensor{RealSpace}(::Type{Tetragonal}, a) = MetricTensor{RealSpace}(a, a, a
 MetricTensor{RealSpace}(::Type{Hexagonal}, a, c) = MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, 2π / 3)
 MetricTensor{RealSpace}(::Type{Trigonal}, a, c) = MetricTensor{RealSpace}(Hexagonal, a, c)
 MetricTensor{RealSpace}(::Type{BravaisLattice{RhombohedralCentered, Hexagonal}}, a, α) = MetricTensor{RealSpace}(a, a, a, α, α, α)
-MetricTensor{ReciprocalSpace}(T::Type{<: CrystalSystem}, args...) = inv(MetricTensor{RealSpace}(T, args...))
-MetricTensor{ReciprocalSpace}(T::Type{<: BravaisLattice}, args...) = inv(MetricTensor{RealSpace}(T, args...))
+MetricTensor{ReciprocalSpace}(args...) = inv(MetricTensor{RealSpace}(args...))
 
 function directioncosine(a::Translation, g::MetricTensor, b::Translation)
     dot(a, g, b) / (length(a, g) * length(b, g))
