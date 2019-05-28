@@ -11,14 +11,17 @@ julia>
 """
 module Directions
 
-using LinearAlgebra: dot
+using LinearAlgebra
+
+using CoordinateTransformations: Translation
 
 export SpaceType,
     RealSpace,
     ReciprocalSpace,
     CrystalDirection,
     MetricTensor,
-    inv
+    directioncosine,
+    directionangle
 
 abstract type SpaceType end
 struct RealSpace <: SpaceType end
@@ -58,6 +61,16 @@ function MetricTensor{RealSpace}(a, b, c, α, β, γ)
     ])
 end
 MetricTensor{ReciprocalSpace}(a, b, c, α, β, γ) = inv(MetricTensor{RealSpace}(a, b, c, α, β, γ))
+
+function directioncosine(a::Translation, g::MetricTensor, b::Translation)
+    dot(a, g, b) / (length(a, g) * length(b, g))
+end
+
+directionangle(a::Translation, g::MetricTensor, b::Translation) = acos(directioncosine(a, g, b))
+
+LinearAlgebra.dot(a::Translation, g::MetricTensor, b::Translation) = a.translation' * g.m * b.translation
+
+Base.length(a::Translation, g::MetricTensor) = sqrt(dot(a, g, a))
 
 Base.inv(::Type{RealSpace}) = ReciprocalSpace
 Base.inv(::Type{ReciprocalSpace}) = RealSpace
