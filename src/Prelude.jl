@@ -1,5 +1,5 @@
 """
-# module Primitive
+# module Prelude
 
 
 
@@ -9,7 +9,7 @@
 julia>
 ```
 """
-module Primitive
+module Prelude
 
 export SpaceType,
     RealSpace,
