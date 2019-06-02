@@ -23,13 +23,13 @@ export MetricTensor,
 
 struct MetricTensor{S,T}
     m::T
-    function MetricTensor{S,T}(m) where {S <: SpaceType,T}
+    function MetricTensor{S,T}(m) where {S <: AbstractSpace,T}
         size(m) == (3, 3) || throw(DimensionMismatch("The metric tensor must be of size 3x3!"))
         new(m)
     end
 end
 MetricTensor{S}(m::T) where {S,T} = MetricTensor{S,T}(m)
-function MetricTensor{S}(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) where {S <: SpaceType}
+function MetricTensor{S}(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) where {S <: AbstractSpace}
     vecs = (v1, v2, v3)
     MetricTensor{S}(map(x->dot(x...), Iterators.product(vecs, vecs)))
 end

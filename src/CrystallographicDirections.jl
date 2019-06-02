@@ -22,14 +22,14 @@ struct MillerIndices{S,T <: Integer} <: FieldVector{3,T}
     i::T
     j::T
     k::T
-    function MillerIndices{S,T}(i, j, k) where {S <: SpaceType,T <: Integer}
+    function MillerIndices{S,T}(i, j, k) where {S <: AbstractSpace,T <: Integer}
         x = [i, j, k]
         i, j, k = iszero(x) ? x : x .÷ gcd(x)
         new(i, j, k)
     end
 end
-MillerIndices{S}(i::T, j::T, k::T) where {S <: SpaceType,T <: Integer} = MillerIndices{S,T}(i, j, k)
-MillerIndices{S}(x::AbstractVector{T}) where {S <: SpaceType,T <: Integer} = MillerIndices{S}(x...)
+MillerIndices{S}(i::T, j::T, k::T) where {S <: AbstractSpace,T <: Integer} = MillerIndices{S,T}(i, j, k)
+MillerIndices{S}(x::AbstractVector{T}) where {S <: AbstractSpace,T <: Integer} = MillerIndices{S}(x...)
 MillerIndices{S}(x::Tuple) where {S} = MillerIndices{S}(collect(x))
 
 struct MillerBravaisIndices{S,T <: Integer} <: FieldVector{4,T}
@@ -37,14 +37,14 @@ struct MillerBravaisIndices{S,T <: Integer} <: FieldVector{4,T}
     j::T
     k::T
     l::T
-    function MillerBravaisIndices{S,T}(i, j, k, l) where {S <: SpaceType,T <: Integer}
+    function MillerBravaisIndices{S,T}(i, j, k, l) where {S <: AbstractSpace,T <: Integer}
         x = [i, j, k, l]
         i, j, k, l = iszero(x) ? x : x .÷ gcd(x)
         new(i, j, k, l)
     end
 end
-MillerBravaisIndices{S}(i::T, j::T, k::T, l::T) where {S <: SpaceType,T <: Integer} = MillerBravaisIndices{S,T}(i, j, k, l)
-MillerBravaisIndices{S}(x::AbstractVector{T}) where {S <: SpaceType,T <: Integer} = MillerBravaisIndices{S}(x...)
+MillerBravaisIndices{S}(i::T, j::T, k::T, l::T) where {S <: AbstractSpace,T <: Integer} = MillerBravaisIndices{S,T}(i, j, k, l)
+MillerBravaisIndices{S}(x::AbstractVector{T}) where {S <: AbstractSpace,T <: Integer} = MillerBravaisIndices{S}(x...)
 MillerBravaisIndices{S}(x::Tuple) where {S} = MillerBravaisIndices{S}(collect(x))
 
 function Base.getproperty(x::MillerIndices{RealSpace}, name::Symbol)

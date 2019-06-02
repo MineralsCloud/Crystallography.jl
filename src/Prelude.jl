@@ -11,13 +11,13 @@ julia>
 """
 module Prelude
 
-export SpaceType,
+export AbstractSpace,
     RealSpace,
     ReciprocalSpace
 
-abstract type SpaceType end
-struct RealSpace <: SpaceType end
-struct ReciprocalSpace <: SpaceType end
+abstract type AbstractSpace end
+struct RealSpace <: AbstractSpace end
+struct ReciprocalSpace <: AbstractSpace end
 
 Base.inv(::Type{RealSpace}) = ReciprocalSpace
 Base.inv(::Type{ReciprocalSpace}) = RealSpace
