@@ -75,7 +75,7 @@ function allbravaislattices(; if_nomenclature = false)
     BravaisLattice{Primitive,Tetragonal}, BravaisLattice{BodyCentered,Tetragonal},
     BravaisLattice{Primitive,Cubic}, BravaisLattice{BodyCentered,Cubic}, BravaisLattice{FaceCentered,Cubic},
     BravaisLattice{Primitive,Hexagonal}, BravaisLattice{RhombohedralCentered,Hexagonal})
-    if_nomenclature ? x : map(nomenclature, x)
+    if_nomenclature ? map(nomenclature, x) : x
 end  # function allbravaislattices
 
 end
