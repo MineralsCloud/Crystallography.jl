@@ -1,5 +1,5 @@
 """
-# module Directions
+# module CrystallographicDirections
 
 
 
@@ -9,7 +9,7 @@
 julia>
 ```
 """
-module Directions
+module CrystallographicDirections
 
 using LinearAlgebra
 
