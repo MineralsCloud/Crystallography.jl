@@ -19,8 +19,10 @@ using Crystallography.CrystallographicDirections
         mb = MillerBravaisIndices{RealSpace}(y)
         @test convert(MillerBravaisIndices{RealSpace}, m) == mb
         @test convert(MillerIndices{RealSpace}, mb) == m
-        # @test_throws ErrorException convert(MillerIndices{ReciprocalSpace}, m)
-        # @test_throws ErrorException convert(MillerBravaisIndices{ReciprocalSpace}, mb)
+        @test convert(MillerIndices{RealSpace}, m) == m
+        @test convert(MillerBravaisIndices{RealSpace}, mb) == mb
+        @test_throws ErrorException convert(MillerIndices{ReciprocalSpace}, m)
+        @test_throws ErrorException convert(MillerBravaisIndices{ReciprocalSpace}, mb)
         @test_throws ErrorException convert(MillerBravaisIndices{ReciprocalSpace}, m)
         @test_throws ErrorException convert(MillerIndices{ReciprocalSpace}, mb)
         @test_throws ErrorException convert(MillerBravaisIndices, m)
@@ -36,6 +38,10 @@ end
         mb = MillerBravaisIndices{ReciprocalSpace}(y)
         @test convert(MillerBravaisIndices{ReciprocalSpace}, m) == mb
         @test convert(MillerIndices{ReciprocalSpace}, mb) == m
+        @test convert(MillerIndices{ReciprocalSpace}, m) == m
+        @test convert(MillerBravaisIndices{ReciprocalSpace}, mb) == mb
+        @test_throws ErrorException convert(MillerIndices{RealSpace}, m)
+        @test_throws ErrorException convert(MillerBravaisIndices{RealSpace}, mb)
         @test_throws ErrorException convert(MillerBravaisIndices{RealSpace}, m)
         @test_throws ErrorException convert(MillerIndices{RealSpace}, mb)
         @test_throws ErrorException convert(MillerBravaisIndices, m)
