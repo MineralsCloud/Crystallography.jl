@@ -34,12 +34,13 @@ for operator in (:+, :-)
         Base.$operator(a::CrystalCoordinates{T}, b::CrystalCoordinates{T}) where {T} = CrystalCoordinates{T}(mapreduce(collect, $operator, (a, b)))
     end)
 end
-for operator in (:*, :/, :÷)
+for operator in (:*, :/)
     eval(quote
         Base.$operator(n::Number, a::CrystalCoordinates{T}) where {T} = CrystalCoordinates{T}($operator(collect(a), n))
         Base.$operator(a::CrystalCoordinates, n::Number) = $operator(n, a)
     end)
 end
+
 
 Base.inv(::Type{RealSpace}) = ReciprocalSpace
 Base.inv(::Type{ReciprocalSpace}) = RealSpace
