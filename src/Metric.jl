@@ -52,19 +52,19 @@ MetricTensor{RealSpace}(::Type{Trigonal}, a, c) = MetricTensor{RealSpace}(Hexago
 MetricTensor{RealSpace}(::Type{BravaisLattice{RhombohedralCentered,Hexagonal}}, a, α) = MetricTensor{RealSpace}(a, a, a, α, α, α)
 MetricTensor{ReciprocalSpace}(args...) = inv(MetricTensor{RealSpace}(args...))
 
-function directioncosine(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates)
+function directioncosine(a::CrystalCoordinates{T}, g::MetricTensor{T}, b::CrystalCoordinates{T}) where {T}
     dot(a, g, b) / (length(a, g) * length(b, g))
 end
 
-directionangle(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = acos(directioncosine(a, g, b))
+directionangle(a::CrystalCoordinates{T}, g::MetricTensor{T}, b::CrystalCoordinates{T}) where {T} = acos(directioncosine(a, g, b))
 
-distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = length(b - a, g)
+distance(a::CrystalCoordinates{T}, g::MetricTensor{T}, b::CrystalCoordinates{T}) where {T} = length(b - a, g)
 
 Base.inv(T::Type{<: MetricTensor}) = MetricTensor{inv(first(T.parameters))}
 Base.inv(g::MetricTensor) = inv(typeof(g))(inv(g.m))
 
-LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = a' * g.m * b
+LinearAlgebra.dot(a::CrystalCoordinates{T}, g::MetricTensor{T}, b::CrystalCoordinates{T}) where {T} = a' * g.m * b
 
-Base.length(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
+Base.length(a::CrystalCoordinates{T}, g::MetricTensor{T}) where {T} = sqrt(dot(a, g, a))
 
 end
