@@ -17,7 +17,8 @@ using Crystallography
 
 export MetricTensor,
     directioncosine,
-    directionangle
+    directionangle,
+    distance
 
 struct MetricTensor{S,T}
     m::T
@@ -56,6 +57,8 @@ function directioncosine(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoord
 end
 
 directionangle(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = acos(directioncosine(a, g, b))
+
+distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = length(b - a, g)
 
 Base.inv(T::Type{<: MetricTensor}) = MetricTensor{inv(first(T.parameters))}
 Base.inv(g::MetricTensor) = inv(typeof(g))(inv(g.m))
