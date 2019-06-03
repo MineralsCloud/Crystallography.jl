@@ -37,7 +37,7 @@ end
 for operator in (:*, :/, :÷)
     eval(quote
         Base.$operator(n::Number, a::CrystalCoordinates{T}) where {T} = CrystalCoordinates{T}($operator(collect(a), n))
-        Base.$operator(a::T, n::Number) where {T <: CrystalCoordinates} = $operator(n, a)
+        Base.$operator(a::CrystalCoordinates, n::Number) = $operator(n, a)
     end)
 end
 
