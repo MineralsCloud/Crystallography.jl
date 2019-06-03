@@ -62,6 +62,8 @@ end
 
 Base.convert(::Type{<: MillerIndices}, mb::MillerBravaisIndices) = error("Unsupported operation!")
 Base.convert(::Type{<: MillerBravaisIndices}, m::MillerIndices) = error("Unsupported operation!")
+Base.convert(T::Type{<: MillerIndices}, m::MillerIndices) = isa(m, T) ? m : error("Unsupported operation!")
+Base.convert(T::Type{<: MillerBravaisIndices}, mb::MillerBravaisIndices) = isa(mb, T) ? mb : error("Unsupported operation!")
 Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T <: RealSpace} = MillerIndices{T}(2mb.u + mb.v, 2mb.v + mb.u, mb.w)
 Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T <: ReciprocalSpace} = MillerIndices{T}(mb.h, mb.k, mb.l)
 Base.convert(::Type{MillerBravaisIndices{T}}, m::MillerIndices{T}) where {T <: RealSpace} = MillerBravaisIndices{T}(2m.u - m.v, 2m.v - m.u, -(m.u + m.v), 3m.w)
