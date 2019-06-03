@@ -18,11 +18,11 @@ using Crystallography
 export MillerIndices,
     MillerBravaisIndices
 
-struct MillerIndices{S,T <: Integer} <: FieldVector{3,T}
+struct MillerIndices{S <: AbstractSpace,T <: Integer} <: FieldVector{3,T}
     i::T
     j::T
     k::T
-    function MillerIndices{S,T}(i, j, k) where {S <: AbstractSpace,T <: Integer}
+    function MillerIndices{S,T}(i, j, k) where {S,T}
         x = [i, j, k]
         i, j, k = iszero(x) ? x : x .÷ gcd(x)
         new(i, j, k)
@@ -32,12 +32,12 @@ MillerIndices{S}(i::T, j::T, k::T) where {S <: AbstractSpace,T <: Integer} = Mil
 MillerIndices{S}(x::AbstractVector{T}) where {S <: AbstractSpace,T <: Integer} = MillerIndices{S}(x...)
 MillerIndices{S}(x::Tuple) where {S} = MillerIndices{S}(collect(x))
 
-struct MillerBravaisIndices{S,T <: Integer} <: FieldVector{4,T}
+struct MillerBravaisIndices{S <: AbstractSpace,T <: Integer} <: FieldVector{4,T}
     i::T
     j::T
     k::T
     l::T
-    function MillerBravaisIndices{S,T}(i, j, k, l) where {S <: AbstractSpace,T <: Integer}
+    function MillerBravaisIndices{S,T}(i, j, k, l) where {S,T}
         x = [i, j, k, l]
         i, j, k, l = iszero(x) ? x : x .÷ gcd(x)
         new(i, j, k, l)

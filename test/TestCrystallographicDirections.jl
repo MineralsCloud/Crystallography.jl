@@ -11,6 +11,11 @@ using Test
 using Crystallography
 using Crystallography.CrystallographicDirections
 
+@testset "Test constructors" begin
+    @test_throws TypeError MillerIndices{Int,Int}
+    @test_throws TypeError MillerBravaisIndices{Int,Int}
+end
+
 @testset "Test conversion between real `MillerIndices` and `MillerBravaisIndices`" begin
     millerreal = [[1, 1, 1], [-1, 0, 1], [0, -1, 1], [-1, -1, 1], [1, 0, 1], [0, 1, 1]]
     millerbravaisreal = [[1, 1, -2, 3], [-2, 1, 1, 3], [1, -2, 1, 3], [-1, -1, 2, 3], [2, -1, -1, 3], [-1, 2, -1, 3]]
