@@ -5,4 +5,5 @@ using Test
     # Write your own tests here.
     include("TestBravaisLattices.jl")
     include("TestCrystallographicDirections.jl")
+    include("TestMetric.jl")
 end
