@@ -29,7 +29,7 @@ struct MillerIndices{S <: AbstractSpace,T <: Integer} <: FieldVector{3,T}
     end
 end
 MillerIndices{S}(i::T, j::T, k::T) where {S,T} = MillerIndices{S,T}(i, j, k)
-MillerIndices{S}(x::AbstractVector{T}) where {S <: AbstractSpace,T <: Integer} = MillerIndices{S}(x...)
+MillerIndices{S}(x::AbstractVector) where {S} = MillerIndices{S}(x...)
 MillerIndices{S}(x::Tuple) where {S} = MillerIndices{S}(collect(x))
 
 struct MillerBravaisIndices{S <: AbstractSpace,T <: Integer} <: FieldVector{4,T}
@@ -44,7 +44,7 @@ struct MillerBravaisIndices{S <: AbstractSpace,T <: Integer} <: FieldVector{4,T}
     end
 end
 MillerBravaisIndices{S}(i::T, j::T, k::T, l::T) where {S,T} = MillerBravaisIndices{S,T}(i, j, k, l)
-MillerBravaisIndices{S}(x::AbstractVector{T}) where {S <: AbstractSpace,T <: Integer} = MillerBravaisIndices{S}(x...)
+MillerBravaisIndices{S}(x::AbstractVector) where {S} = MillerBravaisIndices{S}(x...)
 MillerBravaisIndices{S}(x::Tuple) where {S} = MillerBravaisIndices{S}(collect(x))
 
 function Base.getproperty(x::MillerIndices{RealSpace}, name::Symbol)
