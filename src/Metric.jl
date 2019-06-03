@@ -60,7 +60,7 @@ directionangle(a::CrystalCoordinates{T}, g::MetricTensor{T}, b::CrystalCoordinat
 
 distance(a::CrystalCoordinates{T}, g::MetricTensor{T}, b::CrystalCoordinates{T}) where {T} = length(b - a, g)
 
-Base.inv(T::Type{<: MetricTensor}) = MetricTensor{inv(first(T.parameters))}
+Base.inv(::Type{MetricTensor{T}}) where {T} = MetricTensor{inv(T)}
 Base.inv(g::MetricTensor) = inv(typeof(g))(inv(g.m))
 
 LinearAlgebra.dot(a::CrystalCoordinates{T}, g::MetricTensor{T}, b::CrystalCoordinates{T}) where {T} = a' * g.m * b
