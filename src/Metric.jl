@@ -13,8 +13,6 @@ module Metric
 
 using LinearAlgebra
 
-using CoordinateTransformations: Translation
-
 using Crystallography
 
 export MetricTensor,
@@ -53,17 +51,17 @@ MetricTensor{RealSpace}(::Type{Trigonal}, a, c) = MetricTensor{RealSpace}(Hexago
 MetricTensor{RealSpace}(::Type{BravaisLattice{RhombohedralCentered,Hexagonal}}, a, α) = MetricTensor{RealSpace}(a, a, a, α, α, α)
 MetricTensor{ReciprocalSpace}(args...) = inv(MetricTensor{RealSpace}(args...))
 
-function directioncosine(a::Translation, g::MetricTensor, b::Translation)
+function directioncosine(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates)
     dot(a, g, b) / (length(a, g) * length(b, g))
 end
 
-directionangle(a::Translation, g::MetricTensor, b::Translation) = acos(directioncosine(a, g, b))
+directionangle(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = acos(directioncosine(a, g, b))
 
 Base.inv(T::Type{<: MetricTensor}) = MetricTensor{inv(first(T.parameters))}
 Base.inv(g::MetricTensor) = inv(typeof(g))(inv(g.m))
 
-LinearAlgebra.dot(a::Translation, g::MetricTensor, b::Translation) = a.translation' * g.m * b.translation
+LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = a' * g.m * b
 
-Base.length(a::Translation, g::MetricTensor) = sqrt(dot(a, g, a))
+Base.length(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
 
 end
