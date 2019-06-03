@@ -60,9 +60,11 @@ function Base.getproperty(x::MillerBravaisIndices{ReciprocalSpace}, name::Symbol
     getfield(x, Dict(:h => :i, :k => :j, :i => :k, :l => :l)[name])
 end
 
-Base.convert(::Type{<: MillerIndices}, mb::MillerBravaisIndices{RealSpace}) = MillerIndices{RealSpace}(2mb.u + mb.v, 2mb.v + mb.u, mb.w)
-Base.convert(::Type{<: MillerIndices}, mb::MillerBravaisIndices{ReciprocalSpace}) = MillerIndices{ReciprocalSpace}(mb.h, mb.k, mb.l)
-Base.convert(::Type{<: MillerBravaisIndices}, m::MillerIndices{RealSpace}) = MillerBravaisIndices{RealSpace}(2m.u - m.v, 2m.v - m.u, -(m.u + m.v), 3m.w)
-Base.convert(::Type{<: MillerBravaisIndices}, m::MillerIndices{ReciprocalSpace}) = MillerBravaisIndices{ReciprocalSpace}(m.h, m.k, -(m.h + m.k), m.l)
+Base.convert(::Type{<: MillerIndices}, mb::MillerBravaisIndices) = error("Unsupported operation!")
+Base.convert(::Type{<: MillerBravaisIndices}, m::MillerIndices) = error("Unsupported operation!")
+Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T <: RealSpace} = MillerIndices{T}(2mb.u + mb.v, 2mb.v + mb.u, mb.w)
+Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T <: ReciprocalSpace} = MillerIndices{T}(mb.h, mb.k, mb.l)
+Base.convert(::Type{MillerBravaisIndices{T}}, m::MillerIndices{T}) where {T <: RealSpace} = MillerBravaisIndices{T}(2m.u - m.v, 2m.v - m.u, -(m.u + m.v), 3m.w)
+Base.convert(::Type{MillerBravaisIndices{T}}, m::MillerIndices{T}) where {T <: ReciprocalSpace} = MillerBravaisIndices{T}(m.h, m.k, -(m.h + m.k), m.l)
 
 end
