@@ -14,6 +14,7 @@ using Crystallography.CrystallographicDirections
 @testset "Test constructors" begin
     @test_throws TypeError MillerIndices{Int,Int}
     @test_throws TypeError MillerBravaisIndices{Int,Int}
+    @test_throws TypeError MillerIndices{Int}(1, 2, 3)
 end
 
 @testset "Test conversion between real `MillerIndices` and `MillerBravaisIndices`" begin
