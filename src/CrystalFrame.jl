@@ -15,7 +15,8 @@ using Crystallography
 
 export AbstractCoordinatesTransformation,
     CrystalFromCartesian,
-    CartesianFromCrystal
+    CartesianFromCrystal,
+    transformation
 
 abstract type AbstractCoordinatesTransformation{T <: BravaisLattice} end
 struct CrystalFromCartesian{T} <: AbstractCoordinatesTransformation{T} end
