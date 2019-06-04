@@ -18,7 +18,8 @@ using Crystallography
 export MetricTensor,
     directioncosine,
     directionangle,
-    distance
+    distance,
+    interplanar_spacing
 
 struct MetricTensor{S,T}
     m::T
@@ -59,6 +60,8 @@ end
 directionangle(a::CrystalCoordinates{T}, g::MetricTensor{T}, b::CrystalCoordinates{T}) where {T} = acos(directioncosine(a, g, b))
 
 distance(a::CrystalCoordinates{T}, g::MetricTensor{T}, b::CrystalCoordinates{T}) where {T} = length(b - a, g)
+
+interplanar_spacing(a::CrystalCoordinates{T}, g::MetricTensor{T}) where {T <: ReciprocalSpace} = 1 / length(a, g)
 
 Base.inv(::Type{MetricTensor{T}}) where {T} = MetricTensor{inv(T)}
 Base.inv(g::MetricTensor) = inv(typeof(g))(inv(g.m))
