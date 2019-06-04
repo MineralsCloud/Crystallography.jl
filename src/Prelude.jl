@@ -32,6 +32,7 @@ CrystalCoordinates{S}(x::T, y::T, z::T) where {S,T} = CrystalCoordinates{S,T}(x,
 for operator in (:+, :-)
     eval(quote
         Base.$operator(a::CrystalCoordinates{T}, b::CrystalCoordinates{T}) where {T} = CrystalCoordinates{T}(mapreduce(collect, $operator, (a, b)))
+        Base.$operator(a::CrystalCoordinates{T}) where {T} = CrystalCoordinates{T}($operator(collect(a)))
     end)
 end
 for operator in (:*, :/)
@@ -40,7 +41,7 @@ for operator in (:*, :/)
         Base.$operator(a::CrystalCoordinates, n::Number) = $operator(n, a)
     end)
 end
-
+Base.map(f, a::CrystalCoordinates{T}) where {T} = CrystalCoordinates{T}(map(f, collect(a)))
 
 Base.inv(::Type{RealSpace}) = ReciprocalSpace
 Base.inv(::Type{ReciprocalSpace}) = RealSpace
