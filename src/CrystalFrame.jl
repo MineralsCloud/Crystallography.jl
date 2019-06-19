@@ -119,12 +119,10 @@ end
 # TODO: BravaisLattice{Primitive,Triclinic}
 transformation(::Type{T}, ::Type{ReciprocalSpace}, cell::CellParameters) where {T <: BravaisLattice} = inv(transformation(T, RealSpace, cell))
 
-function transform(m::LinearMap, a::CrystalCoordinates)
-    m.linear * a
+function transform(m::LinearMap, a::CrystalCoordinates{T}) where {T}
+    CrystalCoordinates{T}(m.linear * collect(a))
 end
 
 StaticArrays.similar_type(::Type{<: CellParameters}, ::Type{T}, size::Size{(6,)}) where {T} = CellParameters{T}
-
-Base.:*(m::AbstractMatrix, a::CrystalCoordinates{T}) where {T} = CrystalCoordinates{T}(m * collect(a))
 
 end
