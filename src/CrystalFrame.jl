@@ -117,6 +117,7 @@ function transformation(::Type{BravaisLattice{Primitive,Monoclinic}}, ::Type{Rea
 end
 # TODO: BravaisLattice{BCentered,Monoclinic}
 # TODO: BravaisLattice{Primitive,Triclinic}
+transformation(::Type{T}, ::Type{ReciprocalSpace}, cell::CellParameters) where {T <: BravaisLattice} = inv(transformation(T, RealSpace, cell))
 
 function transform(m::LinearMap, a::CrystalCoordinates)
     m.linear * a
