@@ -17,15 +17,20 @@ using StaticArrays
 using Crystallography
 
 export CellParameters,
-    transformation
+    transformation,
+    transform
 
-struct CellParameters#{T} <: FieldVector{6,T}
-    a
-    b
-    c
-    α
-    β
-    γ
+struct CellParameters{T} <: FieldVector{6,T}
+    a::T
+    b::T
+    c::T
+    α::T
+    β::T
+    γ::T
+end
+function CellParameters(a, b, c, α, β, γ)
+    T = Base.promote_typeof(a, b, c, α, β, γ)
+    CellParameters{T}(a, b, c, α, β, γ)
 end
 CellParameters(::Type{Triclinic}, args...) = CellParameters(args...)
 CellParameters(::Type{Monoclinic}, a, b, c, γ) = CellParameters(a, b, c, π / 2, π / 2, γ)
@@ -112,5 +117,13 @@ function transformation(::Type{BravaisLattice{Primitive,Monoclinic}}, ::Type{Rea
 end
 # TODO: BravaisLattice{BCentered,Monoclinic}
 # TODO: BravaisLattice{Primitive,Triclinic}
+
+function transform(m::LinearMap, a::CrystalCoordinates)
+    m.linear * a
+end
+
+StaticArrays.similar_type(::Type{<: CellParameters}, ::Type{T}, size::Size{(6,)}) where {T} = CellParameters{T}
+
+Base.:*(m::AbstractMatrix, a::CrystalCoordinates{T}) where {T} = CrystalCoordinates{T}(m * collect(a))
 
 end
