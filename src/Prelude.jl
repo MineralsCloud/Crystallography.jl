@@ -11,7 +11,7 @@ julia>
 """
 module Prelude
 
-using StaticArrays: FieldVector
+using StaticArrays
 
 export AbstractSpace,
     RealSpace,
@@ -38,23 +38,8 @@ struct CartesianCoordinates{T} <: AbstractCoordinates{T}
     z::T
 end
 
-for operator in (:+, :-)
-    eval(quote
-        Base.$operator(a::CrystalCoordinates{T}, b::CrystalCoordinates{T}) where {T} = CrystalCoordinates{T}(mapreduce(collect, $operator, (a, b)))
-        Base.$operator(a::CrystalCoordinates{T}) where {T} = CrystalCoordinates{T}($operator(collect(a)))
-        Base.$operator(a::CartesianCoordinates, b::CartesianCoordinates) = CartesianCoordinates(mapreduce(collect, $operator, (a, b)))
-    end)
-end
-for operator in (:*, :/)
-    eval(quote
-        Base.$operator(n::Number, a::CrystalCoordinates{T}) where {T} = CrystalCoordinates{T}($operator(collect(a), n))
-        Base.$operator(a::CrystalCoordinates, n::Number) = $operator(n, a)
-        Base.$operator(n::Number, a::CartesianCoordinates) = CartesianCoordinates($operator(collect(a), n))
-        Base.$operator(a::CartesianCoordinates, n::Number) = $operator(n, a)
-    end)
-end
-Base.map(f, a::CrystalCoordinates{T}) where {T} = CrystalCoordinates{T}(map(f, collect(a)))
-Base.map(f, a::CartesianCoordinates) = CartesianCoordinates(map(f, collect(a)))
+StaticArrays.similar_type(::Type{<: CrystalCoordinates{S}}, ::Type{T}, size::Size{(3,)}) where {S, T} = CrystalCoordinates{S, T}
+StaticArrays.similar_type(::Type{<: CartesianCoordinates}, ::Type{T}, size::Size{(3,)}) where {T} = CartesianCoordinates{T}
 
 Base.inv(::Type{RealSpace}) = ReciprocalSpace
 Base.inv(::Type{ReciprocalSpace}) = RealSpace
