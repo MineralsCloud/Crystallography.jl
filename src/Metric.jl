@@ -13,23 +13,23 @@ module Metric
 
 using LinearAlgebra
 
-using CoordinateTransformations: Translation
-
 using Crystallography
 
 export MetricTensor,
     directioncosine,
-    directionangle
+    directionangle,
+    distance,
+    interplanar_spacing
 
 struct MetricTensor{S,T}
     m::T
-    function MetricTensor{S,T}(m) where {S <: SpaceType,T}
+    function MetricTensor{S,T}(m) where {S <: AbstractSpace,T}
         size(m) == (3, 3) || throw(DimensionMismatch("The metric tensor must be of size 3x3!"))
         new(m)
     end
 end
 MetricTensor{S}(m::T) where {S,T} = MetricTensor{S,T}(m)
-function MetricTensor{S}(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) where {S <: SpaceType}
+function MetricTensor{S}(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) where {S <: AbstractSpace}
     vecs = (v1, v2, v3)
     MetricTensor{S}(map(x->dot(x...), Iterators.product(vecs, vecs)))
 end
@@ -47,23 +47,27 @@ MetricTensor{RealSpace}(::Type{Triclinic}, args...) = MetricTensor{RealSpace}(ar
 MetricTensor{RealSpace}(::Type{Monoclinic}, a, b, c, γ) = MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, γ)
 MetricTensor{RealSpace}(::Type{Orthorhombic}, a, b, c) = MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, π / 2)
 MetricTensor{RealSpace}(::Type{Tetragonal}, a, c) = MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, π / 2)
-MetricTensor{RealSpace}(::Type{Tetragonal}, a) = MetricTensor{RealSpace}(a, a, a, π / 2, π / 2, π / 2)
+MetricTensor{RealSpace}(::Type{Cubic}, a) = MetricTensor{RealSpace}(a, a, a, π / 2, π / 2, π / 2)
 MetricTensor{RealSpace}(::Type{Hexagonal}, a, c) = MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, 2π / 3)
 MetricTensor{RealSpace}(::Type{Trigonal}, a, c) = MetricTensor{RealSpace}(Hexagonal, a, c)
 MetricTensor{RealSpace}(::Type{BravaisLattice{RhombohedralCentered,Hexagonal}}, a, α) = MetricTensor{RealSpace}(a, a, a, α, α, α)
 MetricTensor{ReciprocalSpace}(args...) = inv(MetricTensor{RealSpace}(args...))
 
-function directioncosine(a::Translation, g::MetricTensor, b::Translation)
+function directioncosine(a::CrystalCoordinates{T}, g::MetricTensor{T}, b::CrystalCoordinates{T}) where {T}
     dot(a, g, b) / (length(a, g) * length(b, g))
 end
 
-directionangle(a::Translation, g::MetricTensor, b::Translation) = acos(directioncosine(a, g, b))
+directionangle(a::CrystalCoordinates{T}, g::MetricTensor{T}, b::CrystalCoordinates{T}) where {T} = acos(directioncosine(a, g, b))
 
-Base.inv(T::Type{<: MetricTensor}) = MetricTensor{inv(first(T.parameters))}
+distance(a::CrystalCoordinates{T}, g::MetricTensor{T}, b::CrystalCoordinates{T}) where {T} = length(b - a, g)
+
+interplanar_spacing(a::CrystalCoordinates{T}, g::MetricTensor{T}) where {T <: ReciprocalSpace} = 1 / length(a, g)
+
+Base.inv(::Type{MetricTensor{T}}) where {T} = MetricTensor{inv(T)}
 Base.inv(g::MetricTensor) = inv(typeof(g))(inv(g.m))
 
-LinearAlgebra.dot(a::Translation, g::MetricTensor, b::Translation) = a.translation' * g.m * b.translation
+LinearAlgebra.dot(a::CrystalCoordinates{T}, g::MetricTensor{T}, b::CrystalCoordinates{T}) where {T} = a' * g.m * b
 
-Base.length(a::Translation, g::MetricTensor) = sqrt(dot(a, g, a))
+Base.length(a::CrystalCoordinates{T}, g::MetricTensor{T}) where {T} = sqrt(dot(a, g, a))
 
 end

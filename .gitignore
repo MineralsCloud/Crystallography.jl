@@ -6,7 +6,8 @@
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -148,7 +149,7 @@ fabric.properties
 ### https://raw.github.com/github/gitignore/310f125d232a837c93f482bc8b8703227b312419/Global/VisualStudioCode.gitignore
 
 .vscode/*
-!.vscode/settings.json
+.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
