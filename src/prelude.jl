@@ -1,16 +1,3 @@
-"""
-# module Prelude
-
-
-
-# Examples
-
-```jldoctest
-julia>
-```
-"""
-module Prelude
-
 using StaticArrays
 
 export AbstractSpace,
@@ -43,5 +30,3 @@ StaticArrays.similar_type(::Type{<: CartesianCoordinates}, ::Type{T}, size::Size
 
 Base.inv(::Type{RealSpace}) = ReciprocalSpace
 Base.inv(::Type{ReciprocalSpace}) = RealSpace
-
-end
