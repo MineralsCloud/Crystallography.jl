@@ -16,12 +16,9 @@ using LinearAlgebra: diagm, I
 using CoordinateTransformations: Translation, LinearMap
 using LuxurySparse: IMatrix
 
-export SeitzOperator,
-    IdentityOperator,
-    TranslationOperator,
-    PointSymmetryOperator
+export SeitzOperator, IdentityOperator, TranslationOperator, PointSymmetryOperator
 
-abstract type SeitzOperator{T <: AbstractMatrix} end
+abstract type SeitzOperator{T<:AbstractMatrix} end
 
 struct IdentityOperator{T} <: SeitzOperator{T}
     m::T
@@ -32,7 +29,7 @@ struct IdentityOperator{T} <: SeitzOperator{T}
     end
 end
 IdentityOperator(m::T) where {T} = IdentityOperator{T}(m)
-IdentityOperator(T::Type{<: Real}) = IdentityOperator(IMatrix{4,T}())
+IdentityOperator(T::Type{<:Real}) = IdentityOperator(IMatrix{4,T}())
 
 struct TranslationOperator{T} <: SeitzOperator{T}
     m::T
@@ -60,7 +57,7 @@ function PointSymmetryOperator(m::LinearMap)
     PointSymmetryOperator(vcat(hcat(m.linear, zeros(T, 3)), lastrow(T)))
 end
 
-lastrow(T::Type{<: Real}) = [zeros(T, 3)... ones(T, 1)]
+lastrow(T::Type{<:Real}) = [zeros(T, 3)... ones(T, 1)]
 
 Base.eltype(t::Translation) = eltype(t.translation)
 Base.eltype(m::LinearMap) = eltype(m.linear)

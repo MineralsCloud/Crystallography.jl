@@ -24,7 +24,14 @@ end
 
 @testset "Test conversion between real `MillerIndices` and `MillerBravaisIndices`" begin
     millerreal = [[1, 1, 1], [-1, 0, 1], [0, -1, 1], [-1, -1, 1], [1, 0, 1], [0, 1, 1]]
-    millerbravaisreal = [[1, 1, -2, 3], [-2, 1, 1, 3], [1, -2, 1, 3], [-1, -1, 2, 3], [2, -1, -1, 3], [-1, 2, -1, 3]]
+    millerbravaisreal = [
+        [1, 1, -2, 3],
+        [-2, 1, 1, 3],
+        [1, -2, 1, 3],
+        [-1, -1, 2, 3],
+        [2, -1, -1, 3],
+        [-1, 2, -1, 3],
+    ]
     for (x, y) in zip(millerreal, millerbravaisreal)
         m = MillerIndices{RealSpace}(x)
         mb = MillerBravaisIndices{RealSpace}(y)
@@ -42,8 +49,16 @@ end
 end
 
 @testset "Test conversion between reciprocal `MillerIndices` and `MillerBravaisIndices`" begin
-    millerreciprocal = [[1, 0, 0], [0, 1, 0], [1, -1, 0], [-1, 0, 0], [0, -1, 0], [-1, 1, 0]]
-    millerbravaisreciprocal = [[1, 0, -1, 0], [0, 1, -1, 0], [1, -1, 0, 0], [-1, 0, 1, 0], [0, -1, 1, 0], [-1, 1, 0, 0]]
+    millerreciprocal =
+        [[1, 0, 0], [0, 1, 0], [1, -1, 0], [-1, 0, 0], [0, -1, 0], [-1, 1, 0]]
+    millerbravaisreciprocal = [
+        [1, 0, -1, 0],
+        [0, 1, -1, 0],
+        [1, -1, 0, 0],
+        [-1, 0, 1, 0],
+        [0, -1, 1, 0],
+        [-1, 1, 0, 0],
+    ]
     for (x, y) in zip(millerreciprocal, millerbravaisreciprocal)
         m = MillerIndices{ReciprocalSpace}(x)
         mb = MillerBravaisIndices{ReciprocalSpace}(y)
