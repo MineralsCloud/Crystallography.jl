@@ -2,7 +2,7 @@ module Crystallography
 
 using Reexport
 
-include("Prelude.jl")
+include("prelude.jl")
 @reexport using .Prelude
 include("BravaisLattices.jl")
 @reexport using .BravaisLattices
