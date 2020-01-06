@@ -1,7 +1,5 @@
 module Crystallography
 
-using Reexport
-
 include("prelude.jl")
 include("CrystallographicDirections.jl")
 include("Metric.jl")
