@@ -60,8 +60,8 @@ StaticArrays.similar_type(
     size::Size{(3,)},
 ) where {T} = CartesianCoordinates{T}
 
-Base.inv(::Type{RealSpace}) = ReciprocalSpace
-Base.inv(::Type{ReciprocalSpace}) = RealSpace
+Base.inv(::RealSpace) = ReciprocalSpace()
+Base.inv(::ReciprocalSpace) = RealSpace()
 
 abstract type CrystalSystem end
 struct Triclinic <: CrystalSystem end

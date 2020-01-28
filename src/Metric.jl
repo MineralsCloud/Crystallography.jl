@@ -35,8 +35,7 @@ export MetricTensor, directioncosine, directionangle, distance, interplanar_spac
 struct MetricTensor{S,T}
     m::T
     function MetricTensor{S,T}(m) where {S<:AbstractSpace,T}
-        size(m) == (3, 3) ||
-        throw(DimensionMismatch("The metric tensor must be of size 3x3!"))
+        @assert(size(m) == (3, 3), "The metric tensor must be of size 3×3!")
         return new(m)
     end
 end
@@ -74,7 +73,6 @@ MetricTensor{RealSpace}(::BravaisLattice{C,Trigonal}, a, c) =
     MetricTensor{RealSpace}(BravaisLattice(Primitive(), Hexagonal()), a, c)
 MetricTensor{RealSpace}(::BravaisLattice{RhombohedralCentered,Hexagonal}, a, α) =
     MetricTensor{RealSpace}(a, a, a, α, α, α)
-MetricTensor{ReciprocalSpace}(args...) = inv(MetricTensor{RealSpace}(args...))
 
 function directioncosine(
     a::CrystalCoordinates{T},
