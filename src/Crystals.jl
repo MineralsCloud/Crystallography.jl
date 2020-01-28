@@ -43,13 +43,19 @@ function CellParameters(a, b, c, α, β, γ)
     T = Base.promote_typeof(a, b, c, α, β, γ)
     return CellParameters{T}(a, b, c, α, β, γ)
 end
-CellParameters(::Triclinic, args...) = CellParameters(args...)
-CellParameters(::Monoclinic, a, b, c, γ) = CellParameters(a, b, c, π / 2, π / 2, γ)
-CellParameters(::Orthorhombic, a, b, c) = CellParameters(a, b, c, π / 2, π / 2, π / 2)
-CellParameters(::Tetragonal, a, c) = CellParameters(a, a, c, π / 2, π / 2, π / 2)
-CellParameters(::Cubic, a) = CellParameters(a, a, a, π / 2, π / 2, π / 2)
-CellParameters(::Hexagonal, a, c) = CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
-CellParameters(::Trigonal, a, c) = CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
+CellParameters(::BravaisLattice, args...) = CellParameters(args...)  # Triclinic
+CellParameters(::BravaisLattice{C,Monoclinic}, a, b, c, γ) where {C} =
+    CellParameters(a, b, c, π / 2, π / 2, γ)
+CellParameters(::BravaisLattice{C,Orthorhombic}, a, b, c) where {C} =
+    CellParameters(a, b, c, π / 2, π / 2, π / 2)
+CellParameters(::BravaisLattice{C,Tetragonal}, a, c) where {C} =
+    CellParameters(a, a, c, π / 2, π / 2, π / 2)
+CellParameters(::BravaisLattice{C,Cubic}, a) where {C} =
+    CellParameters(a, a, a, π / 2, π / 2, π / 2)
+CellParameters(::BravaisLattice{C,Hexagonal}, a, c) where {C} =
+    CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
+CellParameters(::BravaisLattice{C,Trigonal}, a, c) where {C} =
+    CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
 CellParameters(::BravaisLattice{RhombohedralCentered,Hexagonal}, a, α) =
     CellParameters(a, a, a, α, α, α)
 
@@ -110,11 +116,7 @@ function makelattice(
         -1 -1 r
     ]
 end
-makelattice(
-    ::BravaisLattice{Primitive,Orthorhombic},
-    ::RealSpace,
-    cell::CellParameters,
-) = [
+makelattice(::BravaisLattice{Primitive,Orthorhombic}, ::RealSpace, cell::CellParameters) = [
     cell.a 0 0
     0 cell.b 0
     0 0 cell.c
