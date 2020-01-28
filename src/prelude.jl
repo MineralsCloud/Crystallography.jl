@@ -76,7 +76,7 @@ struct BodyCentered <: CenteringType end
 struct FaceCentered <: CenteringType end
 struct RhombohedralCentered <: CenteringType end
 
-abstract type BravaisLattice{B<:CenteringType,C<:CrystalSystem} end
+struct BravaisLattice{B<:CenteringType,C<:CrystalSystem} end
 
 nomenclature(::Triclinic) = "a"
 nomenclature(::Monoclinic) = "m"
