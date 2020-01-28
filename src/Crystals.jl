@@ -48,45 +48,33 @@ CellParameters(::Trigonal, a, c) = CellParameters(a, a, c, π / 2, π / 2, 2π /
 CellParameters(::BravaisLattice{RhombohedralCentered,Hexagonal}, a, α) =
     CellParameters(a, a, a, α, α, α)
 
-transformation(
-    ::Type{BravaisLattice{Primitive,Cubic}},
-    ::Type{RealSpace},
-    cell::CellParameters,
-) = cell.a * [
-    1 0 0
-    0 1 0
-    0 0 1
-] |> LinearMap
-transformation(
-    ::Type{BravaisLattice{BodyCentered,Cubic}},
-    ::Type{RealSpace},
-    cell::CellParameters,
-) = cell.a / 2 * [
-    1 1 1
-    -1 1 1
-    -1 -1 1
-] |> LinearMap
-transformation(
-    ::Type{BravaisLattice{FaceCentered,Cubic}},
-    ::Type{RealSpace},
-    cell::CellParameters,
-) = cell.a / 2 * [
-    -1 0 1
-    0 1 1
-    -1 1 0
-] |> LinearMap
-transformation(
-    ::Type{BravaisLattice{Primitive,Hexagonal}},
-    ::Type{RealSpace},
-    cell::CellParameters,
-) = cell.a * [
-    1 0 0
-    -1 / 2 √3 / 2 0
-    0 0 cell.c / cell.a
-] |> LinearMap
+transformation(::BravaisLattice{Primitive,Cubic}, ::RealSpace, cell::CellParameters) =
+    cell.a * [
+        1 0 0
+        0 1 0
+        0 0 1
+    ] |> LinearMap
+transformation(::BravaisLattice{BodyCentered,Cubic}, ::RealSpace, cell::CellParameters) =
+    cell.a / 2 * [
+        1 1 1
+        -1 1 1
+        -1 -1 1
+    ] |> LinearMap
+transformation(::BravaisLattice{FaceCentered,Cubic}, ::RealSpace, cell::CellParameters) =
+    cell.a / 2 * [
+        -1 0 1
+        0 1 1
+        -1 1 0
+    ] |> LinearMap
+transformation(::BravaisLattice{Primitive,Hexagonal}, ::RealSpace, cell::CellParameters) =
+    cell.a * [
+        1 0 0
+        -1 / 2 √3 / 2 0
+        0 0 cell.c / cell.a
+    ] |> LinearMap
 function transformation(
-    ::Type{BravaisLattice{RhombohedralCentered,Hexagonal}},
-    ::Type{RealSpace},
+    ::BravaisLattice{RhombohedralCentered,Hexagonal},
+    ::RealSpace,
     cell::CellParameters,
 )
     r = cos(cell.α)
@@ -99,18 +87,15 @@ function transformation(
         -tx -ty tz
     ] |> LinearMap
 end
-transformation(
-    ::Type{BravaisLattice{Primitive,Tetragonal}},
-    ::Type{RealSpace},
-    cell::CellParameters,
-) = cell.a * [
-    1 0 0
-    0 1 0
-    0 0 cell.c / cell.a
-] |> LinearMap
+transformation(::BravaisLattice{Primitive,Tetragonal}, ::RealSpace, cell::CellParameters) =
+    cell.a * [
+        1 0 0
+        0 1 0
+        0 0 cell.c / cell.a
+    ] |> LinearMap
 function transformation(
-    ::Type{BravaisLattice{BodyCentered,Tetragonal}},
-    ::Type{RealSpace},
+    ::BravaisLattice{BodyCentered,Tetragonal},
+    ::RealSpace,
     cell::CellParameters,
 )
     r = cell.c / cell.a
@@ -121,8 +106,8 @@ function transformation(
     ] |> LinearMap
 end
 transformation(
-    ::Type{BravaisLattice{Primitive,Orthorhombic}},
-    ::Type{RealSpace},
+    ::BravaisLattice{Primitive,Orthorhombic},
+    ::RealSpace,
     cell::CellParameters,
 ) = [
     cell.a 0 0
@@ -131,8 +116,8 @@ transformation(
 ] |> LinearMap
 # TODO: BravaisLattice{CCentered,Orthorhombic}
 function transformation(
-    ::Type{BravaisLattice{FaceCentered,Orthorhombic}},
-    ::Type{RealSpace},
+    ::BravaisLattice{FaceCentered,Orthorhombic},
+    ::RealSpace,
     cell::CellParameters,
 )
     a, b, c = cell.a, cell.b, cell.c
@@ -143,8 +128,8 @@ function transformation(
     ] / 2 |> LinearMap
 end
 function transformation(
-    ::Type{BravaisLattice{BodyCentered,Orthorhombic}},
-    ::Type{RealSpace},
+    ::BravaisLattice{BodyCentered,Orthorhombic},
+    ::RealSpace,
     cell::CellParameters,
 )
     a, b, c = cell.a, cell.b, cell.c
@@ -155,8 +140,8 @@ function transformation(
     ] / 2 |> LinearMap
 end
 function transformation(
-    ::Type{BravaisLattice{Primitive,Monoclinic}},
-    ::Type{RealSpace},
+    ::BravaisLattice{Primitive,Monoclinic},
+    ::RealSpace,
     cell::CellParameters,
 )
     a, b, c = cell.a, cell.b, cell.c
@@ -168,11 +153,8 @@ function transformation(
 end
 # TODO: BravaisLattice{BCentered,Monoclinic}
 # TODO: BravaisLattice{Primitive,Triclinic}
-transformation(
-    ::Type{T},
-    ::Type{ReciprocalSpace},
-    cell::CellParameters,
-) where {T<:BravaisLattice} = inv(transformation(T, RealSpace, cell))
+transformation(T::BravaisLattice, ::ReciprocalSpace, cell::CellParameters) =
+    inv(transformation(T, RealSpace(), cell))
 
 transform(m::LinearMap, a::CrystalCoordinates{T}) where {T} =
     CrystalCoordinates{T}(m.linear * collect(a))
