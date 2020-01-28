@@ -6,7 +6,7 @@ using Crystallography
 
 @testset "Test `allbravaislattices`" begin
     @test allbravaislattices(
-        if_nomenclature = true,
+        symbol = true,
     ) == (
         "aP",
         "mP",

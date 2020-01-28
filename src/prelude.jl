@@ -1,7 +1,13 @@
-using StaticArrays
+using StaticArrays: FieldVector, Size
 
-export AbstractSpace, RealSpace, ReciprocalSpace, CrystalCoordinates, CartesianCoordinates
-export CrystalSystem,
+import StaticArrays
+
+export AbstractSpace,
+    RealSpace,
+    ReciprocalSpace,
+    CrystalCoordinates,
+    CartesianCoordinates,
+    CrystalSystem,
     Triclinic,
     Monoclinic,
     Orthorhombic,
@@ -76,44 +82,50 @@ struct BodyCentered <: CenteringType end
 struct FaceCentered <: CenteringType end
 struct RhombohedralCentered <: CenteringType end
 
-abstract type BravaisLattice{B<:CenteringType,C<:CrystalSystem} end
+struct BravaisLattice{B<:CenteringType,C<:CrystalSystem} end
+BravaisLattice(::B, ::C) where {B,C} = BravaisLattice{B,C}()
 
-nomenclature(::Type{Triclinic}) = "a"
-nomenclature(::Type{Monoclinic}) = "m"
-nomenclature(::Type{Orthorhombic}) = "o"
-nomenclature(::Type{Tetragonal}) = "t"
-nomenclature(::Type{Cubic}) = "c"
-nomenclature(::Type{Hexagonal}) = "h"
-nomenclature(::Type{Trigonal}) = "h"
-nomenclature(::Type{Primitive}) = "P"
-nomenclature(::Type{ACentered}) = "A"
-nomenclature(::Type{BCentered}) = "B"
-nomenclature(::Type{CCentered}) = "C"
-nomenclature(::Type{BodyCentered}) = "I"
-nomenclature(::Type{FaceCentered}) = "F"
-nomenclature(::Type{RhombohedralCentered}) = "R"
-nomenclature(::Type{BravaisLattice{B,C}}) where {B,C} = nomenclature(C) * nomenclature(B)
+nomenclature(::Triclinic) = "a"
+nomenclature(::Monoclinic) = "m"
+nomenclature(::Orthorhombic) = "o"
+nomenclature(::Tetragonal) = "t"
+nomenclature(::Cubic) = "c"
+nomenclature(::Hexagonal) = "h"
+nomenclature(::Trigonal) = "h"
+nomenclature(::Primitive) = "P"
+nomenclature(::ACentered) = "A"
+nomenclature(::BCentered) = "B"
+nomenclature(::CCentered) = "C"
+nomenclature(::BodyCentered) = "I"
+nomenclature(::FaceCentered) = "F"
+nomenclature(::RhombohedralCentered) = "R"
+nomenclature(::BravaisLattice{B,C}) where {B,C} = nomenclature(C()) * nomenclature(B())
 
-function allbravaislattices(; if_nomenclature = false)
+function allbravaislattices(; symbol::Bool = false)
     x = (
-        BravaisLattice{Primitive,Triclinic},
-        BravaisLattice{Primitive,Monoclinic},
-        BravaisLattice{BCentered,Monoclinic},
-        BravaisLattice{Primitive,Orthorhombic},
-        BravaisLattice{CCentered,Orthorhombic},
-        BravaisLattice{BodyCentered,Orthorhombic},
-        BravaisLattice{FaceCentered,Orthorhombic},
-        BravaisLattice{Primitive,Tetragonal},
-        BravaisLattice{BodyCentered,Tetragonal},
-        BravaisLattice{Primitive,Cubic},
-        BravaisLattice{BodyCentered,Cubic},
-        BravaisLattice{FaceCentered,Cubic},
-        BravaisLattice{Primitive,Hexagonal},
-        BravaisLattice{RhombohedralCentered,Hexagonal},
+        BravaisLattice(Primitive(), Triclinic()),
+        BravaisLattice(Primitive(), Monoclinic()),
+        BravaisLattice(BCentered(), Monoclinic()),
+        BravaisLattice(Primitive(), Orthorhombic()),
+        BravaisLattice(CCentered(), Orthorhombic()),
+        BravaisLattice(BodyCentered(), Orthorhombic()),
+        BravaisLattice(FaceCentered(), Orthorhombic()),
+        BravaisLattice(Primitive(), Tetragonal()),
+        BravaisLattice(BodyCentered(), Tetragonal()),
+        BravaisLattice(Primitive(), Cubic()),
+        BravaisLattice(BodyCentered(), Cubic()),
+        BravaisLattice(FaceCentered(), Cubic()),
+        BravaisLattice(Primitive(), Hexagonal()),
+        BravaisLattice(RhombohedralCentered(), Hexagonal()),
     )
-    return if_nomenclature ? map(nomenclature, x) : x
+    return symbol ? map(nomenclature, x) : x
 end  # function allbravaislattices
 
-centeringtype(::BravaisLattice{C}) where {C} = C
+centeringtype(::BravaisLattice{C}) where {C} = C()
 
-crystalsystem(::BravaisLattice{C,T}) where {C,T} = T
+crystalsystem(::BravaisLattice{C,T}) where {C,T} = T()
+
+Base.show(io::IO, t::CrystalSystem) = show(io, lowercase(string(t)))
+Base.show(io::IO, t::CenteringType) = show(io, lowercase(string(t)))
+Base.show(io::IO, t::BravaisLattice{C,T}) where {C,T} =
+    show(io, lowercase(string(C, ' ', T)))
