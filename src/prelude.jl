@@ -78,21 +78,21 @@ struct RhombohedralCentered <: CenteringType end
 
 abstract type BravaisLattice{B<:CenteringType,C<:CrystalSystem} end
 
-nomenclature(::Type{Triclinic}) = "a"
-nomenclature(::Type{Monoclinic}) = "m"
-nomenclature(::Type{Orthorhombic}) = "o"
-nomenclature(::Type{Tetragonal}) = "t"
-nomenclature(::Type{Cubic}) = "c"
-nomenclature(::Type{Hexagonal}) = "h"
-nomenclature(::Type{Trigonal}) = "h"
-nomenclature(::Type{Primitive}) = "P"
-nomenclature(::Type{ACentered}) = "A"
-nomenclature(::Type{BCentered}) = "B"
-nomenclature(::Type{CCentered}) = "C"
-nomenclature(::Type{BodyCentered}) = "I"
-nomenclature(::Type{FaceCentered}) = "F"
-nomenclature(::Type{RhombohedralCentered}) = "R"
-nomenclature(::Type{BravaisLattice{B,C}}) where {B,C} = nomenclature(C) * nomenclature(B)
+nomenclature(::Triclinic) = "a"
+nomenclature(::Monoclinic) = "m"
+nomenclature(::Orthorhombic) = "o"
+nomenclature(::Tetragonal) = "t"
+nomenclature(::Cubic) = "c"
+nomenclature(::Hexagonal) = "h"
+nomenclature(::Trigonal) = "h"
+nomenclature(::Primitive) = "P"
+nomenclature(::ACentered) = "A"
+nomenclature(::BCentered) = "B"
+nomenclature(::CCentered) = "C"
+nomenclature(::BodyCentered) = "I"
+nomenclature(::FaceCentered) = "F"
+nomenclature(::RhombohedralCentered) = "R"
+nomenclature(::BravaisLattice{B,C}) where {B,C} = nomenclature(C) * nomenclature(B)
 
 function allbravaislattices(; if_nomenclature = false)
     x = (
