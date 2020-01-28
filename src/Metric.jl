@@ -32,47 +32,43 @@ import LinearAlgebra
 
 export MetricTensor, directioncosine, directionangle, distance, interplanar_spacing
 
-struct MetricTensor{S,T}
+struct MetricTensor{T}
     m::T
-    function MetricTensor{S,T}(m) where {S<:AbstractSpace,T}
+    function MetricTensor{T}(m) where {T}
         @assert(size(m) == (3, 3), "The metric tensor must be of size 3×3!")
         return new(m)
     end
 end
-MetricTensor{S}(m::T) where {S,T} = MetricTensor{S,T}(m)
-function MetricTensor{S}(
-    v1::AbstractVector,
-    v2::AbstractVector,
-    v3::AbstractVector,
-) where {S<:AbstractSpace}
+MetricTensor(m::T) where {T} = MetricTensor{T}(m)
+function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
     vecs = (v1, v2, v3)
-    return MetricTensor{S}(map(x -> dot(x...), Iterators.product(vecs, vecs)))
+    return MetricTensor(map(x -> dot(x...), Iterators.product(vecs, vecs)))
 end
-function MetricTensor{RealSpace}(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
+function MetricTensor(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
     g12 = a * b * cos(γ)
     g13 = a * c * cos(β)
     g23 = b * c * cos(α)
-    return MetricTensor{RealSpace}([
+    return MetricTensor([
         a^2 g12 g13
         g12 b^2 g23
         g13 g23 c^2
     ])
 end
-MetricTensor{RealSpace}(::BravaisLattice, args...) = MetricTensor{RealSpace}(args...)  # Triclinic
-MetricTensor{RealSpace}(::BravaisLattice{C,Monoclinic}, a, b, c, γ) where {C} =
-    MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, γ)
-MetricTensor{RealSpace}(::BravaisLattice{C,Orthorhombic}, a, b, c) where {C} =
-    MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, π / 2)
-MetricTensor{RealSpace}(::BravaisLattice{C,Tetragonal}, a, c) where {C} =
-    MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, π / 2)
-MetricTensor{RealSpace}(::BravaisLattice{C,Cubic}, a) where {C} =
-    MetricTensor{RealSpace}(a, a, a, π / 2, π / 2, π / 2)
-MetricTensor{RealSpace}(::BravaisLattice{C,Hexagonal}, a, c) where {C} =
-    MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, 2π / 3)
-MetricTensor{RealSpace}(::BravaisLattice{C,Trigonal}, a, c) where {C} =
-    MetricTensor{RealSpace}(BravaisLattice(Primitive(), Hexagonal()), a, c)
-MetricTensor{RealSpace}(::BravaisLattice{RhombohedralCentered,Hexagonal}, a, α) =
-    MetricTensor{RealSpace}(a, a, a, α, α, α)
+# MetricTensor(::BravaisLattice, args...) = MetricTensor(args...)  # Triclinic
+# MetricTensor{RealSpace}(::BravaisLattice{C,Monoclinic}, a, b, c, γ) where {C} =
+#     MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, γ)
+# MetricTensor{RealSpace}(::BravaisLattice{C,Orthorhombic}, a, b, c) where {C} =
+#     MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, π / 2)
+# MetricTensor{RealSpace}(::BravaisLattice{C,Tetragonal}, a, c) where {C} =
+#     MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, π / 2)
+# MetricTensor{RealSpace}(::BravaisLattice{C,Cubic}, a) where {C} =
+#     MetricTensor{RealSpace}(a, a, a, π / 2, π / 2, π / 2)
+# MetricTensor{RealSpace}(::BravaisLattice{C,Hexagonal}, a, c) where {C} =
+#     MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, 2π / 3)
+# MetricTensor{RealSpace}(::BravaisLattice{C,Trigonal}, a, c) where {C} =
+#     MetricTensor{RealSpace}(BravaisLattice(Primitive(), Hexagonal()), a, c)
+# MetricTensor{RealSpace}(::BravaisLattice{RhombohedralCentered,Hexagonal}, a, α) =
+#     MetricTensor{RealSpace}(a, a, a, α, α, α)
 
 function directioncosine(
     a::CrystalCoordinates{T},
