@@ -11,9 +11,24 @@ julia>
 """
 module Metric
 
-using LinearAlgebra
+using LinearAlgebra: dot
 
-using Crystallography
+using Crystallography:
+    AbstractSpace,
+    RealSpace,
+    ReciprocalSpace,
+    CrystalCoordinates,
+    BravaisLattice,
+    Triclinic,
+    Monoclinic,
+    Orthorhombic,
+    Tetragonal,
+    Cubic,
+    Hexagonal,
+    Trigonal,
+    RhombohedralCentered
+
+import LinearAlgebra
 
 export MetricTensor, directioncosine, directionangle, distance, interplanar_spacing
 
