@@ -38,14 +38,14 @@ function CellParameters(a, b, c, α, β, γ)
     T = Base.promote_typeof(a, b, c, α, β, γ)
     return CellParameters{T}(a, b, c, α, β, γ)
 end
-CellParameters(::Type{Triclinic}, args...) = CellParameters(args...)
-CellParameters(::Type{Monoclinic}, a, b, c, γ) = CellParameters(a, b, c, π / 2, π / 2, γ)
-CellParameters(::Type{Orthorhombic}, a, b, c) = CellParameters(a, b, c, π / 2, π / 2, π / 2)
-CellParameters(::Type{Tetragonal}, a, c) = CellParameters(a, a, c, π / 2, π / 2, π / 2)
-CellParameters(::Type{Cubic}, a) = CellParameters(a, a, a, π / 2, π / 2, π / 2)
-CellParameters(::Type{Hexagonal}, a, c) = CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
-CellParameters(::Type{Trigonal}, a, c) = CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
-CellParameters(::Type{BravaisLattice{RhombohedralCentered,Hexagonal}}, a, α) =
+CellParameters(::Triclinic, args...) = CellParameters(args...)
+CellParameters(::Monoclinic, a, b, c, γ) = CellParameters(a, b, c, π / 2, π / 2, γ)
+CellParameters(::Orthorhombic, a, b, c) = CellParameters(a, b, c, π / 2, π / 2, π / 2)
+CellParameters(::Tetragonal, a, c) = CellParameters(a, a, c, π / 2, π / 2, π / 2)
+CellParameters(::Cubic, a) = CellParameters(a, a, a, π / 2, π / 2, π / 2)
+CellParameters(::Hexagonal, a, c) = CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
+CellParameters(::Trigonal, a, c) = CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
+CellParameters(::BravaisLattice{RhombohedralCentered,Hexagonal}, a, α) =
     CellParameters(a, a, a, α, α, α)
 
 transformation(
