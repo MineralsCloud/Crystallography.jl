@@ -15,6 +15,8 @@ using StaticArrays: FieldVector
 
 using Crystallography: AbstractSpace, RealSpace, ReciprocalSpace
 
+import Crystallography
+
 export MillerIndices, MillerBravaisIndices
 
 struct MillerIndices{S<:AbstractSpace,T<:Integer} <: FieldVector{3,T}
@@ -67,5 +69,9 @@ Base.convert(
     ::Type{MillerBravaisIndices{T}},
     m::MillerIndices{T},
 ) where {T<:ReciprocalSpace} = MillerBravaisIndices{T}(m[1], m[2], -(m[1] + m[2]), m[3])
+
+Crystallography.CrystalCoordinates(m::MillerIndices) = CrystalCoordinates(m.i, m.j, m.k)
+Crystallography.crystalCoordinates(mb::MillerBravaisIndices{T}) where {T} =
+    CrystalCoordinates(convert(MillerIndices{T}, mb))
 
 end
