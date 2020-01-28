@@ -75,16 +75,16 @@ MetricTensor(::BravaisLattice{RhombohedralCentered,Hexagonal}, a, α) =
     MetricTensor(a, a, a, α, α, α)
 
 function directioncosine(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates)
-    return dot(a, g, b) / (length(a, g) * length(b, g))
+    return dot(a, g, b) / (norm(a, g) * norm(b, g))
 end
 
 directionangle(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
     acos(directioncosine(a, g, b))
 
 distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) where {T} =
-    length(b - a, g)
+    norm(b - a, g)
 
-interplanar_spacing(a::CrystalCoordinates, g::MetricTensor) = 1 / length(a, g)
+interplanar_spacing(a::CrystalCoordinates, g::MetricTensor) = 1 / norm(a, g)
 
 function reciprocalof(mat::AbstractMatrix)
     @assert size(mat) == (3, 3)
@@ -146,8 +146,7 @@ Base.convert(
 
 LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
     a' * g.m * b
-
-Base.length(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
+LinearAlgebra.norm(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
 
 Crystallography.CrystalCoordinates(m::MillerIndices) = CrystalCoordinates(m.i, m.j, m.k)
 Crystallography.CrystalCoordinates(mb::MillerBravaisIndices{T}) where {T} =
