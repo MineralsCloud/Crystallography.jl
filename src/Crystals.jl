@@ -39,9 +39,9 @@ struct CellParameters{T} <: FieldVector{6,T}
     β::T
     γ::T
 end
-function CellParameters(a, b, c, α, β, γ)
-    T = Base.promote_typeof(a, b, c, α, β, γ)
-    return CellParameters{T}(a, b, c, α, β, γ)
+function CellParameters(a, b, c, α, β, γ, angle_iscosine::Bool = false)
+    v = angle_iscosine ? (a, b, c, acos(α), acos(β), acos(γ)) : (a, b, c, α, β, γ)
+    return CellParameters{Base.promote_typeof(v...)}(v...)
 end
 CellParameters(::BravaisLattice, args...) = CellParameters(args...)  # Triclinic
 CellParameters(::BravaisLattice{C,Monoclinic}, a, b, c, γ) where {C} =
