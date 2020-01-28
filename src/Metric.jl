@@ -11,7 +11,7 @@ julia>
 """
 module Metric
 
-using LinearAlgebra: dot
+using LinearAlgebra: cross, det, dot
 
 using Crystallography:
     AbstractSpace,
@@ -106,5 +106,12 @@ LinearAlgebra.dot(
 ) where {T} = a' * g.m * b
 
 Base.length(a::CrystalCoordinates{T}, g::MetricTensor{T}) where {T} = sqrt(dot(a, g, a))
+
+function reciprocalof(mat::AbstractMatrix)
+    @assert size(mat) == (3, 3)
+    volume = abs(det(mat))
+    a1, a2, a3 = mat[1, :], mat[2, :], mat[3, :]
+    return 2π / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
+end # function reciprocalof
 
 end
