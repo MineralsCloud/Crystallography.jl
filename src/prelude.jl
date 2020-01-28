@@ -121,9 +121,9 @@ function allbravaislattices(; symbol::Bool = false)
     return symbol ? map(nomenclature, x) : x
 end  # function allbravaislattices
 
-centeringtype(::BravaisLattice{C}) where {C} = C
+centeringtype(::BravaisLattice{C}) where {C} = C()
 
-crystalsystem(::BravaisLattice{C,T}) where {C,T} = T
+crystalsystem(::BravaisLattice{C,T}) where {C,T} = T()
 
 Base.show(io::IO, t::CrystalSystem) = show(io, lowercase(string(t)))
 Base.show(io::IO, t::CenteringType) = show(io, lowercase(string(t)))
