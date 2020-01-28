@@ -5,16 +5,10 @@ using LinearAlgebra: diagm, I
 using CoordinateTransformations: AffineMap, Translation, LinearMap
 using LibSymspg: get_symmetry
 
-export SeitzOperator, IdentityOperator, TranslationOperator, PointSymmetryOperator
-export Cell, getsymmetry
+using Crystallography.Crystals: Cell
 
-struct Cell{L<:AbstractVecOrMat,P<:AbstractVecOrMat,N<:AbstractVector,M<:Union{AbstractVector,Nothing}}
-    lattice::L
-    positions::P
-    numbers::N
-    magmoms::M
-end
-Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
+export SeitzOperator, IdentityOperator, TranslationOperator, PointSymmetryOperator
+export getsymmetry
 
 function getsymmetry(cell::Cell, symprec::AbstractFloat = 1e-5)
     maps, translations = get_symmetry(cell.lattice, cell.positions, cell.numbers, length(cell.numbers), symprec)
