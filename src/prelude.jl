@@ -1,7 +1,13 @@
-using StaticArrays
+using StaticArrays: FieldVector, Size
 
-export AbstractSpace, RealSpace, ReciprocalSpace, CrystalCoordinates, CartesianCoordinates
-export CrystalSystem,
+import StaticArrays
+
+export AbstractSpace,
+    RealSpace,
+    ReciprocalSpace,
+    CrystalCoordinates,
+    CartesianCoordinates,
+    CrystalSystem,
     Triclinic,
     Monoclinic,
     Orthorhombic,
