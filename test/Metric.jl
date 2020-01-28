@@ -1,10 +1,4 @@
-#=
-TestMetric.jl:
-- Julia version: 1.0
-- Author: qz
-- Date: Jun 3, 2019
-=#
-module TestMetric
+module Metric
 
 using Test
 

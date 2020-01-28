@@ -2,8 +2,7 @@ using Crystallography
 using Test
 
 @testset "Crystallography.jl" begin
-    # Write your own tests here.
-    include("TestBravaisLattices.jl")
-    include("TestCrystallographicDirections.jl")
-    include("TestMetric.jl")
+    include("BravaisLattices.jl")
+    include("CrystallographicDirections.jl")
+    include("Metric.jl")
 end
