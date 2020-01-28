@@ -54,54 +54,38 @@ function MetricTensor(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
         g13 g23 c^2
     ])
 end
-# MetricTensor(::BravaisLattice, args...) = MetricTensor(args...)  # Triclinic
-# MetricTensor{RealSpace}(::BravaisLattice{C,Monoclinic}, a, b, c, γ) where {C} =
-#     MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, γ)
-# MetricTensor{RealSpace}(::BravaisLattice{C,Orthorhombic}, a, b, c) where {C} =
-#     MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, π / 2)
-# MetricTensor{RealSpace}(::BravaisLattice{C,Tetragonal}, a, c) where {C} =
-#     MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, π / 2)
-# MetricTensor{RealSpace}(::BravaisLattice{C,Cubic}, a) where {C} =
-#     MetricTensor{RealSpace}(a, a, a, π / 2, π / 2, π / 2)
-# MetricTensor{RealSpace}(::BravaisLattice{C,Hexagonal}, a, c) where {C} =
-#     MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, 2π / 3)
-# MetricTensor{RealSpace}(::BravaisLattice{C,Trigonal}, a, c) where {C} =
-#     MetricTensor{RealSpace}(BravaisLattice(Primitive(), Hexagonal()), a, c)
-# MetricTensor{RealSpace}(::BravaisLattice{RhombohedralCentered,Hexagonal}, a, α) =
-#     MetricTensor{RealSpace}(a, a, a, α, α, α)
+MetricTensor(::BravaisLattice, args...) = MetricTensor(args...)  # Triclinic
+MetricTensor(::BravaisLattice{C,Monoclinic}, a, b, c, γ) where {C} =
+    MetricTensor(a, b, c, π / 2, π / 2, γ)
+MetricTensor(::BravaisLattice{C,Orthorhombic}, a, b, c) where {C} =
+    MetricTensor(a, b, c, π / 2, π / 2, π / 2)
+MetricTensor(::BravaisLattice{C,Tetragonal}, a, c) where {C} =
+    MetricTensor(a, a, c, π / 2, π / 2, π / 2)
+MetricTensor(::BravaisLattice{C,Cubic}, a) where {C} =
+    MetricTensor(a, a, a, π / 2, π / 2, π / 2)
+MetricTensor(::BravaisLattice{C,Hexagonal}, a, c) where {C} =
+    MetricTensor(a, a, c, π / 2, π / 2, 2π / 3)
+MetricTensor(::BravaisLattice{C,Trigonal}, a, c) where {C} =
+    MetricTensor(BravaisLattice(Primitive(), Hexagonal()), a, c)
+MetricTensor(::BravaisLattice{RhombohedralCentered,Hexagonal}, a, α) =
+    MetricTensor(a, a, a, α, α, α)
 
-function directioncosine(
-    a::CrystalCoordinates{T},
-    g::MetricTensor{T},
-    b::CrystalCoordinates{T},
-) where {T}
+function directioncosine(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates)
     return dot(a, g, b) / (length(a, g) * length(b, g))
 end
 
-directionangle(
-    a::CrystalCoordinates{T},
-    g::MetricTensor{T},
-    b::CrystalCoordinates{T},
-) where {T} = acos(directioncosine(a, g, b))
+directionangle(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
+    acos(directioncosine(a, g, b))
 
-distance(a::CrystalCoordinates{T}, g::MetricTensor{T}, b::CrystalCoordinates{T}) where {T} =
+distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) where {T} =
     length(b - a, g)
 
-interplanar_spacing(
-    a::CrystalCoordinates{T},
-    g::MetricTensor{T},
-) where {T<:ReciprocalSpace} = 1 / length(a, g)
+interplanar_spacing(a::CrystalCoordinates, g::MetricTensor) = 1 / length(a, g)
 
-Base.inv(::Type{MetricTensor{T}}) where {T} = MetricTensor{inv(T)}
-Base.inv(g::MetricTensor) = inv(typeof(g))(inv(g.m))
+LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
+    a' * g.m * b
 
-LinearAlgebra.dot(
-    a::CrystalCoordinates{T},
-    g::MetricTensor{T},
-    b::CrystalCoordinates{T},
-) where {T} = a' * g.m * b
-
-Base.length(a::CrystalCoordinates{T}, g::MetricTensor{T}) where {T} = sqrt(dot(a, g, a))
+Base.length(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
 
 function reciprocalof(mat::AbstractMatrix)
     @assert size(mat) == (3, 3)
