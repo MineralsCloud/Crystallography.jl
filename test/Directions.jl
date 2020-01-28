@@ -1,4 +1,4 @@
-module CrystallographicDirections
+module Directions
 
 using Test
 
