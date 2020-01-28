@@ -1,5 +1,5 @@
 """
-# module CrystallographicDirections
+# module Directions
 
 
 
@@ -9,7 +9,7 @@
 julia>
 ```
 """
-module CrystallographicDirections
+module Directions
 
 using StaticArrays: FieldVector
 
