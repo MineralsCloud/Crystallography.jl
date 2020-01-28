@@ -3,7 +3,7 @@ module CrystallographicDirections
 using Test
 
 using Crystallography
-using Crystallography.CrystallographicDirections
+using Crystallography.Directions
 
 @testset "Test constructors" begin
     @test_throws TypeError MillerIndices{Int,Int}
