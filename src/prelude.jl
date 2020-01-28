@@ -36,12 +36,11 @@ struct ReciprocalSpace <: AbstractSpace end
 
 abstract type AbstractCoordinates{T} <: FieldVector{3,T} end
 
-struct CrystalCoordinates{S<:AbstractSpace,T} <: AbstractCoordinates{T}
+struct CrystalCoordinates{T} <: AbstractCoordinates{T}
     x::T
     y::T
     z::T
 end
-CrystalCoordinates{S}(x::T, y::T, z::T) where {S,T} = CrystalCoordinates{S,T}(x, y, z)
 
 struct CartesianCoordinates{T} <: AbstractCoordinates{T}
     x::T
@@ -50,18 +49,15 @@ struct CartesianCoordinates{T} <: AbstractCoordinates{T}
 end
 
 StaticArrays.similar_type(
-    ::Type{<:CrystalCoordinates{S}},
+    ::Type{<:CrystalCoordinates},  # Do not delete the `<:`!
     ::Type{T},
     size::Size{(3,)},
-) where {S,T} = CrystalCoordinates{S,T}
+) where {T} = CrystalCoordinates{T}
 StaticArrays.similar_type(
-    ::Type{<:CartesianCoordinates},
+    ::Type{<:CartesianCoordinates},  # Do not delete the `<:`!
     ::Type{T},
     size::Size{(3,)},
 ) where {T} = CartesianCoordinates{T}
-
-Base.inv(::RealSpace) = ReciprocalSpace()
-Base.inv(::ReciprocalSpace) = RealSpace()
 
 abstract type CrystalSystem end
 struct Triclinic <: CrystalSystem end
