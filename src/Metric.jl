@@ -11,7 +11,7 @@ julia>
 """
 module Metric
 
-using LinearAlgebra: dot
+using LinearAlgebra: cross, det, dot
 
 using Crystallography:
     AbstractSpace,
@@ -35,8 +35,7 @@ export MetricTensor, directioncosine, directionangle, distance, interplanar_spac
 struct MetricTensor{S,T}
     m::T
     function MetricTensor{S,T}(m) where {S<:AbstractSpace,T}
-        size(m) == (3, 3) ||
-        throw(DimensionMismatch("The metric tensor must be of size 3x3!"))
+        @assert(size(m) == (3, 3), "The metric tensor must be of size 3×3!")
         return new(m)
     end
 end
@@ -59,21 +58,21 @@ function MetricTensor{RealSpace}(a::Real, b::Real, c::Real, α::Real, β::Real, 
         g13 g23 c^2
     ])
 end
-MetricTensor{RealSpace}(::Type{Triclinic}, args...) = MetricTensor{RealSpace}(args...)
-MetricTensor{RealSpace}(::Type{Monoclinic}, a, b, c, γ) =
+MetricTensor{RealSpace}(::BravaisLattice, args...) = MetricTensor{RealSpace}(args...)  # Triclinic
+MetricTensor{RealSpace}(::BravaisLattice{C,Monoclinic}, a, b, c, γ) =
     MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, γ)
-MetricTensor{RealSpace}(::Type{Orthorhombic}, a, b, c) =
+MetricTensor{RealSpace}(::BravaisLattice{C,Orthorhombic}, a, b, c) =
     MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, π / 2)
-MetricTensor{RealSpace}(::Type{Tetragonal}, a, c) =
+MetricTensor{RealSpace}(::BravaisLattice{C,Tetragonal}, a, c) =
     MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, π / 2)
-MetricTensor{RealSpace}(::Type{Cubic}, a) =
+MetricTensor{RealSpace}(::BravaisLattice{C,Cubic}, a) =
     MetricTensor{RealSpace}(a, a, a, π / 2, π / 2, π / 2)
-MetricTensor{RealSpace}(::Type{Hexagonal}, a, c) =
+MetricTensor{RealSpace}(::BravaisLattice{C,Hexagonal}, a, c) =
     MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, 2π / 3)
-MetricTensor{RealSpace}(::Type{Trigonal}, a, c) = MetricTensor{RealSpace}(Hexagonal, a, c)
-MetricTensor{RealSpace}(::Type{BravaisLattice{RhombohedralCentered,Hexagonal}}, a, α) =
+MetricTensor{RealSpace}(::BravaisLattice{C,Trigonal}, a, c) =
+    MetricTensor{RealSpace}(BravaisLattice(Primitive(), Hexagonal()), a, c)
+MetricTensor{RealSpace}(::BravaisLattice{RhombohedralCentered,Hexagonal}, a, α) =
     MetricTensor{RealSpace}(a, a, a, α, α, α)
-MetricTensor{ReciprocalSpace}(args...) = inv(MetricTensor{RealSpace}(args...))
 
 function directioncosine(
     a::CrystalCoordinates{T},
@@ -107,5 +106,12 @@ LinearAlgebra.dot(
 ) where {T} = a' * g.m * b
 
 Base.length(a::CrystalCoordinates{T}, g::MetricTensor{T}) where {T} = sqrt(dot(a, g, a))
+
+function reciprocalof(mat::AbstractMatrix)
+    @assert size(mat) == (3, 3)
+    volume = abs(det(mat))
+    a1, a2, a3 = mat[1, :], mat[2, :], mat[3, :]
+    return 2π / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
+end # function reciprocalof
 
 end
