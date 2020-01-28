@@ -99,7 +99,7 @@ nomenclature(::CCentered) = "C"
 nomenclature(::BodyCentered) = "I"
 nomenclature(::FaceCentered) = "F"
 nomenclature(::RhombohedralCentered) = "R"
-nomenclature(::BravaisLattice{B,C}) where {B,C} = nomenclature(C) * nomenclature(B)
+nomenclature(::BravaisLattice{B,C}) where {B,C} = nomenclature(C()) * nomenclature(B())
 
 function allbravaislattices(; if_nomenclature = false)
     x = (
