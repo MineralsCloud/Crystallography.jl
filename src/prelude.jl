@@ -101,7 +101,7 @@ nomenclature(::FaceCentered) = "F"
 nomenclature(::RhombohedralCentered) = "R"
 nomenclature(::BravaisLattice{B,C}) where {B,C} = nomenclature(C()) * nomenclature(B())
 
-function allbravaislattices(; if_nomenclature = false)
+function allbravaislattices(; symbol::Bool = false)
     x = (
         BravaisLattice(Primitive(), Triclinic()),
         BravaisLattice(Primitive(), Monoclinic()),
@@ -118,7 +118,7 @@ function allbravaislattices(; if_nomenclature = false)
         BravaisLattice(Primitive(), Hexagonal()),
         BravaisLattice(RhombohedralCentered(), Hexagonal()),
     )
-    return if_nomenclature ? map(nomenclature, x) : x
+    return symbol ? map(nomenclature, x) : x
 end  # function allbravaislattices
 
 centeringtype(::BravaisLattice{C}) where {C} = C
