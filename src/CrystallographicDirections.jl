@@ -13,7 +13,7 @@ module CrystallographicDirections
 
 using StaticArrays: FieldVector
 
-using Crystallography
+using Crystallography: AbstractSpace, RealSpace, ReciprocalSpace
 
 export MillerIndices, MillerBravaisIndices
 
