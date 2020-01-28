@@ -16,7 +16,7 @@ using StaticArrays
 
 using Crystallography
 
-export Cell, CellParameters, transformation, transform
+export Cell, CellParameters, makelattice, transform
 
 struct Cell{
     L<:AbstractVecOrMat,
@@ -53,31 +53,31 @@ CellParameters(::Trigonal, a, c) = CellParameters(a, a, c, π / 2, π / 2, 2π /
 CellParameters(::BravaisLattice{RhombohedralCentered,Hexagonal}, a, α) =
     CellParameters(a, a, a, α, α, α)
 
-transformation(::BravaisLattice{Primitive,Cubic}, ::RealSpace, cell::CellParameters) =
+makelattice(::BravaisLattice{Primitive,Cubic}, ::RealSpace, cell::CellParameters) =
     cell.a * [
         1 0 0
         0 1 0
         0 0 1
-    ] |> LinearMap
-transformation(::BravaisLattice{BodyCentered,Cubic}, ::RealSpace, cell::CellParameters) =
+    ]
+makelattice(::BravaisLattice{BodyCentered,Cubic}, ::RealSpace, cell::CellParameters) =
     cell.a / 2 * [
         1 1 1
         -1 1 1
         -1 -1 1
-    ] |> LinearMap
-transformation(::BravaisLattice{FaceCentered,Cubic}, ::RealSpace, cell::CellParameters) =
+    ]
+makelattice(::BravaisLattice{FaceCentered,Cubic}, ::RealSpace, cell::CellParameters) =
     cell.a / 2 * [
         -1 0 1
         0 1 1
         -1 1 0
-    ] |> LinearMap
-transformation(::BravaisLattice{Primitive,Hexagonal}, ::RealSpace, cell::CellParameters) =
+    ]
+makelattice(::BravaisLattice{Primitive,Hexagonal}, ::RealSpace, cell::CellParameters) =
     cell.a * [
         1 0 0
         -1 / 2 √3 / 2 0
         0 0 cell.c / cell.a
-    ] |> LinearMap
-function transformation(
+    ]
+function makelattice(
     ::BravaisLattice{RhombohedralCentered,Hexagonal},
     ::RealSpace,
     cell::CellParameters,
@@ -90,15 +90,15 @@ function transformation(
         tx -ty tz
         0 2ty tz
         -tx -ty tz
-    ] |> LinearMap
+    ]
 end
-transformation(::BravaisLattice{Primitive,Tetragonal}, ::RealSpace, cell::CellParameters) =
+makelattice(::BravaisLattice{Primitive,Tetragonal}, ::RealSpace, cell::CellParameters) =
     cell.a * [
         1 0 0
         0 1 0
         0 0 cell.c / cell.a
-    ] |> LinearMap
-function transformation(
+    ]
+function makelattice(
     ::BravaisLattice{BodyCentered,Tetragonal},
     ::RealSpace,
     cell::CellParameters,
@@ -108,9 +108,9 @@ function transformation(
         1 -1 r
         1 1 r
         -1 -1 r
-    ] |> LinearMap
+    ]
 end
-transformation(
+makelattice(
     ::BravaisLattice{Primitive,Orthorhombic},
     ::RealSpace,
     cell::CellParameters,
@@ -118,9 +118,9 @@ transformation(
     cell.a 0 0
     0 cell.b 0
     0 0 cell.c
-] |> LinearMap
+]
 # TODO: BravaisLattice{CCentered,Orthorhombic}
-function transformation(
+function makelattice(
     ::BravaisLattice{FaceCentered,Orthorhombic},
     ::RealSpace,
     cell::CellParameters,
@@ -130,9 +130,9 @@ function transformation(
         a 0 c
         a b 0
         0 b c
-    ] / 2 |> LinearMap
+    ] / 2
 end
-function transformation(
+function makelattice(
     ::BravaisLattice{BodyCentered,Orthorhombic},
     ::RealSpace,
     cell::CellParameters,
@@ -142,9 +142,9 @@ function transformation(
         a b c
         -a b c
         -a -b c
-    ] / 2 |> LinearMap
+    ] / 2
 end
-function transformation(
+function makelattice(
     ::BravaisLattice{Primitive,Monoclinic},
     ::RealSpace,
     cell::CellParameters,
@@ -154,12 +154,12 @@ function transformation(
         a 0 0
         0 b 0
         c * cos(cell.β) 0 c * sin(cell.β)
-    ] |> LinearMap
+    ]
 end
 # TODO: BravaisLattice{BCentered,Monoclinic}
 # TODO: BravaisLattice{Primitive,Triclinic}
-transformation(T::BravaisLattice, ::ReciprocalSpace, cell::CellParameters) =
-    inv(transformation(T, RealSpace(), cell))
+makelattice(T::BravaisLattice, ::ReciprocalSpace, cell::CellParameters) =
+    inv(makelattice(T, RealSpace(), cell))
 
 transform(m::LinearMap, a::CrystalCoordinates{T}) where {T} =
     CrystalCoordinates{T}(m.linear * collect(a))
