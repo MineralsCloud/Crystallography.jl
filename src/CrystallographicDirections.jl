@@ -24,7 +24,7 @@ struct MillerIndices{S<:AbstractSpace,T<:Integer} <: FieldVector{3,T}
     function MillerIndices{S,T}(i, j, k) where {S,T}
         x = [i, j, k]
         i, j, k = iszero(x) ? x : x .÷ gcd(x)
-        new(i, j, k)
+        return new(i, j, k)
     end
 end
 MillerIndices{S}(i::T, j::T, k::T) where {S,T} = MillerIndices{S,T}(i, j, k)
@@ -39,7 +39,7 @@ struct MillerBravaisIndices{S<:AbstractSpace,T<:Integer} <: FieldVector{4,T}
     function MillerBravaisIndices{S,T}(i, j, k, l) where {S,T}
         x = [i, j, k, l]
         i, j, k, l = iszero(x) ? x : x .÷ gcd(x)
-        new(i, j, k, l)
+        return new(i, j, k, l)
     end
 end
 MillerBravaisIndices{S}(i::T, j::T, k::T, l::T) where {S,T} =
@@ -47,18 +47,14 @@ MillerBravaisIndices{S}(i::T, j::T, k::T, l::T) where {S,T} =
 MillerBravaisIndices{S}(x::AbstractVector) where {S} = MillerBravaisIndices{S}(x...)
 MillerBravaisIndices{S}(x::Tuple) where {S} = MillerBravaisIndices{S}(collect(x))
 
-function Base.getproperty(x::MillerIndices{RealSpace}, name::Symbol)
+Base.getproperty(x::MillerIndices{RealSpace}, name::Symbol) =
     getfield(x, Dict(:u => :i, :v => :j, :w => :k)[name])
-end
-function Base.getproperty(x::MillerIndices{ReciprocalSpace}, name::Symbol)
+Base.getproperty(x::MillerIndices{ReciprocalSpace}, name::Symbol) =
     getfield(x, Dict(:h => :i, :k => :j, :l => :k)[name])
-end
-function Base.getproperty(x::MillerBravaisIndices{RealSpace}, name::Symbol)
+Base.getproperty(x::MillerBravaisIndices{RealSpace}, name::Symbol) =
     getfield(x, Dict(:u => :i, :v => :j, :t => :k, :w => :l)[name])
-end
-function Base.getproperty(x::MillerBravaisIndices{ReciprocalSpace}, name::Symbol)
+Base.getproperty(x::MillerBravaisIndices{ReciprocalSpace}, name::Symbol) =
     getfield(x, Dict(:h => :i, :k => :j, :i => :k, :l => :l)[name])
-end
 
 Base.convert(::Type{<:MillerIndices}, mb::MillerBravaisIndices) =
     error("Unsupported operation!")
