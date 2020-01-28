@@ -14,7 +14,6 @@ module SeitzOperators
 using LinearAlgebra: diagm, I
 
 using CoordinateTransformations: Translation, LinearMap
-using LuxurySparse: IMatrix
 
 export SeitzOperator, IdentityOperator, TranslationOperator, PointSymmetryOperator
 
@@ -29,7 +28,6 @@ struct IdentityOperator{T} <: SeitzOperator{T}
     end
 end
 IdentityOperator(m::T) where {T} = IdentityOperator{T}(m)
-IdentityOperator(T::Type{<:Real}) = IdentityOperator(IMatrix{4,T}())
 
 struct TranslationOperator{T} <: SeitzOperator{T}
     m::T
