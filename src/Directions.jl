@@ -47,15 +47,6 @@ MillerBravaisIndices{S}(i::T, j::T, k::T, l::T) where {S,T} =
 MillerBravaisIndices{S}(x::AbstractVector) where {S} = MillerBravaisIndices{S}(x...)
 MillerBravaisIndices{S}(x::Tuple) where {S} = MillerBravaisIndices{S}(collect(x))
 
-Base.getproperty(x::MillerIndices{RealSpace}, name::Symbol) =
-    getfield(x, Dict(:u => :i, :v => :j, :w => :k)[name])
-Base.getproperty(x::MillerIndices{ReciprocalSpace}, name::Symbol) =
-    getfield(x, Dict(:h => :i, :k => :j, :l => :k)[name])
-Base.getproperty(x::MillerBravaisIndices{RealSpace}, name::Symbol) =
-    getfield(x, Dict(:u => :i, :v => :j, :t => :k, :w => :l)[name])
-Base.getproperty(x::MillerBravaisIndices{ReciprocalSpace}, name::Symbol) =
-    getfield(x, Dict(:h => :i, :k => :j, :i => :k, :l => :l)[name])
-
 Base.convert(::Type{<:MillerIndices}, mb::MillerBravaisIndices) =
     error("Unsupported operation!")
 Base.convert(::Type{<:MillerBravaisIndices}, m::MillerIndices) =
@@ -65,16 +56,16 @@ Base.convert(T::Type{<:MillerIndices}, m::MillerIndices) =
 Base.convert(T::Type{<:MillerBravaisIndices}, mb::MillerBravaisIndices) =
     isa(mb, T) ? mb : error("Unsupported operation!")
 Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T<:RealSpace} =
-    MillerIndices{T}(2 * mb.u + mb.v, 2 * mb.v + mb.u, mb.w)
+    MillerIndices{T}(2 * mb[1] + mb[2], 2 * mb[2] + mb[1], mb[4])
 Base.convert(
     ::Type{MillerIndices{T}},
     mb::MillerBravaisIndices{T},
-) where {T<:ReciprocalSpace} = MillerIndices{T}(mb.h, mb.k, mb.l)
+) where {T<:ReciprocalSpace} = MillerIndices{T}(mb[1], mb[2], mb[4])
 Base.convert(::Type{MillerBravaisIndices{T}}, m::MillerIndices{T}) where {T<:RealSpace} =
-    MillerBravaisIndices{T}(2 * m.u - m.v, 2 * m.v - m.u, -(m.u + m.v), 3 * m.w)
+    MillerBravaisIndices{T}(2 * m[1] - m[2], 2 * m[2] - m[1], -(m[1] + m[2]), 3 * m[3])
 Base.convert(
     ::Type{MillerBravaisIndices{T}},
     m::MillerIndices{T},
-) where {T<:ReciprocalSpace} = MillerBravaisIndices{T}(m.h, m.k, -(m.h + m.k), m.l)
+) where {T<:ReciprocalSpace} = MillerBravaisIndices{T}(m[1], m[2], -(m[1] + m[2]), m[3])
 
 end
