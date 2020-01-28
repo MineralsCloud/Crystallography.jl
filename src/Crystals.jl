@@ -43,7 +43,7 @@ function CellParameters(a, b, c, α, β, γ, angle_iscosine::Bool = false)
     v = angle_iscosine ? (a, b, c, acos(α), acos(β), acos(γ)) : (a, b, c, α, β, γ)
     return CellParameters{Base.promote_typeof(v...)}(v...)
 end
-CellParameters(::BravaisLattice, args...) = CellParameters(args...)  # Triclinic
+CellParameters(::BravaisLattice{C,Triclinic}, args...) where {C} = CellParameters(args...)  # Triclinic
 CellParameters(::BravaisLattice{C,Monoclinic}, a, b, c, γ) where {C} =
     CellParameters(a, b, c, π / 2, π / 2, γ)
 CellParameters(::BravaisLattice{C,Orthorhombic}, a, b, c) where {C} =

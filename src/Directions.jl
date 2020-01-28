@@ -11,7 +11,7 @@ julia>
 """
 module Directions
 
-using LinearAlgebra: cross, det, dot
+using LinearAlgebra: cross, det, dot, norm
 
 using StaticArrays: FieldVector
 
@@ -58,7 +58,7 @@ function MetricTensor(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
         g13 g23 c^2
     ])
 end
-MetricTensor(::BravaisLattice, args...) = MetricTensor(args...)  # Triclinic
+MetricTensor(::BravaisLattice{C,Triclinic}, args...) where {C} = MetricTensor(args...)  # Triclinic
 MetricTensor(::BravaisLattice{C,Monoclinic}, a, b, c, γ) where {C} =
     MetricTensor(a, b, c, π / 2, π / 2, γ)
 MetricTensor(::BravaisLattice{C,Orthorhombic}, a, b, c) where {C} =
@@ -81,8 +81,7 @@ end
 directionangle(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
     acos(directioncosine(a, g, b))
 
-distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) where {T} =
-    norm(b - a, g)
+distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = norm(b - a, g)
 
 interplanar_spacing(a::CrystalCoordinates, g::MetricTensor) = 1 / norm(a, g)
 
