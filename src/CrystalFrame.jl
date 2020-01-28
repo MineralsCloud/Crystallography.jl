@@ -28,7 +28,7 @@ struct CellParameters{T} <: FieldVector{6,T}
 end
 function CellParameters(a, b, c, α, β, γ)
     T = Base.promote_typeof(a, b, c, α, β, γ)
-    CellParameters{T}(a, b, c, α, β, γ)
+    return CellParameters{T}(a, b, c, α, β, γ)
 end
 CellParameters(::Type{Triclinic}, args...) = CellParameters(args...)
 CellParameters(::Type{Monoclinic}, a, b, c, γ) = CellParameters(a, b, c, π / 2, π / 2, γ)
@@ -85,7 +85,7 @@ function transformation(
     tx = sqrt((1 - r) / 2)
     ty = sqrt((1 - r) / 6)
     tz = sqrt((1 + 2r) / 3)
-    cell.a * [
+    return cell.a * [
         tx -ty tz
         0 2ty tz
         -tx -ty tz
@@ -106,7 +106,7 @@ function transformation(
     cell::CellParameters,
 )
     r = cell.c / cell.a
-    cell.a / 2 * [
+    return cell.a / 2 * [
         1 -1 r
         1 1 r
         -1 -1 r
@@ -128,7 +128,7 @@ function transformation(
     cell::CellParameters,
 )
     a, b, c = cell.a, cell.b, cell.c
-    [
+    return [
         a 0 c
         a b 0
         0 b c
@@ -140,7 +140,7 @@ function transformation(
     cell::CellParameters,
 )
     a, b, c = cell.a, cell.b, cell.c
-    [
+    return [
         a b c
         -a b c
         -a -b c
@@ -152,7 +152,7 @@ function transformation(
     cell::CellParameters,
 )
     a, b, c = cell.a, cell.b, cell.c
-    [
+    return [
         a 0 0
         0 b 0
         c * cos(cell.β) 0 c * sin(cell.β)
@@ -166,9 +166,8 @@ transformation(
     cell::CellParameters,
 ) where {T<:BravaisLattice} = inv(transformation(T, RealSpace, cell))
 
-function transform(m::LinearMap, a::CrystalCoordinates{T}) where {T}
+transform(m::LinearMap, a::CrystalCoordinates{T}) where {T} =
     CrystalCoordinates{T}(m.linear * collect(a))
-end
 
 StaticArrays.similar_type(::Type{<:CellParameters}, ::Type{T}, size::Size{(6,)}) where {T} =
     CellParameters{T}
