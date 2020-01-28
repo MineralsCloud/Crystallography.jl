@@ -123,3 +123,8 @@ end  # function allbravaislattices
 centeringtype(::BravaisLattice{C}) where {C} = C
 
 crystalsystem(::BravaisLattice{C,T}) where {C,T} = T
+
+Base.show(io::IO, t::CrystalSystem) = show(io, lowercase(string(t)))
+Base.show(io::IO, t::CenteringType) = show(io, lowercase(string(t)))
+Base.show(io::IO, t::BravaisLattice{C,T}) where {C,T} =
+    show(io, lowercase(string(C, ' ', T)))
