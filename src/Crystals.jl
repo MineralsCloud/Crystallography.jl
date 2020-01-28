@@ -1,5 +1,5 @@
 """
-# module CrystalFrame
+# module Crystals
 
 
 
@@ -9,7 +9,7 @@
 julia>
 ```
 """
-module CrystalFrame
+module Crystals
 
 using CoordinateTransformations
 using StaticArrays
