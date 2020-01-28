@@ -18,7 +18,12 @@ using Crystallography
 
 export Cell, CellParameters, transformation, transform
 
-struct Cell{L<:AbstractVecOrMat,P<:AbstractVecOrMat,N<:AbstractVector,M<:Union{AbstractVector,Nothing}}
+struct Cell{
+    L<:AbstractVecOrMat,
+    P<:AbstractVecOrMat,
+    N<:AbstractVector,
+    M<:Union{AbstractVector,Nothing},
+}
     lattice::L
     positions::P
     numbers::N
