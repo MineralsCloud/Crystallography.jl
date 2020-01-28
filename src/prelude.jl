@@ -111,7 +111,7 @@ function allbravaislattices(; if_nomenclature = false)
         BravaisLattice{Primitive,Hexagonal},
         BravaisLattice{RhombohedralCentered,Hexagonal},
     )
-    if_nomenclature ? map(nomenclature, x) : x
+    return if_nomenclature ? map(nomenclature, x) : x
 end  # function allbravaislattices
 
 centeringtype(::BravaisLattice{C}) where {C} = C

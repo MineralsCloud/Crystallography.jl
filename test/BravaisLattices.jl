@@ -1,10 +1,4 @@
-#=
-TestBravaisLattices.jl:
-- Julia version: 1.0
-- Author: qz
-- Date: Jun 2, 2019
-=#
-module TestBravaisLattices
+module BravaisLattices
 
 using Test
 

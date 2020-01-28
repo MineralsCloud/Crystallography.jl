@@ -11,9 +11,24 @@ julia>
 """
 module Metric
 
-using LinearAlgebra
+using LinearAlgebra: dot
 
-using Crystallography
+using Crystallography:
+    AbstractSpace,
+    RealSpace,
+    ReciprocalSpace,
+    CrystalCoordinates,
+    BravaisLattice,
+    Triclinic,
+    Monoclinic,
+    Orthorhombic,
+    Tetragonal,
+    Cubic,
+    Hexagonal,
+    Trigonal,
+    RhombohedralCentered
+
+import LinearAlgebra
 
 export MetricTensor, directioncosine, directionangle, distance, interplanar_spacing
 
@@ -22,7 +37,7 @@ struct MetricTensor{S,T}
     function MetricTensor{S,T}(m) where {S<:AbstractSpace,T}
         size(m) == (3, 3) ||
         throw(DimensionMismatch("The metric tensor must be of size 3x3!"))
-        new(m)
+        return new(m)
     end
 end
 MetricTensor{S}(m::T) where {S,T} = MetricTensor{S,T}(m)
@@ -32,13 +47,13 @@ function MetricTensor{S}(
     v3::AbstractVector,
 ) where {S<:AbstractSpace}
     vecs = (v1, v2, v3)
-    MetricTensor{S}(map(x -> dot(x...), Iterators.product(vecs, vecs)))
+    return MetricTensor{S}(map(x -> dot(x...), Iterators.product(vecs, vecs)))
 end
 function MetricTensor{RealSpace}(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
     g12 = a * b * cos(γ)
     g13 = a * c * cos(β)
     g23 = b * c * cos(α)
-    MetricTensor{RealSpace}([
+    return MetricTensor{RealSpace}([
         a^2 g12 g13
         g12 b^2 g23
         g13 g23 c^2
@@ -65,7 +80,7 @@ function directioncosine(
     g::MetricTensor{T},
     b::CrystalCoordinates{T},
 ) where {T}
-    dot(a, g, b) / (length(a, g) * length(b, g))
+    return dot(a, g, b) / (length(a, g) * length(b, g))
 end
 
 directionangle(
