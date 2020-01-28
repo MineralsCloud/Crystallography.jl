@@ -23,8 +23,8 @@ abstract type SeitzOperator{T<:AbstractMatrix} end
 struct IdentityOperator{T} <: SeitzOperator{T}
     m::T
     function IdentityOperator{T}(m) where {T}
-        size(m) == (4, 4) || throw(DimensionMismatch("The operator must be of size 4x4!"))
-        m == I || error("The matrix is not an identity matrix!")
+        @assert(size(m) == (4, 4), "The operator must be of size 4x4!")
+        @assert(m == I, "The matrix is not an identity matrix!")
         return new(m)
     end
 end
@@ -34,7 +34,7 @@ IdentityOperator(T::Type{<:Real}) = IdentityOperator(IMatrix{4,T}())
 struct TranslationOperator{T} <: SeitzOperator{T}
     m::T
     function TranslationOperator{T}(m) where {T}
-        size(m) == (4, 4) || throw(DimensionMismatch("The operator must be of size 4x4!"))
+        @assert(size(m) == (4, 4), "The operator must be of size 4x4!")
         return new(m)
     end
 end
@@ -50,7 +50,7 @@ end
 struct PointSymmetryOperator{T} <: SeitzOperator{T}
     m::T
     function PointSymmetryOperator{T}(m) where {T}
-        size(m) == (4, 4) || throw(DimensionMismatch("The operator must be of size 4x4!"))
+        @assert(size(m) == (4, 4), "The operator must be of size 4x4!")
         return new(m)
     end
 end
