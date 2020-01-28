@@ -59,19 +59,20 @@ function MetricTensor{RealSpace}(a::Real, b::Real, c::Real, α::Real, β::Real, 
         g13 g23 c^2
     ])
 end
-MetricTensor{RealSpace}(::Type{Triclinic}, args...) = MetricTensor{RealSpace}(args...)
-MetricTensor{RealSpace}(::Type{Monoclinic}, a, b, c, γ) =
+MetricTensor{RealSpace}(::BravaisLattice, args...) = MetricTensor{RealSpace}(args...)  # Triclinic
+MetricTensor{RealSpace}(::BravaisLattice{C,Monoclinic}, a, b, c, γ) =
     MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, γ)
-MetricTensor{RealSpace}(::Type{Orthorhombic}, a, b, c) =
+MetricTensor{RealSpace}(::BravaisLattice{C,Orthorhombic}, a, b, c) =
     MetricTensor{RealSpace}(a, b, c, π / 2, π / 2, π / 2)
-MetricTensor{RealSpace}(::Type{Tetragonal}, a, c) =
+MetricTensor{RealSpace}(::BravaisLattice{C,Tetragonal}, a, c) =
     MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, π / 2)
-MetricTensor{RealSpace}(::Type{Cubic}, a) =
+MetricTensor{RealSpace}(::BravaisLattice{C,Cubic}, a) =
     MetricTensor{RealSpace}(a, a, a, π / 2, π / 2, π / 2)
-MetricTensor{RealSpace}(::Type{Hexagonal}, a, c) =
+MetricTensor{RealSpace}(::BravaisLattice{C,Hexagonal}, a, c) =
     MetricTensor{RealSpace}(a, a, c, π / 2, π / 2, 2π / 3)
-MetricTensor{RealSpace}(::Type{Trigonal}, a, c) = MetricTensor{RealSpace}(Hexagonal, a, c)
-MetricTensor{RealSpace}(::Type{BravaisLattice{RhombohedralCentered,Hexagonal}}, a, α) =
+MetricTensor{RealSpace}(::BravaisLattice{C,Trigonal}, a, c) =
+    MetricTensor{RealSpace}(BravaisLattice(Primitive(), Hexagonal()), a, c)
+MetricTensor{RealSpace}(::BravaisLattice{RhombohedralCentered,Hexagonal}, a, α) =
     MetricTensor{RealSpace}(a, a, a, α, α, α)
 MetricTensor{ReciprocalSpace}(args...) = inv(MetricTensor{RealSpace}(args...))
 
