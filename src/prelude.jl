@@ -49,12 +49,12 @@ struct CartesianCoordinates{T} <: AbstractCoordinates{T}
 end
 
 StaticArrays.similar_type(
-    ::Type{CrystalCoordinates},
+    ::Type{<:CrystalCoordinates},  # Do not delete the `<:`!
     ::Type{T},
     size::Size{(3,)},
 ) where {T} = CrystalCoordinates{T}
 StaticArrays.similar_type(
-    ::Type{CartesianCoordinates},
+    ::Type{<:CartesianCoordinates},  # Do not delete the `<:`!
     ::Type{T},
     size::Size{(3,)},
 ) where {T} = CartesianCoordinates{T}
