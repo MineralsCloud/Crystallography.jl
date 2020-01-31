@@ -12,7 +12,13 @@ export SeitzOperator, IdentityOperator, TranslationOperator, PointSymmetryOperat
 export getsymmetry
 
 function getsymmetry(cell::Cell, symprec::AbstractFloat = 1e-5)
-    maps, translations = get_symmetry(cell.lattice, cell.positions, cell.numbers, length(cell.numbers), symprec)
+    maps, translations = get_symmetry(
+        cell.lattice,
+        cell.positions,
+        cell.numbers,
+        length(cell.numbers),
+        symprec,
+    )
     return (AffineMap(m, t) for (m, t) in zip(maps, translations))
 end
 
@@ -79,6 +85,6 @@ lastrow(T::Type{<:Real}) = [zeros(T, 3)... ones(T, 1)]
 Base.eltype(t::Translation) = eltype(t.translation)
 Base.eltype(m::LinearMap) = eltype(m.linear)
 
-Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.m * [c... 1])[1:3])
+Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.m*[c... 1])[1:3])
 
 end # module Symmetry
