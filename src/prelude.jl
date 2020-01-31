@@ -69,14 +69,12 @@ struct Trigonal <: CrystalSystem end
 struct Hexagonal <: CrystalSystem end
 
 abstract type CenteringType end
-abstract type BaseCentered <: CenteringType end
+struct BaseCentered{T} <: CenteringType end
 struct Primitive <: CenteringType end
-struct ACentered <: BaseCentered end
-struct BCentered <: BaseCentered end
-struct CCentered <: BaseCentered end
 struct BodyCentered <: CenteringType end
 struct FaceCentered <: CenteringType end
 struct RhombohedralCentered <: CenteringType end
+BaseCentered(T::Symbol) = BaseCentered{T}()
 
 struct BravaisLattice{B<:CenteringType,C<:CrystalSystem} end
 BravaisLattice(::B, ::C) where {B,C} = BravaisLattice{B,C}()
@@ -98,9 +96,9 @@ function BravaisLattice(ibrav::Integer)
     elseif ibrav == 8
         BravaisLattice(Primitive(), Orthorhombic())
     elseif ibrav == 9
-        BravaisLattice(ACentered(), Orthorhombic())
+        BravaisLattice(BaseCentered(:A), Orthorhombic())
     elseif ibrav == -9
-        BravaisLattice(CCentered(), Orthorhombic())
+        BravaisLattice(BaseCentered(:C), Orthorhombic())
     elseif ibrav == 10
         BravaisLattice(FaceCentered(), Orthorhombic())
     elseif ibrav == 11
@@ -108,7 +106,7 @@ function BravaisLattice(ibrav::Integer)
     elseif ibrav ∈ (12, -12)
         BravaisLattice(Primitive(), Monoclinic())
     elseif ibrav == 13
-        BravaisLattice(ACentered(), Monoclinic())
+        BravaisLattice(BaseCentered(:A), Monoclinic())
     elseif ibrav == 14
         BravaisLattice(Primitive(), Triclinic())
     else
