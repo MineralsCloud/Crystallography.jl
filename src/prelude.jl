@@ -66,39 +66,39 @@ function BaseCentered(T::Symbol)
     return BaseCentered{T}()
 end # function BaseCentered
 
-struct BravaisLattice{B<:Centering,C<:CrystalSystem} end
-BravaisLattice(::B, ::C) where {B,C} = BravaisLattice{B,C}()
+struct BravaisLattice{A<:CrystalSystem,B<:Centering} end
+BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B}()
 function BravaisLattice(ibrav::Integer)
     return if ibrav == 1
-        BravaisLattice(Primitive(), Cubic())
+        BravaisLattice(Cubic(), Primitive())
     elseif ibrav == 2
-        BravaisLattice(FaceCentered(), Cubic())
+        BravaisLattice(Cubic(), FaceCentered())
     elseif ibrav ∈ (3, -3)
-        BravaisLattice(BodyCentered(), Cubic())
+        BravaisLattice(Cubic(), BodyCentered())
     elseif ibrav == 4
-        BravaisLattice(Primitive(), Hexagonal())
+        BravaisLattice(Hexagonal(), Primitive())
     elseif ibrav ∈ (5, -5)
-        BravaisLattice(RhombohedralCentered(), Hexagonal())
+        BravaisLattice(Hexagonal(), RhombohedralCentered())
     elseif ibrav == 6
-        BravaisLattice(Primitive(), Tetragonal())
+        BravaisLattice(Tetragonal(), Primitive())
     elseif ibrav == 7
-        BravaisLattice(BodyCentered(), Tetragonal())
+        BravaisLattice(Tetragonal(), BodyCentered())
     elseif ibrav == 8
-        BravaisLattice(Primitive(), Orthorhombic())
+        BravaisLattice(Orthorhombic(), Primitive())
     elseif ibrav == 9
-        BravaisLattice(BaseCentered(:B), Orthorhombic())
+        BravaisLattice(Orthorhombic(), BaseCentered(:B))
     elseif ibrav == -9
-        BravaisLattice(BaseCentered(:C), Orthorhombic())
+        BravaisLattice(Orthorhombic(), BaseCentered(:C))
     elseif ibrav == 10
-        BravaisLattice(FaceCentered(), Orthorhombic())
+        BravaisLattice(Orthorhombic(), FaceCentered())
     elseif ibrav == 11
-        BravaisLattice(BodyCentered(), Orthorhombic())
+        BravaisLattice(Orthorhombic(), BodyCentered())
     elseif ibrav ∈ (12, -12)
-        BravaisLattice(Primitive(), Monoclinic())
+        BravaisLattice(Monoclinic(), Primitive())
     elseif ibrav == 13
-        BravaisLattice(BaseCentered(:B), Monoclinic())
+        BravaisLattice(Monoclinic(), BaseCentered(:B))
     elseif ibrav == 14
-        BravaisLattice(Primitive(), Triclinic())
+        BravaisLattice(Triclinic(), Primitive())
     else
         error("undefined lattice!")
     end
@@ -116,36 +116,36 @@ pearsonsymbol(::BaseCentered{T}) where {T} = string(T)
 pearsonsymbol(::BodyCentered) = "I"
 pearsonsymbol(::FaceCentered) = "F"
 pearsonsymbol(::RhombohedralCentered) = "R"
-pearsonsymbol(::BravaisLattice{B,C}) where {B,C} = pearsonsymbol(C()) * pearsonsymbol(B())
+pearsonsymbol(::BravaisLattice{A,B}) where {A,B} = pearsonsymbol(A()) * pearsonsymbol(B())
 
 function bravaislattices(; symbol::Bool = false)
     x = (
-        BravaisLattice(Primitive(), Triclinic()),
-        BravaisLattice(Primitive(), Monoclinic()),
-        BravaisLattice(BaseCentered(:B), Monoclinic()),
-        BravaisLattice(Primitive(), Orthorhombic()),
-        BravaisLattice(BaseCentered(:C), Orthorhombic()),
-        BravaisLattice(BodyCentered(), Orthorhombic()),
-        BravaisLattice(FaceCentered(), Orthorhombic()),
-        BravaisLattice(Primitive(), Tetragonal()),
-        BravaisLattice(BodyCentered(), Tetragonal()),
-        BravaisLattice(Primitive(), Cubic()),
-        BravaisLattice(BodyCentered(), Cubic()),
-        BravaisLattice(FaceCentered(), Cubic()),
-        BravaisLattice(Primitive(), Hexagonal()),
-        BravaisLattice(RhombohedralCentered(), Hexagonal()),
+        BravaisLattice(Triclinic(), Primitive()),
+        BravaisLattice(Monoclinic(), Primitive()),
+        BravaisLattice(Monoclinic(), BaseCentered(:B)),
+        BravaisLattice(Orthorhombic(), Primitive()),
+        BravaisLattice(Orthorhombic(), BaseCentered(:C)),
+        BravaisLattice(Orthorhombic(), BodyCentered()),
+        BravaisLattice(Orthorhombic(), FaceCentered()),
+        BravaisLattice(Tetragonal(), Primitive()),
+        BravaisLattice(Tetragonal(), BodyCentered()),
+        BravaisLattice(Cubic(), Primitive()),
+        BravaisLattice(Cubic(), BodyCentered()),
+        BravaisLattice(Cubic(), FaceCentered()),
+        BravaisLattice(Hexagonal(), Primitive()),
+        BravaisLattice(Hexagonal(), RhombohedralCentered()),
     )
     return symbol ? map(pearsonsymbol, x) : x
 end  # function bravaislattices
 
-centeringof(::BravaisLattice{C}) where {C} = C()
+centeringof(::BravaisLattice{C,T}) where {C,T} = T()
 
-crystalsystem(::BravaisLattice{C,T}) where {C,T} = T()
+crystalsystem(::BravaisLattice{C}) where {C} = C()
 
 Base.show(io::IO, t::CrystalSystem) = show(io, lowercase(string(t)))
 Base.show(io::IO, t::Centering) = show(io, lowercase(string(t)))
 Base.show(io::IO, t::BravaisLattice{C,T}) where {C,T} =
-    show(io, lowercase(string(C, ' ', T)))
+    show(io, lowercase(string(T, ' ', C)))
 
 StaticArrays.similar_type(
     ::Type{<:CrystalCoordinates},  # Do not delete the `<:`!

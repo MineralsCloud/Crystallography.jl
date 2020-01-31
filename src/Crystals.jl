@@ -43,48 +43,47 @@ function CellParameters(a, b, c, α, β, γ, angle_iscosine::Bool = false)
     v = angle_iscosine ? (a, b, c, acos(α), acos(β), acos(γ)) : (a, b, c, α, β, γ)
     return CellParameters{Base.promote_typeof(v...)}(v...)
 end
-CellParameters(::BravaisLattice{C,Triclinic}, args...) where {C} = CellParameters(args...)  # Triclinic
-CellParameters(::BravaisLattice{C,Monoclinic}, a, b, c, γ) where {C} =
+CellParameters(::BravaisLattice{Triclinic}, args...) = CellParameters(args...)  # Triclinic
+CellParameters(::BravaisLattice{Monoclinic}, a, b, c, γ) =
     CellParameters(a, b, c, π / 2, π / 2, γ)
-CellParameters(::BravaisLattice{C,Orthorhombic}, a, b, c) where {C} =
+CellParameters(::BravaisLattice{Orthorhombic}, a, b, c) =
     CellParameters(a, b, c, π / 2, π / 2, π / 2)
-CellParameters(::BravaisLattice{C,Tetragonal}, a, c) where {C} =
+CellParameters(::BravaisLattice{Tetragonal}, a, c) =
     CellParameters(a, a, c, π / 2, π / 2, π / 2)
-CellParameters(::BravaisLattice{C,Cubic}, a) where {C} =
-    CellParameters(a, a, a, π / 2, π / 2, π / 2)
-CellParameters(::BravaisLattice{C,Hexagonal}, a, c) where {C} =
+CellParameters(::BravaisLattice{Cubic}, a) = CellParameters(a, a, a, π / 2, π / 2, π / 2)
+CellParameters(::BravaisLattice{Hexagonal}, a, c) =
     CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
-CellParameters(::BravaisLattice{C,Trigonal}, a, c) where {C} =
+CellParameters(::BravaisLattice{Trigonal}, a, c) =
     CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
-CellParameters(::BravaisLattice{RhombohedralCentered,Hexagonal}, a, α) =
+CellParameters(::BravaisLattice{Hexagonal,RhombohedralCentered}, a, α) =
     CellParameters(a, a, a, α, α, α)
 
 makelattice(ibrav::Integer, cell::CellParameters) = makelattice(BravaisLattice(ibrav), cell)
-makelattice(::BravaisLattice{Primitive,Cubic}, cell::CellParameters) =
+makelattice(::BravaisLattice{Cubic,Primitive}, cell::CellParameters) =
     cell.a * [
         1 0 0
         0 1 0
         0 0 1
     ]
-makelattice(::BravaisLattice{BodyCentered,Cubic}, cell::CellParameters) =
+makelattice(::BravaisLattice{Cubic,BodyCentered}, cell::CellParameters) =
     cell.a / 2 * [
         1 1 1
         -1 1 1
         -1 -1 1
     ]
-makelattice(::BravaisLattice{FaceCentered,Cubic}, cell::CellParameters) =
+makelattice(::BravaisLattice{Cubic,FaceCentered}, cell::CellParameters) =
     cell.a / 2 * [
         -1 0 1
         0 1 1
         -1 1 0
     ]
-makelattice(::BravaisLattice{Primitive,Hexagonal}, cell::CellParameters) =
+makelattice(::BravaisLattice{Hexagonal,Primitive}, cell::CellParameters) =
     cell.a * [
         1 0 0
         -1 / 2 √3 / 2 0
         0 0 cell.c / cell.a
     ]
-function makelattice(::BravaisLattice{RhombohedralCentered,Hexagonal}, cell::CellParameters)
+function makelattice(::BravaisLattice{Hexagonal,RhombohedralCentered}, cell::CellParameters)
     r = cos(cell.α)
     tx = sqrt((1 - r) / 2)
     ty = sqrt((1 - r) / 6)
@@ -95,13 +94,13 @@ function makelattice(::BravaisLattice{RhombohedralCentered,Hexagonal}, cell::Cel
         -tx -ty tz
     ]
 end
-makelattice(::BravaisLattice{Primitive,Tetragonal}, cell::CellParameters) =
+makelattice(::BravaisLattice{Tetragonal,Primitive}, cell::CellParameters) =
     cell.a * [
         1 0 0
         0 1 0
         0 0 cell.c / cell.a
     ]
-function makelattice(::BravaisLattice{BodyCentered,Tetragonal}, cell::CellParameters)
+function makelattice(::BravaisLattice{Tetragonal,BodyCentered}, cell::CellParameters)
     r = cell.c / cell.a
     return cell.a / 2 * [
         1 -1 r
@@ -109,13 +108,13 @@ function makelattice(::BravaisLattice{BodyCentered,Tetragonal}, cell::CellParame
         -1 -1 r
     ]
 end
-makelattice(::BravaisLattice{Primitive,Orthorhombic}, cell::CellParameters) = [
+makelattice(::BravaisLattice{Orthorhombic,Primitive}, cell::CellParameters) = [
     cell.a 0 0
     0 cell.b 0
     0 0 cell.c
 ]
-# TODO: BravaisLattice{CCentered,Orthorhombic}
-function makelattice(::BravaisLattice{FaceCentered,Orthorhombic}, cell::CellParameters)
+# TODO: BravaisLattice{Orthorhombic,CCentered}
+function makelattice(::BravaisLattice{Orthorhombic,FaceCentered}, cell::CellParameters)
     a, b, c = cell.a, cell.b, cell.c
     return [
         a 0 c
@@ -123,7 +122,7 @@ function makelattice(::BravaisLattice{FaceCentered,Orthorhombic}, cell::CellPara
         0 b c
     ] / 2
 end
-function makelattice(::BravaisLattice{BodyCentered,Orthorhombic}, cell::CellParameters)
+function makelattice(::BravaisLattice{Orthorhombic,BodyCentered}, cell::CellParameters)
     a, b, c = cell.a, cell.b, cell.c
     return [
         a b c
@@ -131,7 +130,7 @@ function makelattice(::BravaisLattice{BodyCentered,Orthorhombic}, cell::CellPara
         -a -b c
     ] / 2
 end
-function makelattice(::BravaisLattice{Primitive,Monoclinic}, cell::CellParameters)
+function makelattice(::BravaisLattice{Monoclinic,Primitive}, cell::CellParameters)
     a, b, c = cell.a, cell.b, cell.c
     return [
         a 0 0
@@ -139,8 +138,8 @@ function makelattice(::BravaisLattice{Primitive,Monoclinic}, cell::CellParameter
         c * cos(cell.β) 0 c * sin(cell.β)
     ]
 end
-# TODO: BravaisLattice{BCentered,Monoclinic}
-# TODO: BravaisLattice{Primitive,Triclinic}
+# TODO: BravaisLattice{Monoclinic,BCentered}
+# TODO: BravaisLattice{Triclinic,Primitive}
 
 StaticArrays.similar_type(::Type{<:CellParameters}, ::Type{T}, size::Size{(6,)}) where {T} =
     CellParameters{T}
