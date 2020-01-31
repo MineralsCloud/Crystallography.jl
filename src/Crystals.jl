@@ -169,11 +169,19 @@ end
 # TODO: BravaisLattice{Monoclinic,BCentered}
 # TODO: BravaisLattice{Triclinic,Primitive}
 
+function _checkpositive(v)  # This is a helper function and should not be exported.
+    v <= zero(v) && @warn "The volume of the cell is not positive! Check your input!"
+    return v
+end # function _checkpositive
+
 function cellvolume(param::CellParameters)
     a, b, c, α, β, γ = param
-    return a * b * c * sqrt(1 - cos(α)^2 - cos(β)^2 - cos(γ)^2 + 2cos(α) * cos(β) * cos(γ))
+    return _checkpositive(
+        a * b * c * sqrt(1 - cos(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ)),
+    )
 end # function cellvolume
-cellvolume(g::MetricTensor) = sqrt(det(g.m))
+cellvolume(g::MetricTensor) = _checkpositive(sqrt(det(g.m)))
+cellvolume(m::AbstractMatrix) = _checkpositive(det(m))
 
 StaticArrays.similar_type(::Type{<:CellParameters}, ::Type{T}, size::Size{(6,)}) where {T} =
     CellParameters{T}
