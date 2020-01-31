@@ -4,8 +4,8 @@ using Test
 
 using Crystallography
 
-@testset "Test `allbravaislattices`" begin
-    @test allbravaislattices(
+@testset "Test `bravaislattices`" begin
+    @test bravaislattices(
         symbol = true,
     ) == (
         "aP",
