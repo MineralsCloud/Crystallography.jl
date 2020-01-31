@@ -68,6 +68,10 @@ struct GeneralSeitzOperator{T} <: SeitzOperator{T}
     end
 end
 GeneralSeitzOperator(m::T) where {T} = GeneralSeitzOperator{T}(m)
+function GeneralSeitzOperator(m::AffineMap)
+    linear, translation = m.linear, m.translation
+    return GeneralSeitzOperator(-translation * linear * translation)
+end # function GeneralSeitzOperator
 
 lastrow(T::Type{<:Real}) = [zeros(T, 3)... ones(T, 1)]
 
