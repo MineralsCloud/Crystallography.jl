@@ -32,6 +32,8 @@ struct TranslationOperator{T} <: SeitzOperator{T}
     m::T
     function TranslationOperator{T}(m) where {T}
         @assert(size(m) == (4, 4), "The operator must be of size 4x4!")
+        @assert(m[1:3, 1:3] == I)
+        @assert(iszero(m[4, 1:3]) && isone(m[4, 4]))
         return new(m)
     end
 end
@@ -48,6 +50,7 @@ struct PointSymmetryOperator{T} <: SeitzOperator{T}
     m::T
     function PointSymmetryOperator{T}(m) where {T}
         @assert(size(m) == (4, 4), "The operator must be of size 4x4!")
+        @assert(m[4, :] == [0, 0, 0, 1] && iszero(m[1:3, end]))
         return new(m)
     end
 end
