@@ -65,17 +65,23 @@ makelattice(::BravaisLattice{Cubic,Primitive}, cell::CellParameters) =
         0 1 0
         0 0 1
     ]
-makelattice(::BravaisLattice{Cubic,BodyCentered}, cell::CellParameters) =
-    cell.a / 2 * [
-        1 1 1
-        -1 1 1
-        -1 -1 1
-    ]
 makelattice(::BravaisLattice{Cubic,FaceCentered}, cell::CellParameters) =
     cell.a / 2 * [
         -1 0 1
         0 1 1
         -1 1 0
+    ]
+makelattice(::BravaisLattice{Cubic,BodyCentered,1}, cell::CellParameters) =
+    cell.a / 2 * [
+        1 1 1
+        -1 1 1
+        -1 -1 1
+    ]
+makelattice(::BravaisLattice{Cubic,BodyCentered,2}, cell::CellParameters) =
+    cell[1] / 2 * [
+        -1 1 1
+        1 -1 1
+        1 1 -1
     ]
 makelattice(::BravaisLattice{Hexagonal,Primitive}, cell::CellParameters) =
     cell.a * [
@@ -83,7 +89,10 @@ makelattice(::BravaisLattice{Hexagonal,Primitive}, cell::CellParameters) =
         -1 / 2 √3 / 2 0
         0 0 cell.c / cell.a
     ]
-function makelattice(::BravaisLattice{Hexagonal,RhombohedralCentered}, cell::CellParameters)
+function makelattice(
+    ::BravaisLattice{Hexagonal,RhombohedralCentered,1},
+    cell::CellParameters,
+)
     r = cos(cell.α)
     tx = sqrt((1 - r) / 2)
     ty = sqrt((1 - r) / 6)
@@ -92,6 +101,22 @@ function makelattice(::BravaisLattice{Hexagonal,RhombohedralCentered}, cell::Cel
         tx -ty tz
         0 2ty tz
         -tx -ty tz
+    ]
+end
+function makelattice(
+    ::BravaisLattice{Hexagonal,RhombohedralCentered,2},
+    cell::CellParameters,
+)
+    ap = cell[1] / √3
+    c = acos(cell[4])
+    ty = sqrt((1 - c) / 6)
+    tz = sqrt((1 + 2c) / 3)
+    u = tz - 2 * √2 * ty
+    v = tz + √2 * ty
+    return ap * [
+        u v v
+        v u v
+        v v u
     ]
 end
 makelattice(::BravaisLattice{Tetragonal,Primitive}, cell::CellParameters) =
