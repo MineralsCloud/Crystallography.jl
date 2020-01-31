@@ -57,7 +57,7 @@ struct PointSymmetryOperator{T} <: SeitzOperator{T}
     m::T
     function PointSymmetryOperator{T}(m) where {T}
         @assert(size(m) == (4, 4), "The operator must be of size 4x4!")
-        @assert(m[4, :] == [0, 0, 0, 1] && iszero(m[1:3, end]))
+        @assert(iszero(m[4, 1:3]) && iszero(m[1:3, 4]) && isone(m[4, 4]))
         return new(m)
     end
 end
@@ -77,14 +77,14 @@ end
 GeneralSeitzOperator(m::T) where {T} = GeneralSeitzOperator{T}(m)
 function GeneralSeitzOperator(m::AffineMap)
     linear, translation = m.linear, m.translation
-    return GeneralSeitzOperator(-translation * linear * translation)
+    return GeneralSeitzOperator(translation ∘ linear ∘ inv(translation))
 end # function GeneralSeitzOperator
 
 lastrow(T::Type{<:Real}) = [zeros(T, 3)... ones(T, 1)]
 
-Base.eltype(t::Translation) = eltype(t.translation)
-Base.eltype(m::LinearMap) = eltype(m.linear)
+# Base.eltype(t::Translation) = eltype(t.translation)
+# Base.eltype(m::LinearMap) = eltype(m.linear)
 
-Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.m*[c... 1])[1:3])
+Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.m*[c; 1])[1:3])
 
 end # module Symmetry
