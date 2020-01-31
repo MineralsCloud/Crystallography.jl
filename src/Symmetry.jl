@@ -26,6 +26,7 @@ struct IdentityOperator{T} <: SeitzOperator{T}
     end
 end
 IdentityOperator(m::T) where {T} = IdentityOperator{T}(m)
+IdentityOperator() = IdentityOperator(Matrix{Int}(I, 4, 4))
 
 struct TranslationOperator{T} <: SeitzOperator{T}
     m::T
