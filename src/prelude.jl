@@ -24,7 +24,6 @@ export AbstractSpace,
     BaseCentered,
     BravaisLattice,
     pearsonsymbol,
-    bravaislattices,
     centeringof,
     crystalsystem,
     viewsetting
@@ -111,22 +110,7 @@ function BravaisLattice(ibrav::Integer)
         error("undefined lattice!")
     end
 end # function BravaisLattice
-
-pearsonsymbol(::Triclinic) = "a"
-pearsonsymbol(::Monoclinic) = "m"
-pearsonsymbol(::Orthorhombic) = "o"
-pearsonsymbol(::Tetragonal) = "t"
-pearsonsymbol(::Cubic) = "c"
-pearsonsymbol(::Hexagonal) = "h"
-pearsonsymbol(::Trigonal) = "h"
-pearsonsymbol(::Primitive) = "P"
-pearsonsymbol(::BaseCentered{T}) where {T} = string(T)
-pearsonsymbol(::BodyCentered) = "I"
-pearsonsymbol(::FaceCentered) = "F"
-pearsonsymbol(::RhombohedralCentered) = "R"
-pearsonsymbol(::BravaisLattice{A,B}) where {A,B} = pearsonsymbol(A()) * pearsonsymbol(B())
-
-function bravaislattices(; symbol::Bool = false)
+function BravaisLattice(; symbol::Bool = false)
     x = (
         BravaisLattice(Triclinic(), Primitive()),
         BravaisLattice(Monoclinic(), Primitive()),
@@ -143,8 +127,22 @@ function bravaislattices(; symbol::Bool = false)
         BravaisLattice(Hexagonal(), Primitive()),
         BravaisLattice(Hexagonal(), RhombohedralCentered()),
     )
-    return symbol ? map(pearsonsymbol, x) : x
-end  # function bravaislattices
+    return symbol ? pearsonsymbol.(x) : x
+end  # function BravaisLattice
+
+pearsonsymbol(::Triclinic) = "a"
+pearsonsymbol(::Monoclinic) = "m"
+pearsonsymbol(::Orthorhombic) = "o"
+pearsonsymbol(::Tetragonal) = "t"
+pearsonsymbol(::Cubic) = "c"
+pearsonsymbol(::Hexagonal) = "h"
+pearsonsymbol(::Trigonal) = "h"
+pearsonsymbol(::Primitive) = "P"
+pearsonsymbol(::BaseCentered{T}) where {T} = string(T)
+pearsonsymbol(::BodyCentered) = "I"
+pearsonsymbol(::FaceCentered) = "F"
+pearsonsymbol(::RhombohedralCentered) = "R"
+pearsonsymbol(::BravaisLattice{A,B}) where {A,B} = pearsonsymbol(A()) * pearsonsymbol(B())
 
 centeringof(::BravaisLattice{C,T}) where {C,T} = T()
 
