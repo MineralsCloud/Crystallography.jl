@@ -11,12 +11,15 @@ julia>
 """
 module Crystals
 
+using LinearAlgebra: det
+
 using CoordinateTransformations
 using StaticArrays
 
 using Crystallography
+using Crystallography.Directions: MetricTensor
 
-export Cell, CellParameters, makelattice
+export Cell, CellParameters, makelattice, cellvolume
 
 struct Cell{
     L<:AbstractVecOrMat,
@@ -165,6 +168,38 @@ function makelattice(::BravaisLattice{Monoclinic,Primitive}, cell::CellParameter
 end
 # TODO: BravaisLattice{Monoclinic,BCentered}
 # TODO: BravaisLattice{Triclinic,Primitive}
+
+function _checkpositive(v)  # This is a helper function and should not be exported.
+    v <= zero(v) && @warn "The volume of the cell is not positive! Check your input!"
+    return v
+end # function _checkpositive
+
+"""
+    cellvolume(param::CellParameters)
+
+Calculates the cell volume from a set of `CellParameters`.
+"""
+function cellvolume(param::CellParameters)
+    a, b, c, α, β, γ = param
+    return _checkpositive(
+        a * b * c * sqrt(1 - cos(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ)),
+    )
+end # function cellvolume
+"""
+    cellvolume(m::AbstractMatrix)
+
+Calculates the cell volume from a general 3×3 matrix.
+"""
+function cellvolume(m::AbstractMatrix)
+    @assert(size(m) == (3, 3), "The matrix must be of size 3×3!")
+    return _checkpositive(det(m))
+end # function cellvolume
+"""
+    cellvolume(g::MetricTensor)
+
+Calculates the cell volume from a `MetricTensor`.
+"""
+cellvolume(g::MetricTensor) = sqrt(det(g.m))  # `sqrt` is always positive!
 
 StaticArrays.similar_type(::Type{<:CellParameters}, ::Type{T}, size::Size{(6,)}) where {T} =
     CellParameters{T}
