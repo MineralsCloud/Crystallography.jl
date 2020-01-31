@@ -11,10 +11,13 @@ julia>
 """
 module Crystals
 
+using LinearAlgebra: det
+
 using CoordinateTransformations
 using StaticArrays
 
 using Crystallography
+using Crystallography.Directions: MetricTensor
 
 export Cell, CellParameters, makelattice, cellvolume
 
@@ -170,6 +173,7 @@ function cellvolume(param::CellParameters)
     a, b, c, α, β, γ = param
     return a * b * c * sqrt(1 - cos(α)^2 - cos(β)^2 - cos(γ)^2 + 2cos(α) * cos(β) * cos(γ))
 end # function cellvolume
+cellvolume(g::MetricTensor) = sqrt(det(g.m))
 
 StaticArrays.similar_type(::Type{<:CellParameters}, ::Type{T}, size::Size{(6,)}) where {T} =
     CellParameters{T}
