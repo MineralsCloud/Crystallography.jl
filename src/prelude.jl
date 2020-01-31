@@ -80,6 +80,41 @@ struct RhombohedralCentered <: CenteringType end
 
 struct BravaisLattice{B<:CenteringType,C<:CrystalSystem} end
 BravaisLattice(::B, ::C) where {B,C} = BravaisLattice{B,C}()
+function BravaisLattice(ibrav::Integer)
+    return if ibrav == 1
+        BravaisLattice(Primitive(), Cubic())
+    elseif ibrav == 2
+        BravaisLattice(FaceCentered(), Cubic())
+    elseif ibrav ∈ (3, -3)
+        BravaisLattice(BodyCentered(), Cubic())
+    elseif ibrav == 4
+        BravaisLattice(Primitive(), Hexagonal())
+    elseif ibrav ∈ (5, -5)
+        BravaisLattice(RhombohedralCentered(), Hexagonal())
+    elseif ibrav == 6
+        BravaisLattice(Primitive(), Tetragonal())
+    elseif ibrav == 7
+        BravaisLattice(BodyCentered(), Tetragonal())
+    elseif ibrav == 8
+        BravaisLattice(Primitive(), Orthorhombic())
+    elseif ibrav == 9
+        BravaisLattice(ACentered(), Orthorhombic())
+    elseif ibrav == -9
+        BravaisLattice(CCentered(), Orthorhombic())
+    elseif ibrav == 10
+        BravaisLattice(FaceCentered(), Orthorhombic())
+    elseif ibrav == 11
+        BravaisLattice(BodyCentered(), Orthorhombic())
+    elseif ibrav ∈ (12, -12)
+        BravaisLattice(Primitive(), Monoclinic())
+    elseif ibrav == 13
+        BravaisLattice(ACentered(), Monoclinic())
+    elseif ibrav == 14
+        BravaisLattice(Primitive(), Triclinic())
+    else
+        error("undefined lattice!")
+    end
+end # function BravaisLattice
 
 nomenclature(::Triclinic) = "a"
 nomenclature(::Monoclinic) = "m"
