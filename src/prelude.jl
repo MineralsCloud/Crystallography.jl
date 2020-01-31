@@ -24,7 +24,7 @@ export AbstractSpace,
     BaseCentered,
     BravaisLattice,
     nomenclature,
-    allbravaislattices,
+    bravaislattices,
     centeringof,
     crystalsystem
 
@@ -118,7 +118,7 @@ nomenclature(::FaceCentered) = "F"
 nomenclature(::RhombohedralCentered) = "R"
 nomenclature(::BravaisLattice{B,C}) where {B,C} = nomenclature(C()) * nomenclature(B())
 
-function allbravaislattices(; symbol::Bool = false)
+function bravaislattices(; symbol::Bool = false)
     x = (
         BravaisLattice(Primitive(), Triclinic()),
         BravaisLattice(Primitive(), Monoclinic()),
@@ -136,7 +136,7 @@ function allbravaislattices(; symbol::Bool = false)
         BravaisLattice(RhombohedralCentered(), Hexagonal()),
     )
     return symbol ? map(nomenclature, x) : x
-end  # function allbravaislattices
+end  # function bravaislattices
 
 centeringof(::BravaisLattice{C}) where {C} = C()
 
