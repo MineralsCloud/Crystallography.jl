@@ -5,6 +5,7 @@ using LinearAlgebra: diagm, I
 using CoordinateTransformations: AffineMap, Translation, LinearMap
 using LibSymspg: get_symmetry
 
+using Crystallography: CrystalCoordinates
 using Crystallography.Crystals: Cell
 
 export SeitzOperator, IdentityOperator, TranslationOperator, PointSymmetryOperator
@@ -77,5 +78,7 @@ lastrow(T::Type{<:Real}) = [zeros(T, 3)... ones(T, 1)]
 
 Base.eltype(t::Translation) = eltype(t.translation)
 Base.eltype(m::LinearMap) = eltype(m.linear)
+
+Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.m * [c... 1])[1:3])
 
 end # module Symmetry
