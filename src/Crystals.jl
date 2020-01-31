@@ -16,7 +16,7 @@ using StaticArrays
 
 using Crystallography
 
-export Cell, CellParameters, makelattice, transform
+export Cell, CellParameters, makelattice
 
 struct Cell{
     L<:AbstractVecOrMat,
@@ -141,8 +141,6 @@ function makelattice(::BravaisLattice{Primitive,Monoclinic}, cell::CellParameter
 end
 # TODO: BravaisLattice{BCentered,Monoclinic}
 # TODO: BravaisLattice{Primitive,Triclinic}
-
-transform(m::LinearMap, a::CrystalCoordinates) = CrystalCoordinates(m.linear * collect(a))
 
 StaticArrays.similar_type(::Type{<:CellParameters}, ::Type{T}, size::Size{(6,)}) where {T} =
     CellParameters{T}
