@@ -23,7 +23,7 @@ export AbstractSpace,
     RhombohedralCentered,
     BaseCentered,
     BravaisLattice,
-    nomenclature,
+    pearsonsymbol,
     bravaislattices,
     centeringof,
     crystalsystem
@@ -104,19 +104,19 @@ function BravaisLattice(ibrav::Integer)
     end
 end # function BravaisLattice
 
-nomenclature(::Triclinic) = "a"
-nomenclature(::Monoclinic) = "m"
-nomenclature(::Orthorhombic) = "o"
-nomenclature(::Tetragonal) = "t"
-nomenclature(::Cubic) = "c"
-nomenclature(::Hexagonal) = "h"
-nomenclature(::Trigonal) = "h"
-nomenclature(::Primitive) = "P"
-nomenclature(::BaseCentered{T}) where {T} = string(T)
-nomenclature(::BodyCentered) = "I"
-nomenclature(::FaceCentered) = "F"
-nomenclature(::RhombohedralCentered) = "R"
-nomenclature(::BravaisLattice{B,C}) where {B,C} = nomenclature(C()) * nomenclature(B())
+pearsonsymbol(::Triclinic) = "a"
+pearsonsymbol(::Monoclinic) = "m"
+pearsonsymbol(::Orthorhombic) = "o"
+pearsonsymbol(::Tetragonal) = "t"
+pearsonsymbol(::Cubic) = "c"
+pearsonsymbol(::Hexagonal) = "h"
+pearsonsymbol(::Trigonal) = "h"
+pearsonsymbol(::Primitive) = "P"
+pearsonsymbol(::BaseCentered{T}) where {T} = string(T)
+pearsonsymbol(::BodyCentered) = "I"
+pearsonsymbol(::FaceCentered) = "F"
+pearsonsymbol(::RhombohedralCentered) = "R"
+pearsonsymbol(::BravaisLattice{B,C}) where {B,C} = pearsonsymbol(C()) * pearsonsymbol(B())
 
 function bravaislattices(; symbol::Bool = false)
     x = (
@@ -135,7 +135,7 @@ function bravaislattices(; symbol::Bool = false)
         BravaisLattice(Primitive(), Hexagonal()),
         BravaisLattice(RhombohedralCentered(), Hexagonal()),
     )
-    return symbol ? map(nomenclature, x) : x
+    return symbol ? map(pearsonsymbol, x) : x
 end  # function bravaislattices
 
 centeringof(::BravaisLattice{C}) where {C} = C()
