@@ -77,7 +77,7 @@ end
 GeneralSeitzOperator(m::T) where {T} = GeneralSeitzOperator{T}(m)
 function GeneralSeitzOperator(m::AffineMap)
     linear, translation = m.linear, m.translation
-    return GeneralSeitzOperator(-translation * linear * translation)
+    return GeneralSeitzOperator(translation ∘ linear ∘ inv(translation))
 end # function GeneralSeitzOperator
 
 lastrow(T::Type{<:Real}) = [zeros(T, 3)... ones(T, 1)]
@@ -85,6 +85,6 @@ lastrow(T::Type{<:Real}) = [zeros(T, 3)... ones(T, 1)]
 Base.eltype(t::Translation) = eltype(t.translation)
 Base.eltype(m::LinearMap) = eltype(m.linear)
 
-Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.m*[c... 1])[1:3])
+Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.m*[c; 1])[1:3])
 
 end # module Symmetry
