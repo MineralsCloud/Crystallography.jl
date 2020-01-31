@@ -180,7 +180,7 @@ function cellvolume(param::CellParameters)
         a * b * c * sqrt(1 - cos(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ)),
     )
 end # function cellvolume
-cellvolume(g::MetricTensor) = _checkpositive(sqrt(det(g.m)))
+cellvolume(g::MetricTensor) = sqrt(det(g.m))
 cellvolume(m::AbstractMatrix) = _checkpositive(det(m))
 
 StaticArrays.similar_type(::Type{<:CellParameters}, ::Type{T}, size::Size{(6,)}) where {T} =
