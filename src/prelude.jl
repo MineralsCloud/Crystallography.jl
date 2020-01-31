@@ -86,7 +86,7 @@ function BravaisLattice(ibrav::Integer)
     elseif ibrav == 8
         BravaisLattice(Primitive(), Orthorhombic())
     elseif ibrav == 9
-        BravaisLattice(BaseCentered(:A), Orthorhombic())
+        BravaisLattice(BaseCentered(:B), Orthorhombic())
     elseif ibrav == -9
         BravaisLattice(BaseCentered(:C), Orthorhombic())
     elseif ibrav == 10
@@ -96,7 +96,7 @@ function BravaisLattice(ibrav::Integer)
     elseif ibrav ∈ (12, -12)
         BravaisLattice(Primitive(), Monoclinic())
     elseif ibrav == 13
-        BravaisLattice(BaseCentered(:A), Monoclinic())
+        BravaisLattice(BaseCentered(:B), Monoclinic())
     elseif ibrav == 14
         BravaisLattice(Primitive(), Triclinic())
     else
