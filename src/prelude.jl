@@ -15,7 +15,7 @@ export AbstractSpace,
     Cubic,
     Trigonal,
     Hexagonal,
-    CenteringType,
+    Centering,
     BaseCentered,
     Primitive,
     ACentered,
@@ -68,18 +68,18 @@ struct Cubic <: CrystalSystem end
 struct Trigonal <: CrystalSystem end
 struct Hexagonal <: CrystalSystem end
 
-abstract type CenteringType end
-struct Primitive <: CenteringType end
-struct BodyCentered <: CenteringType end
-struct FaceCentered <: CenteringType end
-struct RhombohedralCentered <: CenteringType end
-struct BaseCentered{T} <: CenteringType end
+abstract type Centering end
+struct Primitive <: Centering end
+struct BodyCentered <: Centering end
+struct FaceCentered <: Centering end
+struct RhombohedralCentered <: Centering end
+struct BaseCentered{T} <: Centering end
 function BaseCentered(T::Symbol)
     @assert T ∈ (:A, :B, :C)
     return BaseCentered{T}()
 end # function BaseCentered
 
-struct BravaisLattice{B<:CenteringType,C<:CrystalSystem} end
+struct BravaisLattice{B<:Centering,C<:CrystalSystem} end
 BravaisLattice(::B, ::C) where {B,C} = BravaisLattice{B,C}()
 function BravaisLattice(ibrav::Integer)
     return if ibrav == 1
@@ -156,6 +156,6 @@ centeringtype(::BravaisLattice{C}) where {C} = C()
 crystalsystem(::BravaisLattice{C,T}) where {C,T} = T()
 
 Base.show(io::IO, t::CrystalSystem) = show(io, lowercase(string(t)))
-Base.show(io::IO, t::CenteringType) = show(io, lowercase(string(t)))
+Base.show(io::IO, t::Centering) = show(io, lowercase(string(t)))
 Base.show(io::IO, t::BravaisLattice{C,T}) where {C,T} =
     show(io, lowercase(string(C, ' ', T)))
