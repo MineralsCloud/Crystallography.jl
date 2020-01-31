@@ -71,21 +71,21 @@ end
 end
 
 @testset "Test length in a hexagonal lattice" begin
-    g = MetricTensor(BravaisLattice(Primitive(), Hexagonal()), 1, 2)
+    g = MetricTensor(BravaisLattice(Hexagonal(), Primitive()), 1, 2)
     a = CrystalCoordinates(1, 2, 1)
     @test dot(a, g, a) ≈ 7
     @test norm(CrystalCoordinates(1, 2, 1), g) == sqrt(7)
 end
 
 @testset "Test distance between atoms in a hexagonal lattice" begin
-    g = MetricTensor(BravaisLattice(Primitive(), Hexagonal()), 1, 2)
+    g = MetricTensor(BravaisLattice(Hexagonal(), Primitive()), 1, 2)
     a = CrystalCoordinates(1, 1, 1)
     b = CrystalCoordinates(1 / 3, 1 / 3, 1 / 2)
     @test distance(a, g, b) ≈ sqrt(13) / 3
 end
 
 @testset "Test direction cosine in a tetragonal lattice" begin
-    g = MetricTensor(BravaisLattice(Primitive(), Tetragonal()), 2, 3)
+    g = MetricTensor(BravaisLattice(Tetragonal(), Primitive()), 2, 3)
     a = CrystalCoordinates(1, 2, 1)
     b = CrystalCoordinates(0, 0, 1)
     @test directioncosine(a, g, b) ≈ 3 / sqrt(29)

@@ -58,20 +58,19 @@ function MetricTensor(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
         g13 g23 c^2
     ])
 end
-MetricTensor(::BravaisLattice{C,Triclinic}, args...) where {C} = MetricTensor(args...)  # Triclinic
-MetricTensor(::BravaisLattice{C,Monoclinic}, a, b, c, γ) where {C} =
+MetricTensor(::BravaisLattice{Triclinic}, args...) = MetricTensor(args...)  # Triclinic
+MetricTensor(::BravaisLattice{Monoclinic}, a, b, c, γ) =
     MetricTensor(a, b, c, π / 2, π / 2, γ)
-MetricTensor(::BravaisLattice{C,Orthorhombic}, a, b, c) where {C} =
+MetricTensor(::BravaisLattice{Orthorhombic}, a, b, c) =
     MetricTensor(a, b, c, π / 2, π / 2, π / 2)
-MetricTensor(::BravaisLattice{C,Tetragonal}, a, c) where {C} =
+MetricTensor(::BravaisLattice{Tetragonal}, a, c) =
     MetricTensor(a, a, c, π / 2, π / 2, π / 2)
-MetricTensor(::BravaisLattice{C,Cubic}, a) where {C} =
-    MetricTensor(a, a, a, π / 2, π / 2, π / 2)
-MetricTensor(::BravaisLattice{C,Hexagonal}, a, c) where {C} =
+MetricTensor(::BravaisLattice{Cubic}, a) = MetricTensor(a, a, a, π / 2, π / 2, π / 2)
+MetricTensor(::BravaisLattice{Hexagonal}, a, c) =
     MetricTensor(a, a, c, π / 2, π / 2, 2π / 3)
-MetricTensor(::BravaisLattice{C,Trigonal}, a, c) where {C} =
-    MetricTensor(BravaisLattice(Primitive(), Hexagonal()), a, c)
-MetricTensor(::BravaisLattice{RhombohedralCentered,Hexagonal}, a, α) =
+MetricTensor(::BravaisLattice{Trigonal}, a, c) =
+    MetricTensor(BravaisLattice(Hexagonal(), Primitive()), a, c)
+MetricTensor(::BravaisLattice{Hexagonal,RhombohedralCentered}, a, α) =
     MetricTensor(a, a, a, α, α, α)
 
 function directioncosine(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates)
