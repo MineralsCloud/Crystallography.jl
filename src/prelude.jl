@@ -24,9 +24,9 @@ export AbstractSpace,
     BaseCentered,
     BravaisLattice,
     pearsonsymbol,
-    bravaislattices,
     centeringof,
-    crystalsystem
+    crystalsystem,
+    viewsetting
 
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
@@ -66,19 +66,24 @@ function BaseCentered(T::Symbol)
     return BaseCentered{T}()
 end # function BaseCentered
 
-struct BravaisLattice{A<:CrystalSystem,B<:Centering} end
-BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B}()
+struct BravaisLattice{A<:CrystalSystem,B<:Centering,N} end
+BravaisLattice(::A, ::B, N::Integer) where {A,B} = BravaisLattice{A,B,N}()
+BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B,1}()
 function BravaisLattice(ibrav::Integer)
     return if ibrav == 1
         BravaisLattice(Cubic(), Primitive())
     elseif ibrav == 2
         BravaisLattice(Cubic(), FaceCentered())
-    elseif ibrav ∈ (3, -3)
+    elseif ibrav == 3
         BravaisLattice(Cubic(), BodyCentered())
+    elseif ibrav == -3
+        BravaisLattice(Cubic(), BodyCentered(), 2)
     elseif ibrav == 4
         BravaisLattice(Hexagonal(), Primitive())
-    elseif ibrav ∈ (5, -5)
+    elseif ibrav == 5
         BravaisLattice(Hexagonal(), RhombohedralCentered())
+    elseif ibrav == -5
+        BravaisLattice(Hexagonal(), RhombohedralCentered(), 2)
     elseif ibrav == 6
         BravaisLattice(Tetragonal(), Primitive())
     elseif ibrav == 7
@@ -89,11 +94,15 @@ function BravaisLattice(ibrav::Integer)
         BravaisLattice(Orthorhombic(), BaseCentered(:B))
     elseif ibrav == -9
         BravaisLattice(Orthorhombic(), BaseCentered(:C))
+    elseif ibrav == 91  # In QE 6.5
+        BravaisLattice(Orthorhombic(), BaseCentered(:C))
     elseif ibrav == 10
         BravaisLattice(Orthorhombic(), FaceCentered())
     elseif ibrav == 11
         BravaisLattice(Orthorhombic(), BodyCentered())
-    elseif ibrav ∈ (12, -12)
+    elseif ibrav == 12
+        BravaisLattice(Monoclinic(), Primitive())
+    elseif ibrav == -12
         BravaisLattice(Monoclinic(), Primitive())
     elseif ibrav == 13
         BravaisLattice(Monoclinic(), BaseCentered(:B))
@@ -103,22 +112,7 @@ function BravaisLattice(ibrav::Integer)
         error("undefined lattice!")
     end
 end # function BravaisLattice
-
-pearsonsymbol(::Triclinic) = "a"
-pearsonsymbol(::Monoclinic) = "m"
-pearsonsymbol(::Orthorhombic) = "o"
-pearsonsymbol(::Tetragonal) = "t"
-pearsonsymbol(::Cubic) = "c"
-pearsonsymbol(::Hexagonal) = "h"
-pearsonsymbol(::Trigonal) = "h"
-pearsonsymbol(::Primitive) = "P"
-pearsonsymbol(::BaseCentered{T}) where {T} = string(T)
-pearsonsymbol(::BodyCentered) = "I"
-pearsonsymbol(::FaceCentered) = "F"
-pearsonsymbol(::RhombohedralCentered) = "R"
-pearsonsymbol(::BravaisLattice{A,B}) where {A,B} = pearsonsymbol(A()) * pearsonsymbol(B())
-
-function bravaislattices(; symbol::Bool = false)
+function BravaisLattice(; symbol::Bool = false)
     x = (
         BravaisLattice(Triclinic(), Primitive()),
         BravaisLattice(Monoclinic(), Primitive()),
@@ -135,12 +129,28 @@ function bravaislattices(; symbol::Bool = false)
         BravaisLattice(Hexagonal(), Primitive()),
         BravaisLattice(Hexagonal(), RhombohedralCentered()),
     )
-    return symbol ? map(pearsonsymbol, x) : x
-end  # function bravaislattices
+    return symbol ? pearsonsymbol.(x) : x
+end  # function BravaisLattice
+
+pearsonsymbol(::Triclinic) = "a"
+pearsonsymbol(::Monoclinic) = "m"
+pearsonsymbol(::Orthorhombic) = "o"
+pearsonsymbol(::Tetragonal) = "t"
+pearsonsymbol(::Cubic) = "c"
+pearsonsymbol(::Hexagonal) = "h"
+pearsonsymbol(::Trigonal) = "h"
+pearsonsymbol(::Primitive) = "P"
+pearsonsymbol(::BaseCentered{T}) where {T} = string(T)
+pearsonsymbol(::BodyCentered) = "I"
+pearsonsymbol(::FaceCentered) = "F"
+pearsonsymbol(::RhombohedralCentered) = "R"
+pearsonsymbol(::BravaisLattice{A,B}) where {A,B} = pearsonsymbol(A()) * pearsonsymbol(B())
 
 centeringof(::BravaisLattice{C,T}) where {C,T} = T()
 
 crystalsystem(::BravaisLattice{C}) where {C} = C()
+
+viewsetting(::BravaisLattice{C,T,N}) where {C,T,N} = N
 
 Base.show(io::IO, t::CrystalSystem) = show(io, lowercase(string(t)))
 Base.show(io::IO, t::Centering) = show(io, lowercase(string(t)))

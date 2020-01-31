@@ -60,62 +60,87 @@ CellParameters(::BravaisLattice{Hexagonal,RhombohedralCentered}, a, α) =
 
 makelattice(ibrav::Integer, cell::CellParameters) = makelattice(BravaisLattice(ibrav), cell)
 makelattice(::BravaisLattice{Cubic,Primitive}, cell::CellParameters) =
-    cell.a * [
+    cell[1] * [
         1 0 0
         0 1 0
         0 0 1
     ]
-makelattice(::BravaisLattice{Cubic,BodyCentered}, cell::CellParameters) =
-    cell.a / 2 * [
-        1 1 1
-        -1 1 1
-        -1 -1 1
-    ]
 makelattice(::BravaisLattice{Cubic,FaceCentered}, cell::CellParameters) =
-    cell.a / 2 * [
+    cell[1] / 2 * [
         -1 0 1
         0 1 1
         -1 1 0
     ]
+makelattice(::BravaisLattice{Cubic,BodyCentered,1}, cell::CellParameters) =
+    cell[1] / 2 * [
+        1 1 1
+        -1 1 1
+        -1 -1 1
+    ]
+makelattice(::BravaisLattice{Cubic,BodyCentered,2}, cell::CellParameters) =
+    cell[1] / 2 * [
+        -1 1 1
+        1 -1 1
+        1 1 -1
+    ]
 makelattice(::BravaisLattice{Hexagonal,Primitive}, cell::CellParameters) =
-    cell.a * [
+    cell[1] * [
         1 0 0
         -1 / 2 √3 / 2 0
-        0 0 cell.c / cell.a
+        0 0 cell[3] / cell[1]
     ]
-function makelattice(::BravaisLattice{Hexagonal,RhombohedralCentered}, cell::CellParameters)
-    r = cos(cell.α)
+function makelattice(
+    ::BravaisLattice{Hexagonal,RhombohedralCentered,1},
+    cell::CellParameters,
+)
+    r = cos(cell[4])
     tx = sqrt((1 - r) / 2)
     ty = sqrt((1 - r) / 6)
     tz = sqrt((1 + 2r) / 3)
-    return cell.a * [
+    return cell[1] * [
         tx -ty tz
         0 2ty tz
         -tx -ty tz
     ]
 end
+function makelattice(
+    ::BravaisLattice{Hexagonal,RhombohedralCentered,2},
+    cell::CellParameters,
+)
+    ap = cell[1] / √3
+    c = acos(cell[4])
+    ty = sqrt((1 - c) / 6)
+    tz = sqrt((1 + 2c) / 3)
+    u = tz - 2 * √2 * ty
+    v = tz + √2 * ty
+    return ap * [
+        u v v
+        v u v
+        v v u
+    ]
+end
 makelattice(::BravaisLattice{Tetragonal,Primitive}, cell::CellParameters) =
-    cell.a * [
+    cell[1] * [
         1 0 0
         0 1 0
-        0 0 cell.c / cell.a
+        0 0 cell[3] / cell[1]
     ]
 function makelattice(::BravaisLattice{Tetragonal,BodyCentered}, cell::CellParameters)
-    r = cell.c / cell.a
-    return cell.a / 2 * [
+    r = cell[3] / cell[1]
+    return cell[1] / 2 * [
         1 -1 r
         1 1 r
         -1 -1 r
     ]
 end
 makelattice(::BravaisLattice{Orthorhombic,Primitive}, cell::CellParameters) = [
-    cell.a 0 0
-    0 cell.b 0
-    0 0 cell.c
+    cell[1] 0 0
+    0 cell[2] 0
+    0 0 cell[3]
 ]
 # TODO: BravaisLattice{Orthorhombic,CCentered}
 function makelattice(::BravaisLattice{Orthorhombic,FaceCentered}, cell::CellParameters)
-    a, b, c = cell.a, cell.b, cell.c
+    a, b, c = cell[1:3]
     return [
         a 0 c
         a b 0
@@ -123,7 +148,7 @@ function makelattice(::BravaisLattice{Orthorhombic,FaceCentered}, cell::CellPara
     ] / 2
 end
 function makelattice(::BravaisLattice{Orthorhombic,BodyCentered}, cell::CellParameters)
-    a, b, c = cell.a, cell.b, cell.c
+    a, b, c = cell[1:3]
     return [
         a b c
         -a b c
@@ -131,11 +156,11 @@ function makelattice(::BravaisLattice{Orthorhombic,BodyCentered}, cell::CellPara
     ] / 2
 end
 function makelattice(::BravaisLattice{Monoclinic,Primitive}, cell::CellParameters)
-    a, b, c = cell.a, cell.b, cell.c
+    a, b, c = cell[1:3]
     return [
         a 0 0
         0 b 0
-        c * cos(cell.β) 0 c * sin(cell.β)
+        c * cos(cell[5]) 0 c * sin(cell[5])
     ]
 end
 # TODO: BravaisLattice{Monoclinic,BCentered}
