@@ -18,12 +18,10 @@ export AbstractSpace,
     Centering,
     BaseCentered,
     Primitive,
-    ACentered,
-    BCentered,
-    CCentered,
     BodyCentered,
     FaceCentered,
     RhombohedralCentered,
+    BaseCentered,
     BravaisLattice,
     nomenclature,
     allbravaislattices,
@@ -47,17 +45,6 @@ struct CartesianCoordinates{T} <: AbstractCoordinates{T}
     y::T
     z::T
 end
-
-StaticArrays.similar_type(
-    ::Type{<:CrystalCoordinates},  # Do not delete the `<:`!
-    ::Type{T},
-    size::Size{(3,)},
-) where {T} = CrystalCoordinates{T}
-StaticArrays.similar_type(
-    ::Type{<:CartesianCoordinates},  # Do not delete the `<:`!
-    ::Type{T},
-    size::Size{(3,)},
-) where {T} = CartesianCoordinates{T}
 
 abstract type CrystalSystem end
 struct Triclinic <: CrystalSystem end
@@ -159,3 +146,14 @@ Base.show(io::IO, t::CrystalSystem) = show(io, lowercase(string(t)))
 Base.show(io::IO, t::Centering) = show(io, lowercase(string(t)))
 Base.show(io::IO, t::BravaisLattice{C,T}) where {C,T} =
     show(io, lowercase(string(C, ' ', T)))
+
+StaticArrays.similar_type(
+    ::Type{<:CrystalCoordinates},  # Do not delete the `<:`!
+    ::Type{T},
+    size::Size{(3,)},
+) where {T} = CrystalCoordinates{T}
+StaticArrays.similar_type(
+    ::Type{<:CartesianCoordinates},  # Do not delete the `<:`!
+    ::Type{T},
+    size::Size{(3,)},
+) where {T} = CartesianCoordinates{T}
