@@ -26,7 +26,8 @@ export AbstractSpace,
     pearsonsymbol,
     bravaislattices,
     centeringof,
-    crystalsystem
+    crystalsystem,
+    viewsetting
 
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
@@ -148,6 +149,8 @@ end  # function bravaislattices
 centeringof(::BravaisLattice{C,T}) where {C,T} = T()
 
 crystalsystem(::BravaisLattice{C}) where {C} = C()
+
+viewsetting(::BravaisLattice{C,T,N}) where {C,T,N} = N
 
 Base.show(io::IO, t::CrystalSystem) = show(io, lowercase(string(t)))
 Base.show(io::IO, t::Centering) = show(io, lowercase(string(t)))
