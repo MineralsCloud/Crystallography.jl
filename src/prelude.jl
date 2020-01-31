@@ -25,7 +25,7 @@ export AbstractSpace,
     BravaisLattice,
     nomenclature,
     allbravaislattices,
-    centeringtype,
+    centeringof,
     crystalsystem
 
 abstract type AbstractSpace end
@@ -138,7 +138,7 @@ function allbravaislattices(; symbol::Bool = false)
     return symbol ? map(nomenclature, x) : x
 end  # function allbravaislattices
 
-centeringtype(::BravaisLattice{C}) where {C} = C()
+centeringof(::BravaisLattice{C}) where {C} = C()
 
 crystalsystem(::BravaisLattice{C,T}) where {C,T} = T()
 
