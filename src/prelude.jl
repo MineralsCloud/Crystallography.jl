@@ -69,12 +69,15 @@ struct Trigonal <: CrystalSystem end
 struct Hexagonal <: CrystalSystem end
 
 abstract type CenteringType end
-struct BaseCentered{T} <: CenteringType end
 struct Primitive <: CenteringType end
 struct BodyCentered <: CenteringType end
 struct FaceCentered <: CenteringType end
 struct RhombohedralCentered <: CenteringType end
-BaseCentered(T::Symbol) = BaseCentered{T}()
+struct BaseCentered{T} <: CenteringType end
+function BaseCentered(T::Symbol)
+    @assert T ∈ (:A, :B, :C)
+    return BaseCentered{T}()
+end # function BaseCentered
 
 struct BravaisLattice{B<:CenteringType,C<:CrystalSystem} end
 BravaisLattice(::B, ::C) where {B,C} = BravaisLattice{B,C}()
@@ -122,9 +125,7 @@ nomenclature(::Cubic) = "c"
 nomenclature(::Hexagonal) = "h"
 nomenclature(::Trigonal) = "h"
 nomenclature(::Primitive) = "P"
-nomenclature(::ACentered) = "A"
-nomenclature(::BCentered) = "B"
-nomenclature(::CCentered) = "C"
+nomenclature(::BaseCentered{T}) where {T} = string(T)
 nomenclature(::BodyCentered) = "I"
 nomenclature(::FaceCentered) = "F"
 nomenclature(::RhombohedralCentered) = "R"
@@ -134,9 +135,9 @@ function allbravaislattices(; symbol::Bool = false)
     x = (
         BravaisLattice(Primitive(), Triclinic()),
         BravaisLattice(Primitive(), Monoclinic()),
-        BravaisLattice(BCentered(), Monoclinic()),
+        BravaisLattice(BaseCentered(:B), Monoclinic()),
         BravaisLattice(Primitive(), Orthorhombic()),
-        BravaisLattice(CCentered(), Orthorhombic()),
+        BravaisLattice(BaseCentered(:C), Orthorhombic()),
         BravaisLattice(BodyCentered(), Orthorhombic()),
         BravaisLattice(FaceCentered(), Orthorhombic()),
         BravaisLattice(Primitive(), Tetragonal()),
