@@ -94,6 +94,8 @@ function BravaisLattice(ibrav::Integer)
         BravaisLattice(Orthorhombic(), BaseCentered(:B))
     elseif ibrav == -9
         BravaisLattice(Orthorhombic(), BaseCentered(:C))
+    elseif ibrav == 91  # In QE 6.5
+        BravaisLattice(Orthorhombic(), BaseCentered(:C))
     elseif ibrav == 10
         BravaisLattice(Orthorhombic(), FaceCentered())
     elseif ibrav == 11
