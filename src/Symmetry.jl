@@ -56,6 +56,15 @@ function PointSymmetryOperator(m::LinearMap)
     return PointSymmetryOperator(vcat(hcat(m.linear, zeros(T, 3)), lastrow(T)))
 end
 
+struct GeneralSeitzOperator{T} <: SeitzOperator{T}
+    m::T
+    function GeneralSeitzOperator{T}(m) where {T}
+        @assert(size(m) == (4, 4), "The operator must be of size 4x4!")
+        return new(m)
+    end
+end
+GeneralSeitzOperator(m::T) where {T} = GeneralSeitzOperator{T}(m)
+
 lastrow(T::Type{<:Real}) = [zeros(T, 3)... ones(T, 1)]
 
 Base.eltype(t::Translation) = eltype(t.translation)
