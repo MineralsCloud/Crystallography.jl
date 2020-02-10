@@ -79,6 +79,25 @@ end # function BaseCentered
 
 struct BravaisLattice{A<:CrystalSystem,B<:Centering} end
 BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B}()
+BravaisLattice(ibrav::Integer) = BravaisLattice(Val(ibrav))
+BravaisLattice(::Val{1}) = BravaisLattice(Cubic(), Primitive())
+BravaisLattice(::Val{2}) = BravaisLattice(Cubic(), FaceCentered())
+BravaisLattice(::Val{3}) = BravaisLattice(Cubic(), BodyCentered())
+BravaisLattice(::Val{4}) = BravaisLattice(Hexagonal(), Primitive())
+BravaisLattice(::Val{5}) = BravaisLattice(Hexagonal(), RhombohedralCentered())
+BravaisLattice(::Val{-5}) = BravaisLattice(Hexagonal(), RhombohedralCentered())
+BravaisLattice(::Val{6}) = BravaisLattice(Tetragonal(), Primitive())
+BravaisLattice(::Val{7}) = BravaisLattice(Tetragonal(), BodyCentered())
+BravaisLattice(::Val{8}) = BravaisLattice(Orthorhombic(), Primitive())
+BravaisLattice(::Val{9}) = BravaisLattice(Orthorhombic(), BaseCentered(:B))
+BravaisLattice(::Val{-9}) = BravaisLattice(Orthorhombic(), BaseCentered(:C))
+BravaisLattice(::Val{91}) = BravaisLattice(Orthorhombic(), BaseCentered(:A))  # New in QE 6.5
+BravaisLattice(::Val{10}) = BravaisLattice(Orthorhombic(), FaceCentered())
+BravaisLattice(::Val{11}) = BravaisLattice(Orthorhombic(), BodyCentered())
+BravaisLattice(::Val{12}) = BravaisLattice(Monoclinic(), Primitive())
+BravaisLattice(::Val{-12}) = BravaisLattice(Monoclinic(), Primitive())
+BravaisLattice(::Val{13}) = BravaisLattice(Monoclinic(), BaseCentered(:B))
+BravaisLattice(::Val{14}) = BravaisLattice(Triclinic(), Primitive())
 
 pearsonsymbol(::Triclinic) = "a"
 pearsonsymbol(::Monoclinic) = "m"

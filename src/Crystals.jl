@@ -55,13 +55,17 @@ CellParameters(::BravaisLattice{Orthorhombic}, a, b, c) =
 CellParameters(::BravaisLattice{Tetragonal}, a, c) =
     CellParameters(a, a, c, π / 2, π / 2, π / 2)
 CellParameters(::BravaisLattice{Cubic}, a) = CellParameters(a, a, a, π / 2, π / 2, π / 2)
-CellParameters(::BravaisLattice{Hexagonal}, a, c) =
+CellParameters(::BravaisLattice{Hexagonal{3}}, a, c) =
     CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
 CellParameters(::BravaisLattice{Trigonal}, a, c) =
     CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
-CellParameters(::BravaisLattice{Hexagonal,RhombohedralCentered}, a, α) =
+CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, α) =
     CellParameters(a, a, a, α, α, α)
 
+function makelattice(b::BravaisLattice, params...; vecform::Bool = false, view::Int = 1)
+    lattice = makelattice(b, CellParameters(b, params...))
+    return vecform ? _splitlattice(lattice) : lattice
+end # function makelattice
 makelattice(::BravaisLattice{Cubic,Primitive}, cell::CellParameters) =
     cell[1] * [
         1 0 0
@@ -95,14 +99,14 @@ function makelattice(
         error("wrong `view` $view input!")
     end
 end # function makelattice
-makelattice(::BravaisLattice{Hexagonal,Primitive}, cell::CellParameters) =
+makelattice(::BravaisLattice{Hexagonal{3},Primitive}, cell::CellParameters) =
     cell[1] * [
         1 0 0
         -1 / 2 √3 / 2 0
         0 0 cell[3] / cell[1]
     ]
 function makelattice(
-    ::BravaisLattice{Hexagonal,RhombohedralCentered},
+    ::BravaisLattice{Hexagonal{3},RhombohedralCentered},
     cell::CellParameters,
     view::Int = 1,
 )
@@ -178,6 +182,9 @@ function makelattice(::BravaisLattice{Monoclinic,Primitive}, cell::CellParameter
 end
 # TODO: BravaisLattice{Monoclinic,BCentered}
 # TODO: BravaisLattice{Triclinic,Primitive}
+
+# This is a helper function and should not be exported.
+_splitlattice(m::AbstractMatrix) = collect(Iterators.partition(m', 3))
 
 function _checkpositive(v)  # This is a helper function and should not be exported.
     v <= zero(v) && @warn "The volume of the cell is not positive! Check your input!"
