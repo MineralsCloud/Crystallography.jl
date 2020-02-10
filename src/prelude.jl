@@ -160,34 +160,6 @@ crystalsystem(::BravaisLattice{C}) where {C} = C()
 dimensionof(c::CrystalSystem) = first(supertype(typeof(c)).parameters)
 dimensionof(::BravaisLattice{C}) where {C} = dimensionof(C())
 
-StaticArrays.similar_type(
-    ::Type{<:CrystalCoordinates},  # Do not delete the `<:`!
-    ::Type{T},
-    size::Size{(3,)},
-) where {T} = CrystalCoordinates{T}
-StaticArrays.similar_type(
-    ::Type{<:CartesianCoordinates},  # Do not delete the `<:`!
-    ::Type{T},
-    size::Size{(3,)},
-) where {T} = CartesianCoordinates{T}
-
-Base.instances(::Type{<:BravaisLattice}) = (
-    BravaisLattice(Triclinic(), Primitive()),
-    BravaisLattice(Monoclinic(), Primitive()),
-    BravaisLattice(Monoclinic(), BaseCentered(:B)),
-    BravaisLattice(Orthorhombic(), Primitive()),
-    BravaisLattice(Orthorhombic(), BaseCentered(:C)),
-    BravaisLattice(Orthorhombic(), BodyCentered()),
-    BravaisLattice(Orthorhombic(), FaceCentered()),
-    BravaisLattice(Tetragonal(), Primitive()),
-    BravaisLattice(Tetragonal(), BodyCentered()),
-    BravaisLattice(Cubic(), Primitive()),
-    BravaisLattice(Cubic(), BodyCentered()),
-    BravaisLattice(Cubic(), FaceCentered()),
-    BravaisLattice(Hexagonal(), Primitive()),
-    BravaisLattice(Hexagonal(), RhombohedralCentered()),
-)
-
 struct Cell{
     L<:AbstractVecOrMat,
     P<:AbstractVecOrMat,
@@ -313,31 +285,6 @@ MillerBravaisIndices{S}(i::T, j::T, k::T, l::T) where {S,T} =
     MillerBravaisIndices{S,T}(i, j, k, l)
 MillerBravaisIndices{S}(x::AbstractVector) where {S} = MillerBravaisIndices{S}(x...)
 MillerBravaisIndices{S}(x::Tuple) where {S} = MillerBravaisIndices{S}(collect(x))
-
-Base.convert(::Type{<:MillerIndices}, mb::MillerBravaisIndices) =
-    error("Unsupported operation!")
-Base.convert(::Type{<:MillerBravaisIndices}, m::MillerIndices) =
-    error("Unsupported operation!")
-Base.convert(T::Type{<:MillerIndices}, m::MillerIndices) =
-    isa(m, T) ? m : error("Unsupported operation!")
-Base.convert(T::Type{<:MillerBravaisIndices}, mb::MillerBravaisIndices) =
-    isa(mb, T) ? mb : error("Unsupported operation!")
-Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T<:RealSpace} =
-    MillerIndices{T}(2 * mb[1] + mb[2], 2 * mb[2] + mb[1], mb[4])
-Base.convert(
-    ::Type{MillerIndices{T}},
-    mb::MillerBravaisIndices{T},
-) where {T<:ReciprocalSpace} = MillerIndices{T}(mb[1], mb[2], mb[4])
-Base.convert(::Type{MillerBravaisIndices{T}}, m::MillerIndices{T}) where {T<:RealSpace} =
-    MillerBravaisIndices{T}(2 * m[1] - m[2], 2 * m[2] - m[1], -(m[1] + m[2]), 3 * m[3])
-Base.convert(
-    ::Type{MillerBravaisIndices{T}},
-    m::MillerIndices{T},
-) where {T<:ReciprocalSpace} = MillerBravaisIndices{T}(m[1], m[2], -(m[1] + m[2]), m[3])
-
-LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
-    a' * g.m * b
-LinearAlgebra.norm(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
 
 CrystalCoordinates(m::MillerIndices) = CrystalCoordinates(m.i, m.j, m.k)
 CrystalCoordinates(mb::MillerBravaisIndices{T}) where {T} =
@@ -499,5 +446,57 @@ Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.m))  # `sqrt` is always positive!
 
+Base.instances(::Type{<:BravaisLattice}) = (
+    BravaisLattice(Triclinic(), Primitive()),
+    BravaisLattice(Monoclinic(), Primitive()),
+    BravaisLattice(Monoclinic(), BaseCentered(:B)),
+    BravaisLattice(Orthorhombic(), Primitive()),
+    BravaisLattice(Orthorhombic(), BaseCentered(:C)),
+    BravaisLattice(Orthorhombic(), BodyCentered()),
+    BravaisLattice(Orthorhombic(), FaceCentered()),
+    BravaisLattice(Tetragonal(), Primitive()),
+    BravaisLattice(Tetragonal(), BodyCentered()),
+    BravaisLattice(Cubic(), Primitive()),
+    BravaisLattice(Cubic(), BodyCentered()),
+    BravaisLattice(Cubic(), FaceCentered()),
+    BravaisLattice(Hexagonal(), Primitive()),
+    BravaisLattice(Hexagonal(), RhombohedralCentered()),
+)
+
+Base.convert(::Type{<:MillerIndices}, mb::MillerBravaisIndices) =
+    error("Unsupported operation!")
+Base.convert(::Type{<:MillerBravaisIndices}, m::MillerIndices) =
+    error("Unsupported operation!")
+Base.convert(T::Type{<:MillerIndices}, m::MillerIndices) =
+    isa(m, T) ? m : error("Unsupported operation!")
+Base.convert(T::Type{<:MillerBravaisIndices}, mb::MillerBravaisIndices) =
+    isa(mb, T) ? mb : error("Unsupported operation!")
+Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T<:RealSpace} =
+    MillerIndices{T}(2 * mb[1] + mb[2], 2 * mb[2] + mb[1], mb[4])
+Base.convert(
+    ::Type{MillerIndices{T}},
+    mb::MillerBravaisIndices{T},
+) where {T<:ReciprocalSpace} = MillerIndices{T}(mb[1], mb[2], mb[4])
+Base.convert(::Type{MillerBravaisIndices{T}}, m::MillerIndices{T}) where {T<:RealSpace} =
+    MillerBravaisIndices{T}(2 * m[1] - m[2], 2 * m[2] - m[1], -(m[1] + m[2]), 3 * m[3])
+Base.convert(
+    ::Type{MillerBravaisIndices{T}},
+    m::MillerIndices{T},
+) where {T<:ReciprocalSpace} = MillerBravaisIndices{T}(m[1], m[2], -(m[1] + m[2]), m[3])
+
+StaticArrays.similar_type(
+    ::Type{<:CrystalCoordinates},  # Do not delete the `<:`!
+    ::Type{T},
+    size::Size{(3,)},
+) where {T} = CrystalCoordinates{T}
+StaticArrays.similar_type(
+    ::Type{<:CartesianCoordinates},  # Do not delete the `<:`!
+    ::Type{T},
+    size::Size{(3,)},
+) where {T} = CartesianCoordinates{T}
 StaticArrays.similar_type(::Type{<:CellParameters}, ::Type{T}, size::Size{(6,)}) where {T} =
     CellParameters{T}
+
+LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
+    a' * g.m * b
+LinearAlgebra.norm(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
