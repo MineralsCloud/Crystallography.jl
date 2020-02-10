@@ -62,7 +62,6 @@ CellParameters(::BravaisLattice{Trigonal}, a, c) =
 CellParameters(::BravaisLattice{Hexagonal,RhombohedralCentered}, a, α) =
     CellParameters(a, a, a, α, α, α)
 
-makelattice(ibrav::Integer, cell::CellParameters) = makelattice(BravaisLattice(ibrav), cell)
 makelattice(::BravaisLattice{Cubic,Primitive}, cell::CellParameters) =
     cell[1] * [
         1 0 0
@@ -75,18 +74,27 @@ makelattice(::BravaisLattice{Cubic,FaceCentered}, cell::CellParameters) =
         0 1 1
         -1 1 0
     ]
-makelattice(::BravaisLattice{Cubic,BodyCentered,1}, cell::CellParameters) =
-    cell[1] / 2 * [
-        1 1 1
-        -1 1 1
-        -1 -1 1
-    ]
-makelattice(::BravaisLattice{Cubic,BodyCentered,2}, cell::CellParameters) =
-    cell[1] / 2 * [
-        -1 1 1
-        1 -1 1
-        1 1 -1
-    ]
+function makelattice(
+    ::BravaisLattice{Cubic,BodyCentered},
+    cell::CellParameters,
+    view::Int = 1,
+)
+    if view == 1
+        cell[1] / 2 * [
+            1 1 1
+            -1 1 1
+            -1 -1 1
+        ]
+    elseif view == 2
+        cell[1] / 2 * [
+            -1 1 1
+            1 -1 1
+            1 1 -1
+        ]
+    else
+        error("wrong `view` $view input!")
+    end
+end # function makelattice
 makelattice(::BravaisLattice{Hexagonal,Primitive}, cell::CellParameters) =
     cell[1] * [
         1 0 0
@@ -94,34 +102,35 @@ makelattice(::BravaisLattice{Hexagonal,Primitive}, cell::CellParameters) =
         0 0 cell[3] / cell[1]
     ]
 function makelattice(
-    ::BravaisLattice{Hexagonal,RhombohedralCentered,1},
+    ::BravaisLattice{Hexagonal,RhombohedralCentered},
     cell::CellParameters,
+    view::Int = 1,
 )
-    r = cos(cell[4])
-    tx = sqrt((1 - r) / 2)
-    ty = sqrt((1 - r) / 6)
-    tz = sqrt((1 + 2r) / 3)
-    return cell[1] * [
-        tx -ty tz
-        0 2ty tz
-        -tx -ty tz
-    ]
-end
-function makelattice(
-    ::BravaisLattice{Hexagonal,RhombohedralCentered,2},
-    cell::CellParameters,
-)
-    ap = cell[1] / √3
-    c = acos(cell[4])
-    ty = sqrt((1 - c) / 6)
-    tz = sqrt((1 + 2c) / 3)
-    u = tz - 2 * √2 * ty
-    v = tz + √2 * ty
-    return ap * [
-        u v v
-        v u v
-        v v u
-    ]
+    if view == 1
+        r = cos(cell[4])
+        tx = sqrt((1 - r) / 2)
+        ty = sqrt((1 - r) / 6)
+        tz = sqrt((1 + 2r) / 3)
+        cell[1] * [
+            tx -ty tz
+            0 2ty tz
+            -tx -ty tz
+        ]
+    elseif view == 2
+        ap = cell[1] / √3
+        c = acos(cell[4])
+        ty = sqrt((1 - c) / 6)
+        tz = sqrt((1 + 2c) / 3)
+        u = tz - 2 * √2 * ty
+        v = tz + √2 * ty
+        ap * [
+            u v v
+            v u v
+            v v u
+        ]
+    else
+        error("wrong `view` $view input!")
+    end
 end
 makelattice(::BravaisLattice{Tetragonal,Primitive}, cell::CellParameters) =
     cell[1] * [
