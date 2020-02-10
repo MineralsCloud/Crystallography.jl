@@ -1,5 +1,3 @@
-module Crystallography
-
 using LinearAlgebra
 using Test
 
@@ -104,5 +102,3 @@ end
         0 0 c^2
     ])
 end # testset
-
-end
