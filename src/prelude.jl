@@ -79,6 +79,49 @@ end # function BaseCentered
 
 struct BravaisLattice{A<:CrystalSystem,B<:Centering} end
 BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B}()
+function BravaisLattice(ibrav::Integer)
+    return if ibrav == 1
+        BravaisLattice(Cubic(), Primitive())
+    elseif ibrav == 2
+        BravaisLattice(Cubic(), FaceCentered())
+    elseif ibrav == 3
+        BravaisLattice(Cubic(), BodyCentered())
+    # elseif ibrav == -3
+        # BravaisLattice(Cubic(), BodyCentered(), 2)
+    elseif ibrav == 4
+        BravaisLattice(Hexagonal(), Primitive())
+    elseif ibrav == 5
+        BravaisLattice(Hexagonal(), RhombohedralCentered())
+    # elseif ibrav == -5
+        # BravaisLattice(Hexagonal(), RhombohedralCentered(), 2)
+    elseif ibrav == 6
+        BravaisLattice(Tetragonal(), Primitive())
+    elseif ibrav == 7
+        BravaisLattice(Tetragonal(), BodyCentered())
+    elseif ibrav == 8
+        BravaisLattice(Orthorhombic(), Primitive())
+    elseif ibrav == 9
+        BravaisLattice(Orthorhombic(), BaseCentered(:B))
+    elseif ibrav == -9
+        BravaisLattice(Orthorhombic(), BaseCentered(:C))
+    elseif ibrav == 91  # In QE 6.5
+        BravaisLattice(Orthorhombic(), BaseCentered(:C))
+    elseif ibrav == 10
+        BravaisLattice(Orthorhombic(), FaceCentered())
+    elseif ibrav == 11
+        BravaisLattice(Orthorhombic(), BodyCentered())
+    elseif ibrav == 12
+        BravaisLattice(Monoclinic(), Primitive())
+    elseif ibrav == -12
+        BravaisLattice(Monoclinic(), Primitive())
+    elseif ibrav == 13
+        BravaisLattice(Monoclinic(), BaseCentered(:B))
+    elseif ibrav == 14
+        BravaisLattice(Triclinic(), Primitive())
+    else
+        error("undefined lattice!")
+    end
+end # function BravaisLattice
 
 pearsonsymbol(::Triclinic) = "a"
 pearsonsymbol(::Monoclinic) = "m"
