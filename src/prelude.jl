@@ -79,25 +79,6 @@ end # function BaseCentered
 
 struct BravaisLattice{A<:CrystalSystem,B<:Centering} end
 BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B}()
-function BravaisLattice(; symbol::Bool = false)
-    x = (
-        BravaisLattice(Triclinic(), Primitive()),
-        BravaisLattice(Monoclinic(), Primitive()),
-        BravaisLattice(Monoclinic(), BaseCentered(:B)),
-        BravaisLattice(Orthorhombic(), Primitive()),
-        BravaisLattice(Orthorhombic(), BaseCentered(:C)),
-        BravaisLattice(Orthorhombic(), BodyCentered()),
-        BravaisLattice(Orthorhombic(), FaceCentered()),
-        BravaisLattice(Tetragonal(), Primitive()),
-        BravaisLattice(Tetragonal(), BodyCentered()),
-        BravaisLattice(Cubic(), Primitive()),
-        BravaisLattice(Cubic(), BodyCentered()),
-        BravaisLattice(Cubic(), FaceCentered()),
-        BravaisLattice(Hexagonal(), Primitive()),
-        BravaisLattice(Hexagonal(), RhombohedralCentered()),
-    )
-    return symbol ? pearsonsymbol.(x) : x
-end  # function BravaisLattice
 
 pearsonsymbol(::Triclinic) = "a"
 pearsonsymbol(::Monoclinic) = "m"
@@ -153,3 +134,20 @@ StaticArrays.similar_type(
     ::Type{T},
     size::Size{(3,)},
 ) where {T} = CartesianCoordinates{T}
+
+Base.instances(::Type{<:BravaisLattice}) = (
+    BravaisLattice(Triclinic(), Primitive()),
+    BravaisLattice(Monoclinic(), Primitive()),
+    BravaisLattice(Monoclinic(), BaseCentered(:B)),
+    BravaisLattice(Orthorhombic(), Primitive()),
+    BravaisLattice(Orthorhombic(), BaseCentered(:C)),
+    BravaisLattice(Orthorhombic(), BodyCentered()),
+    BravaisLattice(Orthorhombic(), FaceCentered()),
+    BravaisLattice(Tetragonal(), Primitive()),
+    BravaisLattice(Tetragonal(), BodyCentered()),
+    BravaisLattice(Cubic(), Primitive()),
+    BravaisLattice(Cubic(), BodyCentered()),
+    BravaisLattice(Cubic(), FaceCentered()),
+    BravaisLattice(Hexagonal(), Primitive()),
+    BravaisLattice(Hexagonal(), RhombohedralCentered()),
+)
