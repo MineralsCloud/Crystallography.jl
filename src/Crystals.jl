@@ -62,6 +62,10 @@ CellParameters(::BravaisLattice{Trigonal}, a, c) =
 CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, α) =
     CellParameters(a, a, a, α, α, α)
 
+function makelattice(b::BravaisLattice, params...; vecform::Bool = false, view::Int = 1)
+    lattice = makelattice(b, CellParameters(b, params...))
+    return vecform ? _splitlattice(lattice) : lattice
+end # function makelattice
 makelattice(::BravaisLattice{Cubic,Primitive}, cell::CellParameters) =
     cell[1] * [
         1 0 0
@@ -178,6 +182,9 @@ function makelattice(::BravaisLattice{Monoclinic,Primitive}, cell::CellParameter
 end
 # TODO: BravaisLattice{Monoclinic,BCentered}
 # TODO: BravaisLattice{Triclinic,Primitive}
+
+# This is a helper function and should not be exported.
+_splitlattice(m::AbstractMatrix) = collect(Iterators.partition(m', 3))
 
 function _checkpositive(v)  # This is a helper function and should not be exported.
     v <= zero(v) && @warn "The volume of the cell is not positive! Check your input!"
