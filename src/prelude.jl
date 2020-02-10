@@ -77,9 +77,8 @@ function BaseCentered(T::Symbol)
     return BaseCentered{T}()
 end # function BaseCentered
 
-struct BravaisLattice{A<:CrystalSystem,B<:Centering,N} end
-BravaisLattice(::A, ::B, N::Integer) where {A,B} = BravaisLattice{A,B,supertype(A).parameters[1]}()
-BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B,3}()
+struct BravaisLattice{A<:CrystalSystem,B<:Centering} end
+BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B}()
 function BravaisLattice(; symbol::Bool = false)
     x = (
         BravaisLattice(Triclinic(), Primitive()),
