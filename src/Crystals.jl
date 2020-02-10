@@ -55,11 +55,11 @@ CellParameters(::BravaisLattice{Orthorhombic}, a, b, c) =
 CellParameters(::BravaisLattice{Tetragonal}, a, c) =
     CellParameters(a, a, c, π / 2, π / 2, π / 2)
 CellParameters(::BravaisLattice{Cubic}, a) = CellParameters(a, a, a, π / 2, π / 2, π / 2)
-CellParameters(::BravaisLattice{Hexagonal}, a, c) =
+CellParameters(::BravaisLattice{Hexagonal{3}}, a, c) =
     CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
 CellParameters(::BravaisLattice{Trigonal}, a, c) =
     CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
-CellParameters(::BravaisLattice{Hexagonal,RhombohedralCentered}, a, α) =
+CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, α) =
     CellParameters(a, a, a, α, α, α)
 
 makelattice(::BravaisLattice{Cubic,Primitive}, cell::CellParameters) =
