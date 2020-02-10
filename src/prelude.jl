@@ -201,7 +201,7 @@ CellParameters(::BravaisLattice{Trigonal}, a, c) =
 CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, α) =
     CellParameters(a, a, a, α, α, α)
 
-struct MetricTensor{T}
+struct MetricTensor{T<:AbstractMatrix}
     m::T
     function MetricTensor{T}(m) where {T}
         @assert(size(m) == (3, 3), "The metric tensor must be of size 3×3!")
