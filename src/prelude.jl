@@ -186,10 +186,7 @@ crystalsystem(::BravaisLattice{C}) where {C} = C()
 
 viewsetting(::BravaisLattice{C,T,N}) where {C,T,N} = N
 
-Base.show(io::IO, t::CrystalSystem) = show(io, lowercase(string(t)))
-Base.show(io::IO, t::Centering) = show(io, lowercase(string(t)))
-Base.show(io::IO, t::BravaisLattice{C,T}) where {C,T} =
-    show(io, lowercase(string(T, ' ', C)))
+viewsetting(::BravaisLattice{C,T,N}) where {C,T,N} = N
 
 StaticArrays.similar_type(
     ::Type{<:CrystalCoordinates},  # Do not delete the `<:`!
