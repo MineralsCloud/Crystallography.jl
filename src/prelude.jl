@@ -464,13 +464,13 @@ Base.instances(::Type{<:BravaisLattice}) = (
 )
 
 Base.convert(::Type{<:MillerIndices}, mb::MillerBravaisIndices) =
-    error("Unsupported operation!")
+    error("unsupported conversion!")
 Base.convert(::Type{<:MillerBravaisIndices}, m::MillerIndices) =
-    error("Unsupported operation!")
+    error("unsupported conversion!")
 Base.convert(T::Type{<:MillerIndices}, m::MillerIndices) =
-    isa(m, T) ? m : error("Unsupported operation!")
+    isa(m, T) ? m : error("unsupported conversion!")
 Base.convert(T::Type{<:MillerBravaisIndices}, mb::MillerBravaisIndices) =
-    isa(mb, T) ? mb : error("Unsupported operation!")
+    isa(mb, T) ? mb : error("unsupported conversion!")
 Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T<:RealSpace} =
     MillerIndices{T}(2 * mb[1] + mb[2], 2 * mb[2] + mb[1], mb[4])
 Base.convert(
