@@ -62,7 +62,6 @@ CellParameters(::BravaisLattice{Trigonal}, a, c) =
 CellParameters(::BravaisLattice{Hexagonal,RhombohedralCentered}, a, α) =
     CellParameters(a, a, a, α, α, α)
 
-makelattice(ibrav::Integer, cell::CellParameters) = makelattice(BravaisLattice(ibrav), cell)
 makelattice(::BravaisLattice{Cubic,Primitive}, cell::CellParameters) =
     cell[1] * [
         1 0 0
