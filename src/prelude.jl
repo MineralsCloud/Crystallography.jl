@@ -30,8 +30,7 @@ export AbstractSpace,
     arithmeticclass,
     centeringof,
     crystalsystem,
-    dimensionof,
-    viewsetting
+    dimensionof
 
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
@@ -186,8 +185,6 @@ centeringof(::BravaisLattice{C,T}) where {C,T} = T()
 crystalsystem(::BravaisLattice{C}) where {C} = C()
 
 dimensionof(::BravaisLattice{C,T,N}) where {C,T,N} = N
-
-viewsetting(::BravaisLattice{C,T,N}) where {C,T,N} = N
 
 StaticArrays.similar_type(
     ::Type{<:CrystalCoordinates},  # Do not delete the `<:`!
