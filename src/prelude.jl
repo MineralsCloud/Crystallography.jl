@@ -30,6 +30,7 @@ export AbstractSpace,
     arithmeticclass,
     centeringof,
     crystalsystem,
+    dimensionof,
     viewsetting
 
 abstract type AbstractSpace end
@@ -78,8 +79,8 @@ function BaseCentered(T::Symbol)
 end # function BaseCentered
 
 struct BravaisLattice{A<:CrystalSystem,B<:Centering,N} end
-BravaisLattice(::A, ::B, N::Integer) where {A,B} = BravaisLattice{A,B,N}()
-BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B,1}()
+BravaisLattice(::A, ::B, N::Integer) where {A,B} = BravaisLattice{A,B,supertype(A).parameters[1]}()
+BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B,3}()
 function BravaisLattice(ibrav::Integer)
     return if ibrav == 1
         BravaisLattice(Cubic(), Primitive())
@@ -184,7 +185,7 @@ centeringof(::BravaisLattice{C,T}) where {C,T} = T()
 
 crystalsystem(::BravaisLattice{C}) where {C} = C()
 
-viewsetting(::BravaisLattice{C,T,N}) where {C,T,N} = N
+dimensionof(::BravaisLattice{C,T,N}) where {C,T,N} = N
 
 viewsetting(::BravaisLattice{C,T,N}) where {C,T,N} = N
 
