@@ -57,6 +57,10 @@ struct Tetragonal <: CrystalSystem{3} end
 struct Cubic <: CrystalSystem{3} end
 struct Trigonal <: CrystalSystem{3} end
 struct Hexagonal{N} <: CrystalSystem{N} end  # Could both be 2D or 3D
+function Hexagonal(N::Int = 3)
+    @assert N ∈ (2, 3)
+    return Hexagonal{N}()
+end
 
 abstract type Centering end
 struct Primitive <: Centering end
