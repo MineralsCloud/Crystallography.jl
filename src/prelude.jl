@@ -46,14 +46,17 @@ struct CartesianCoordinates{T} <: AbstractCoordinates{T}
     z::T
 end
 
-abstract type CrystalSystem end
-struct Triclinic <: CrystalSystem end
-struct Monoclinic <: CrystalSystem end
-struct Orthorhombic <: CrystalSystem end
-struct Tetragonal <: CrystalSystem end
-struct Cubic <: CrystalSystem end
-struct Trigonal <: CrystalSystem end
-struct Hexagonal <: CrystalSystem end
+abstract type CrystalSystem{N} end
+struct Oblique <: CrystalSystem{2} end
+struct Rectangular <: CrystalSystem{2} end
+struct Square <: CrystalSystem{2} end
+struct Triclinic <: CrystalSystem{3} end
+struct Monoclinic <: CrystalSystem{3} end
+struct Orthorhombic <: CrystalSystem{3} end
+struct Tetragonal <: CrystalSystem{3} end
+struct Cubic <: CrystalSystem{3} end
+struct Trigonal <: CrystalSystem{3} end
+struct Hexagonal{N} <: CrystalSystem{N} end  # Could both be 2D or 3D
 
 abstract type Centering end
 struct Primitive <: Centering end
