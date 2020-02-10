@@ -3,7 +3,10 @@ module Directions
 using LinearAlgebra
 using Test
 
+using SymPy: symbols
+
 using Crystallography
+using Crystallography.Crystals
 using Crystallography.Directions
 
 @testset "Test constructors" begin
@@ -90,5 +93,15 @@ end
     b = CrystalCoordinates(0, 0, 1)
     @test directioncosine(a, g, b) ≈ 3 / sqrt(29)
 end
+
+@testset "Symbolic calculation" begin
+    a, b, c = symbols("a, b, c", positive = true)
+    @test MetricTensor(makelattice(BravaisLattice(4), a, c; vecform = true)...) ==
+          MetricTensor([
+        a^2 -0.5 * a^2 0
+        -0.5 * a^2 1.0 * a^2 0
+        0 0 c^2
+    ])
+end # testset
 
 end
