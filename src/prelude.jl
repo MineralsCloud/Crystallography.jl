@@ -24,6 +24,7 @@ export AbstractSpace,
     BaseCentered,
     BravaisLattice,
     pearsonsymbol,
+    arithmeticclass,
     centeringof,
     crystalsystem,
     viewsetting
@@ -152,6 +153,29 @@ pearsonsymbol(::BodyCentered) = "I"
 pearsonsymbol(::FaceCentered) = "F"
 pearsonsymbol(::RhombohedralCentered) = "R"
 pearsonsymbol(::BravaisLattice{A,B}) where {A,B} = pearsonsymbol(A()) * pearsonsymbol(B())
+
+arithmeticclass(::Oblique) = "2"
+arithmeticclass(::Rectangular) = "2mm"
+arithmeticclass(::Square) = "4mm"
+arithmeticclass(::Hexagonal{2}) = "6mm"
+arithmeticclass(::Triclinic) = "-1"
+arithmeticclass(::Monoclinic) = "2/m"
+arithmeticclass(::Orthorhombic) = "mmm"
+arithmeticclass(::Tetragonal) = "4/mmm"
+arithmeticclass(::Hexagonal{3}) = "6/mmm"
+arithmeticclass(::Cubic) = "m-3m"
+arithmeticclass(::Primitive) = "P"
+arithmeticclass(::BaseCentered) = "S"
+arithmeticclass(::BodyCentered) = "I"
+arithmeticclass(::FaceCentered) = "F"
+arithmeticclass(::RhombohedralCentered) = "R"
+arithmeticclass(::BravaisLattice{A,B}) where {A,B} = arithmeticclass(A()) * arithmeticclass(B())
+arithmeticclass(::BravaisLattice{Hexagonal{3},RhombohedralCentered}) = "-3mR"
+arithmeticclass(::BravaisLattice{Oblique}) = "2p"
+arithmeticclass(::BravaisLattice{Rectangular,Primitive}) = "2mmp"
+arithmeticclass(::BravaisLattice{Rectangular,<:BaseCentered}) = "2mmc"
+arithmeticclass(::BravaisLattice{Square}) = "4mmp"
+arithmeticclass(::BravaisLattice{Hexagonal{2}}) = "6mmh"
 
 centeringof(::BravaisLattice{C,T}) where {C,T} = T()
 
