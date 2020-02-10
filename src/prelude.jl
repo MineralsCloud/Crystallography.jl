@@ -140,7 +140,8 @@ centeringof(::BravaisLattice{C,T}) where {C,T} = T()
 
 crystalsystem(::BravaisLattice{C}) where {C} = C()
 
-dimensionof(::BravaisLattice{C,T,N}) where {C,T,N} = N
+dimensionof(c::CrystalSystem) = first(supertype(typeof(c)).parameters)
+dimensionof(::BravaisLattice{C}) where {C} = dimensionof(C())
 
 StaticArrays.similar_type(
     ::Type{<:CrystalCoordinates},  # Do not delete the `<:`!
