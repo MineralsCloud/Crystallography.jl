@@ -1,4 +1,4 @@
-module Directions
+module Crystallography
 
 using LinearAlgebra
 using Test
@@ -6,8 +6,9 @@ using Test
 using SymPy: symbols
 
 using Crystallography
-using Crystallography.Crystals
-using Crystallography.Directions
+
+@testset "Test `bravaislattices`" begin
+end
 
 @testset "Test constructors" begin
     @test_throws TypeError MillerIndices{Int,Int}
