@@ -224,20 +224,6 @@ function MetricTensor(a, b, c, α, β, γ)
     ]))
 end
 MetricTensor(p::CellParameters) = MetricTensor(p...)
-MetricTensor(::BravaisLattice{Triclinic}, args...) = MetricTensor(args...)  # Triclinic
-MetricTensor(::BravaisLattice{Monoclinic}, a, b, c, γ) =
-    MetricTensor(a, b, c, π / 2, π / 2, γ)
-MetricTensor(::BravaisLattice{Orthorhombic}, a, b, c) =
-    MetricTensor(a, b, c, π / 2, π / 2, π / 2)
-MetricTensor(::BravaisLattice{Tetragonal}, a, c) =
-    MetricTensor(a, a, c, π / 2, π / 2, π / 2)
-MetricTensor(::BravaisLattice{Cubic}, a) = MetricTensor(a, a, a, π / 2, π / 2, π / 2)
-MetricTensor(::BravaisLattice{Hexagonal}, a, c) =
-    MetricTensor(a, a, c, π / 2, π / 2, 2π / 3)
-MetricTensor(::BravaisLattice{Trigonal}, a, c) =
-    MetricTensor(BravaisLattice(Hexagonal(), Primitive()), a, c)
-MetricTensor(::BravaisLattice{Hexagonal,RhombohedralCentered}, a, α) =
-    MetricTensor(a, a, a, α, α, α)
 
 directioncosine(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
     dot(a, g, b) / (norm(a, g) * norm(b, g))
