@@ -95,14 +95,14 @@ function makelattice(
         error("wrong `view` $view input!")
     end
 end # function makelattice
-makelattice(::BravaisLattice{Hexagonal,Primitive}, cell::CellParameters) =
+makelattice(::BravaisLattice{Hexagonal{3},Primitive}, cell::CellParameters) =
     cell[1] * [
         1 0 0
         -1 / 2 √3 / 2 0
         0 0 cell[3] / cell[1]
     ]
 function makelattice(
-    ::BravaisLattice{Hexagonal,RhombohedralCentered},
+    ::BravaisLattice{Hexagonal{3},RhombohedralCentered},
     cell::CellParameters,
     view::Int = 1,
 )
