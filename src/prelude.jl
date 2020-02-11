@@ -438,6 +438,8 @@ Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.m))  # `sqrt` is always positive!
 
+Base.inv(g::MetricTensor) = MetricTensor(inv.(g.m))
+
 Base.convert(::Type{<:MillerIndices}, mb::MillerBravaisIndices) =
     error("unsupported conversion!")
 Base.convert(::Type{<:MillerBravaisIndices}, m::MillerIndices) =
