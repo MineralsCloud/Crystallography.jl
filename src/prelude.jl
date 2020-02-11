@@ -1,5 +1,6 @@
 using LinearAlgebra: Symmetric, cross, det, dot, norm
 
+using AutoHashEquals: @auto_hash_equals
 using CoordinateTransformations
 using StaticArrays: FieldVector, Size
 using SymPy: PI
@@ -202,7 +203,7 @@ CellParameters(::BravaisLattice{Trigonal}, a, c) =
 CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, α) =
     CellParameters(a, a, a, α, α, α)
 
-struct MetricTensor{T<:AbstractMatrix}
+@auto_hash_equals struct MetricTensor{T<:AbstractMatrix}
     m::T
     function MetricTensor{T}(m) where {T}
         @assert(size(m) == (3, 3), "The metric tensor must be of size 3×3!")
