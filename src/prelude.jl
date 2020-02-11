@@ -3,7 +3,7 @@ using LinearAlgebra: Symmetric, cross, det, dot, norm
 using AutoHashEquals: @auto_hash_equals
 using CoordinateTransformations
 using StaticArrays: FieldVector, Size
-using SymPy: PI
+using SymPy
 
 import LinearAlgebra
 import StaticArrays
@@ -43,6 +43,7 @@ export pearsonsymbol,
     centeringof,
     crystalsystem,
     dimensionof,
+    axessetting,
     directioncosine,
     directionangle,
     distance,
@@ -95,8 +96,9 @@ function BaseCentered(T::Symbol)
     return BaseCentered{T}()
 end # function BaseCentered
 
-struct BravaisLattice{A<:CrystalSystem,B<:Centering} end
-BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B}()
+struct BravaisLattice{A<:CrystalSystem,B<:Centering,N} end
+BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B,1}()
+BravaisLattice(::A, ::B, N::Integer) where {A,B} = BravaisLattice{A,B,N}()
 BravaisLattice(ibrav::Integer) = BravaisLattice(Val(ibrav))
 BravaisLattice(::Val{1}) = BravaisLattice(Cubic(), Primitive())
 BravaisLattice(::Val{2}) = BravaisLattice(Cubic(), FaceCentered())
@@ -162,6 +164,8 @@ crystalsystem(::BravaisLattice{C}) where {C} = C()
 dimensionof(c::CrystalSystem) = first(supertype(typeof(c)).parameters)
 dimensionof(::BravaisLattice{C}) where {C} = dimensionof(C())
 
+axessetting(::BravaisLattice{C,T,N}) where {C,T,N} = N
+
 struct Cell{
     L<:AbstractVecOrMat,
     P<:AbstractVecOrMat,
@@ -188,20 +192,26 @@ function CellParameters(a, b, c, α, β, γ, angle_iscosine::Bool = false)
     return CellParameters{Base.promote_typeof(v...)}(v...)
 end
 CellParameters(bravais::BravaisLattice) = args -> CellParameters(bravais, args...)
-CellParameters(::BravaisLattice{Triclinic}, args...) = CellParameters(args...)  # Triclinic
-CellParameters(::BravaisLattice{Monoclinic}, a, b, c, γ) =
-    CellParameters(a, b, c, PI / 2, PI / 2, γ)
-CellParameters(::BravaisLattice{Orthorhombic}, a, b, c) =
-    CellParameters(a, b, c, PI / 2, PI / 2, PI / 2)
-CellParameters(::BravaisLattice{Tetragonal}, a, c) =
-    CellParameters(a, a, c, PI / 2, PI / 2, PI / 2)
-CellParameters(::BravaisLattice{Cubic}, a) = CellParameters(a, a, a, PI / 2, PI / 2, PI / 2)
-CellParameters(::BravaisLattice{Hexagonal{3}}, a, c) =
-    CellParameters(a, a, c, PI / 2, PI / 2, 2PI / 3)
-CellParameters(::BravaisLattice{Trigonal}, a, c) =
-    CellParameters(a, a, c, PI / 2, PI / 2, 2PI / 3)
-CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, α) =
-    CellParameters(a, a, a, α, α, α)
+CellParameters(::BravaisLattice{Triclinic}, a, b, c, α, β, γ, args...) =
+    CellParameters(a, b, c, α, β, γ)  # Triclinic
+CellParameters(::BravaisLattice{Monoclinic,Primitive,1}, a, b, c, α, β, γ, args...) =
+    CellParameters(a, b, c, SymPy.PI / 2, SymPy.PI / 2, γ)  # `α`, `β` are ignored.
+CellParameters(::BravaisLattice{Monoclinic,Primitive,2}, a, b, c, α, β, γ, args...) =
+    CellParameters(a, b, c, SymPy.PI / 2, β, SymPy.PI / 2)  # `α`, `γ` are ignored.
+CellParameters(::BravaisLattice{Monoclinic,BaseCentered{:C}}, a, b, c, α, β, γ, args...) =
+    CellParameters(a, b, c, SymPy.PI / 2, SymPy.PI / 2, γ)  # `α`, `β` are ignored.
+CellParameters(::BravaisLattice{Monoclinic,BaseCentered{:B}}, a, b, c, α, β, γ, args...) =
+    CellParameters(a, b, c, SymPy.PI / 2, β, SymPy.PI / 2)  # `α`, `γ` are ignored.
+CellParameters(::BravaisLattice{Orthorhombic}, a, b, c, args...) =
+    CellParameters(a, b, c, SymPy.PI / 2, SymPy.PI / 2, SymPy.PI / 2)  # `α`, `β`, `γ` are ignored.
+CellParameters(::BravaisLattice{Tetragonal}, a, b, c, args...) =
+    CellParameters(a, a, c, SymPy.PI / 2, SymPy.PI / 2, SymPy.PI / 2)  # `b` is ignored.
+CellParameters(::BravaisLattice{Cubic}, a, args...) =
+    CellParameters(a, a, a, SymPy.PI / 2, SymPy.PI / 2, SymPy.PI / 2)  # Only `a` matters.
+CellParameters(::BravaisLattice{Hexagonal{3},Primitive}, a, b, c, args...) =
+    CellParameters(a, a, c, SymPy.PI / 2, SymPy.PI / 2, 2 * SymPy.PI / 3)  # `b` is ignored.
+CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, b, c, α, args...) =
+    CellParameters(a, a, a, α, α, α)  # `b`, `c` are ignored.
 
 @auto_hash_equals struct MetricTensor{T<:AbstractMatrix}
     m::T
@@ -241,7 +251,7 @@ function reciprocalof(mat::AbstractMatrix)
     @assert size(mat) == (3, 3)
     volume = abs(det(mat))
     a1, a2, a3 = mat[1, :], mat[2, :], mat[3, :]
-    return 2PI / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
+    return 2 * SymPy.PI / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocalof
 
 struct MillerIndices{S<:AbstractSpace,T<:Integer} <: FieldVector{3,T}
@@ -433,6 +443,8 @@ end # function cellvolume
 Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.m))  # `sqrt` is always positive!
+
+Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.m)))
 
 Base.convert(::Type{<:MillerIndices}, mb::MillerBravaisIndices) =
     error("unsupported conversion!")
