@@ -194,8 +194,10 @@ end
 CellParameters(bravais::BravaisLattice) = args -> CellParameters(bravais, args...)
 CellParameters(::BravaisLattice{Triclinic}, a, b, c, α, β, γ, args...) =
     CellParameters(a, b, c, α, β, γ)  # Triclinic
-CellParameters(::BravaisLattice{Monoclinic,Primitive}, a, b, c, α, β, γ, args...) =
-    CellParameters(a, b, c, PI / 2, PI / 2, γ)
+CellParameters(::BravaisLattice{Monoclinic,Primitive,1}, a, b, c, α, β, γ, args...) =
+    CellParameters(a, b, c, PI / 2, PI / 2, γ)  # `α`, `β` are ignored.
+CellParameters(::BravaisLattice{Monoclinic,Primitive,2}, a, b, c, α, β, γ, args...) =
+    CellParameters(a, b, c, PI / 2, β, PI / 2)  # `α`, `γ` are ignored.
 CellParameters(::BravaisLattice{Monoclinic,BaseCentered{:C}}, a, b, c, α, β, γ, args...) =
     CellParameters(a, b, c, PI / 2, PI / 2, γ)  # `α`, `β` are ignored.
 CellParameters(::BravaisLattice{Monoclinic,BaseCentered{:B}}, a, b, c, α, β, γ, args...) =
