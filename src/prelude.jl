@@ -188,20 +188,24 @@ function CellParameters(a, b, c, α, β, γ, angle_iscosine::Bool = false)
     return CellParameters{Base.promote_typeof(v...)}(v...)
 end
 CellParameters(bravais::BravaisLattice) = args -> CellParameters(bravais, args...)
-CellParameters(::BravaisLattice{Triclinic}, args...) = CellParameters(args...)  # Triclinic
-CellParameters(::BravaisLattice{Monoclinic}, a, b, c, γ) =
+CellParameters(::BravaisLattice{Triclinic}, a, b, c, α, β, γ, args...) =
+    CellParameters(a, b, c, α, β, γ)  # Triclinic
+CellParameters(::BravaisLattice{Monoclinic,Primitive}, a, b, c, α, β, γ, args...) =
     CellParameters(a, b, c, PI / 2, PI / 2, γ)
-CellParameters(::BravaisLattice{Orthorhombic}, a, b, c) =
-    CellParameters(a, b, c, PI / 2, PI / 2, PI / 2)
-CellParameters(::BravaisLattice{Tetragonal}, a, c) =
-    CellParameters(a, a, c, PI / 2, PI / 2, PI / 2)
-CellParameters(::BravaisLattice{Cubic}, a) = CellParameters(a, a, a, PI / 2, PI / 2, PI / 2)
-CellParameters(::BravaisLattice{Hexagonal{3}}, a, c) =
-    CellParameters(a, a, c, PI / 2, PI / 2, 2PI / 3)
-CellParameters(::BravaisLattice{Trigonal}, a, c) =
-    CellParameters(a, a, c, PI / 2, PI / 2, 2PI / 3)
-CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, α) =
-    CellParameters(a, a, a, α, α, α)
+CellParameters(::BravaisLattice{Monoclinic,BaseCentered{:C}}, a, b, c, α, β, γ, args...) =
+    CellParameters(a, b, c, PI / 2, PI / 2, γ)  # `α`, `β` are ignored.
+CellParameters(::BravaisLattice{Monoclinic,BaseCentered{:B}}, a, b, c, α, β, γ, args...) =
+    CellParameters(a, b, c, PI / 2, β, PI / 2)  # `α`, `γ` are ignored.
+CellParameters(::BravaisLattice{Orthorhombic}, a, b, c, args...) =
+    CellParameters(a, b, c, PI / 2, PI / 2, PI / 2)  # `α`, `β`, `γ` are ignored.
+CellParameters(::BravaisLattice{Tetragonal}, a, b, c, args...) =
+    CellParameters(a, a, c, PI / 2, PI / 2, PI / 2)  # `b` is ignored.
+CellParameters(::BravaisLattice{Cubic}, a, args...) =
+    CellParameters(a, a, a, PI / 2, PI / 2, PI / 2)  # Only `a` matters.
+CellParameters(::BravaisLattice{Hexagonal{3},Primitive}, a, b, c, args...) =
+    CellParameters(a, a, c, PI / 2, PI / 2, 2PI / 3)  # `b` is ignored.
+CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, b, c, α, args...) =
+    CellParameters(a, a, a, α, α, α)  # `b`, `c` are ignored.
 
 @auto_hash_equals struct MetricTensor{T<:AbstractMatrix}
     m::T
