@@ -434,23 +434,6 @@ Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.m))  # `sqrt` is always positive!
 
-Base.instances(::Type{<:BravaisLattice}) = (
-    BravaisLattice(Triclinic(), Primitive()),
-    BravaisLattice(Monoclinic(), Primitive()),
-    BravaisLattice(Monoclinic(), BaseCentered(:B)),
-    BravaisLattice(Orthorhombic(), Primitive()),
-    BravaisLattice(Orthorhombic(), BaseCentered(:C)),
-    BravaisLattice(Orthorhombic(), BodyCentered()),
-    BravaisLattice(Orthorhombic(), FaceCentered()),
-    BravaisLattice(Tetragonal(), Primitive()),
-    BravaisLattice(Tetragonal(), BodyCentered()),
-    BravaisLattice(Cubic(), Primitive()),
-    BravaisLattice(Cubic(), BodyCentered()),
-    BravaisLattice(Cubic(), FaceCentered()),
-    BravaisLattice(Hexagonal(), Primitive()),
-    BravaisLattice(Hexagonal(), RhombohedralCentered()),
-)
-
 Base.convert(::Type{<:MillerIndices}, mb::MillerBravaisIndices) =
     error("unsupported conversion!")
 Base.convert(::Type{<:MillerBravaisIndices}, m::MillerIndices) =
