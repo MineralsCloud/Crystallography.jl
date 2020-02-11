@@ -2,6 +2,7 @@ using LinearAlgebra: Symmetric, cross, det, dot, norm
 
 using CoordinateTransformations
 using StaticArrays: FieldVector, Size
+using SymPy: PI
 
 import LinearAlgebra
 import StaticArrays
@@ -188,16 +189,16 @@ end
 CellParameters(bravais::BravaisLattice) = args -> CellParameters(bravais, args...)
 CellParameters(::BravaisLattice{Triclinic}, args...) = CellParameters(args...)  # Triclinic
 CellParameters(::BravaisLattice{Monoclinic}, a, b, c, γ) =
-    CellParameters(a, b, c, π / 2, π / 2, γ)
+    CellParameters(a, b, c, PI / 2, PI / 2, γ)
 CellParameters(::BravaisLattice{Orthorhombic}, a, b, c) =
-    CellParameters(a, b, c, π / 2, π / 2, π / 2)
+    CellParameters(a, b, c, PI / 2, PI / 2, PI / 2)
 CellParameters(::BravaisLattice{Tetragonal}, a, c) =
-    CellParameters(a, a, c, π / 2, π / 2, π / 2)
-CellParameters(::BravaisLattice{Cubic}, a) = CellParameters(a, a, a, π / 2, π / 2, π / 2)
+    CellParameters(a, a, c, PI / 2, PI / 2, PI / 2)
+CellParameters(::BravaisLattice{Cubic}, a) = CellParameters(a, a, a, PI / 2, PI / 2, PI / 2)
 CellParameters(::BravaisLattice{Hexagonal{3}}, a, c) =
-    CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
+    CellParameters(a, a, c, PI / 2, PI / 2, 2PI / 3)
 CellParameters(::BravaisLattice{Trigonal}, a, c) =
-    CellParameters(a, a, c, π / 2, π / 2, 2π / 3)
+    CellParameters(a, a, c, PI / 2, PI / 2, 2PI / 3)
 CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, α) =
     CellParameters(a, a, a, α, α, α)
 
@@ -239,7 +240,7 @@ function reciprocalof(mat::AbstractMatrix)
     @assert size(mat) == (3, 3)
     volume = abs(det(mat))
     a1, a2, a3 = mat[1, :], mat[2, :], mat[3, :]
-    return 2π / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
+    return 2PI / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocalof
 
 struct MillerIndices{S<:AbstractSpace,T<:Integer} <: FieldVector{3,T}
