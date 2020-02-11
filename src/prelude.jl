@@ -95,8 +95,9 @@ function BaseCentered(T::Symbol)
     return BaseCentered{T}()
 end # function BaseCentered
 
-struct BravaisLattice{A<:CrystalSystem,B<:Centering} end
-BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B}()
+struct BravaisLattice{A<:CrystalSystem,B<:Centering,N} end
+BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B,1}()
+BravaisLattice(::A, ::B, N::Integer) where {A,B} = BravaisLattice{A,B,N}()
 BravaisLattice(ibrav::Integer) = BravaisLattice(Val(ibrav))
 BravaisLattice(::Val{1}) = BravaisLattice(Cubic(), Primitive())
 BravaisLattice(::Val{2}) = BravaisLattice(Cubic(), FaceCentered())
