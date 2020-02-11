@@ -3,7 +3,7 @@ using LinearAlgebra: Symmetric, cross, det, dot, norm
 using AutoHashEquals: @auto_hash_equals
 using CoordinateTransformations
 using StaticArrays: FieldVector, Size
-using SymPy: PI
+using SymPy
 
 import LinearAlgebra
 import StaticArrays
@@ -195,21 +195,21 @@ CellParameters(bravais::BravaisLattice) = args -> CellParameters(bravais, args..
 CellParameters(::BravaisLattice{Triclinic}, a, b, c, α, β, γ, args...) =
     CellParameters(a, b, c, α, β, γ)  # Triclinic
 CellParameters(::BravaisLattice{Monoclinic,Primitive,1}, a, b, c, α, β, γ, args...) =
-    CellParameters(a, b, c, PI / 2, PI / 2, γ)  # `α`, `β` are ignored.
+    CellParameters(a, b, c, SymPy.PI / 2, SymPy.PI / 2, γ)  # `α`, `β` are ignored.
 CellParameters(::BravaisLattice{Monoclinic,Primitive,2}, a, b, c, α, β, γ, args...) =
-    CellParameters(a, b, c, PI / 2, β, PI / 2)  # `α`, `γ` are ignored.
+    CellParameters(a, b, c, SymPy.PI / 2, β, SymPy.PI / 2)  # `α`, `γ` are ignored.
 CellParameters(::BravaisLattice{Monoclinic,BaseCentered{:C}}, a, b, c, α, β, γ, args...) =
-    CellParameters(a, b, c, PI / 2, PI / 2, γ)  # `α`, `β` are ignored.
+    CellParameters(a, b, c, SymPy.PI / 2, SymPy.PI / 2, γ)  # `α`, `β` are ignored.
 CellParameters(::BravaisLattice{Monoclinic,BaseCentered{:B}}, a, b, c, α, β, γ, args...) =
-    CellParameters(a, b, c, PI / 2, β, PI / 2)  # `α`, `γ` are ignored.
+    CellParameters(a, b, c, SymPy.PI / 2, β, SymPy.PI / 2)  # `α`, `γ` are ignored.
 CellParameters(::BravaisLattice{Orthorhombic}, a, b, c, args...) =
-    CellParameters(a, b, c, PI / 2, PI / 2, PI / 2)  # `α`, `β`, `γ` are ignored.
+    CellParameters(a, b, c, SymPy.PI / 2, SymPy.PI / 2, SymPy.PI / 2)  # `α`, `β`, `γ` are ignored.
 CellParameters(::BravaisLattice{Tetragonal}, a, b, c, args...) =
-    CellParameters(a, a, c, PI / 2, PI / 2, PI / 2)  # `b` is ignored.
+    CellParameters(a, a, c, SymPy.PI / 2, SymPy.PI / 2, SymPy.PI / 2)  # `b` is ignored.
 CellParameters(::BravaisLattice{Cubic}, a, args...) =
-    CellParameters(a, a, a, PI / 2, PI / 2, PI / 2)  # Only `a` matters.
+    CellParameters(a, a, a, SymPy.PI / 2, SymPy.PI / 2, SymPy.PI / 2)  # Only `a` matters.
 CellParameters(::BravaisLattice{Hexagonal{3},Primitive}, a, b, c, args...) =
-    CellParameters(a, a, c, PI / 2, PI / 2, 2PI / 3)  # `b` is ignored.
+    CellParameters(a, a, c, SymPy.PI / 2, SymPy.PI / 2, 2 * SymPy.PI / 3)  # `b` is ignored.
 CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, b, c, α, args...) =
     CellParameters(a, a, a, α, α, α)  # `b`, `c` are ignored.
 
@@ -251,7 +251,7 @@ function reciprocalof(mat::AbstractMatrix)
     @assert size(mat) == (3, 3)
     volume = abs(det(mat))
     a1, a2, a3 = mat[1, :], mat[2, :], mat[3, :]
-    return 2PI / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
+    return 2 * SymPy.PI / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocalof
 
 struct MillerIndices{S<:AbstractSpace,T<:Integer} <: FieldVector{3,T}
