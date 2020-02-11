@@ -247,11 +247,12 @@ distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = norm(b
 
 interplanar_spacing(a::CrystalCoordinates, g::MetricTensor) = 1 / norm(a, g)
 
-function reciprocalof(mat::AbstractMatrix)
+function reciprocalof(mat::AbstractMatrix, twopi::Bool = false)
     @assert size(mat) == (3, 3)
     volume = abs(det(mat))
     a1, a2, a3 = mat[1, :], mat[2, :], mat[3, :]
-    return 2 * SymPy.PI / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
+    factor = twopi ? 2 * SymPy.PI : 1
+    return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocalof
 
 struct MillerIndices{S<:AbstractSpace,T<:Integer} <: FieldVector{3,T}
