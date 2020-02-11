@@ -49,7 +49,8 @@ export pearsonsymbol,
     distance,
     interplanar_spacing,
     makelattice,
-    cellvolume
+    cellvolume,
+    reciprocalof
 
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
