@@ -4,10 +4,12 @@ authors = ["Qi Zhang"]
 version = "0.1.0"
 
 [deps]
+AutoHashEquals = "15f4f7f2-30c1-5605-9d31-71845cf9641f"
 CoordinateTransformations = "150eb455-5306-5404-9cee-2592286d6298"
 LibSymspg = "2098c8a6-82c4-11e9-1f54-e72760d085ce"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+SymPy = "24249f21-da20-56a4-8eb1-6a02cf4ae2e6"
 
 [compat]
 CoordinateTransformations = "0.5"

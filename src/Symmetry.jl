@@ -5,8 +5,7 @@ using LinearAlgebra: diagm, I
 using CoordinateTransformations: AffineMap, Translation, LinearMap
 using LibSymspg: get_symmetry
 
-using Crystallography: CrystalCoordinates
-using Crystallography.Crystals: Cell
+using Crystallography: CrystalCoordinates, Cell
 
 export SeitzOperator, IdentityOperator, TranslationOperator, PointSymmetryOperator
 export getsymmetry

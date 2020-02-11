@@ -1,13 +1,11 @@
-module Directions
-
 using LinearAlgebra
 using Test
 
 using SymPy: symbols
 
 using Crystallography
-using Crystallography.Crystals
-using Crystallography.Directions
+
+@testset "Test `bravaislattices`" begin end
 
 @testset "Test constructors" begin
     @test_throws TypeError MillerIndices{Int,Int}
@@ -74,34 +72,27 @@ end
 end
 
 @testset "Test length in a hexagonal lattice" begin
-    g = MetricTensor(BravaisLattice(Hexagonal(), Primitive()), 1, 2)
+    g = MetricTensor(CellParameters(BravaisLattice(4), 1, 2))
     a = CrystalCoordinates(1, 2, 1)
-    @test dot(a, g, a) ≈ 7
-    @test norm(CrystalCoordinates(1, 2, 1), g) == sqrt(7)
+    @test dot(a, g, a) == 7
+    @test norm(CrystalCoordinates(1, 2, 1), g)^2 == 7
 end
 
 @testset "Test distance between atoms in a hexagonal lattice" begin
-    g = MetricTensor(BravaisLattice(Hexagonal(), Primitive()), 1, 2)
+    g = MetricTensor(CellParameters(BravaisLattice(4), 1, 2))
     a = CrystalCoordinates(1, 1, 1)
     b = CrystalCoordinates(1 / 3, 1 / 3, 1 / 2)
-    @test distance(a, g, b) ≈ sqrt(13) / 3
+    @test distance(a, g, b)^2 == 13 / 9
 end
 
 @testset "Test direction cosine in a tetragonal lattice" begin
-    g = MetricTensor(BravaisLattice(Tetragonal(), Primitive()), 2, 3)
+    g = MetricTensor(CellParameters(BravaisLattice(6), 2, 3))
     a = CrystalCoordinates(1, 2, 1)
     b = CrystalCoordinates(0, 0, 1)
-    @test directioncosine(a, g, b) ≈ 3 / sqrt(29)
+    @test directioncosine(a, g, b)^2 == 9 // 29
 end
 
 @testset "Symbolic calculation" begin
     a, b, c = symbols("a, b, c", positive = true)
-    @test MetricTensor(makelattice(BravaisLattice(4), a, c; vecform = true)...) ==
-          MetricTensor([
-        a^2 -0.5 * a^2 0
-        -0.5 * a^2 1.0 * a^2 0
-        0 0 c^2
-    ])
+    @test MetricTensor(CellParameters(BravaisLattice(4), a, c)) == MetricTensor([a^2 -a^2/2 0; -a^2/2 a^2 0; 0 0 c^2])
 end # testset
-
-end
