@@ -43,6 +43,7 @@ export pearsonsymbol,
     centeringof,
     crystalsystem,
     dimensionof,
+    axessetting,
     directioncosine,
     directionangle,
     distance,
@@ -162,6 +163,8 @@ crystalsystem(::BravaisLattice{C}) where {C} = C()
 
 dimensionof(c::CrystalSystem) = first(supertype(typeof(c)).parameters)
 dimensionof(::BravaisLattice{C}) where {C} = dimensionof(C())
+
+axessetting(::BravaisLattice{C,T,N}) where {C,T,N} = N
 
 struct Cell{
     L<:AbstractVecOrMat,
