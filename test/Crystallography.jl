@@ -94,5 +94,6 @@ end
 
 @testset "Symbolic calculation" begin
     a, b, c = symbols("a, b, c", positive = true)
-    @test MetricTensor(CellParameters(BravaisLattice(4), a, c)) == MetricTensor([a^2 -a^2/2 0; -a^2/2 a^2 0; 0 0 c^2])
+    @test MetricTensor(CellParameters(BravaisLattice(4), a, c)) ==
+          MetricTensor([a^2 -a^2 / 2 0; -a^2 / 2 a^2 0; 0 0 c^2])
 end # testset
