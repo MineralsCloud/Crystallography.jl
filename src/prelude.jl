@@ -427,7 +427,7 @@ Calculates the cell volume from a set of `CellParameters`.
 function cellvolume(param::CellParameters)
     a, b, c, α, β, γ = param
     return _checkpositive(
-        a * b * c * sqrt(1 - cos(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ)),
+        a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ)),
     )
 end # function cellvolume
 """
