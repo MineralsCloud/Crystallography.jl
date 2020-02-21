@@ -187,7 +187,12 @@ struct CellParameters{T} <: FieldVector{6,T}
     α::T
     β::T
     γ::T
+    function CellParameters{T}(a, b, c, α, β, γ) where {T}
+        @assert all(x > zero(T) for x in (a, b, c))
+        return new(a, b, c, α, β, γ)
+    end
 end
+CellParameters(a::T, b::T, c::T, α::T, β::T, γ::T) where {T} = CellParameters{T}(a, b, c, α, β, γ)
 function CellParameters(a, b, c, α, β, γ, angle_iscosine::Bool = false)
     v = angle_iscosine ? (a, b, c, acos(α), acos(β), acos(γ)) : (a, b, c, α, β, γ)
     return CellParameters{Base.promote_typeof(v...)}(v...)
@@ -426,9 +431,7 @@ Calculates the cell volume from a set of `CellParameters`.
 """
 function cellvolume(param::CellParameters)
     a, b, c, α, β, γ = param
-    return _checkpositive(
-        a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ)),
-    )
+    return a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
 end # function cellvolume
 """
     cellvolume(m::AbstractMatrix)
