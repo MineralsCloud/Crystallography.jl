@@ -187,7 +187,12 @@ struct CellParameters{T} <: FieldVector{6,T}
     α::T
     β::T
     γ::T
+    function CellParameters{T}(a, b, c, α, β, γ) where {T}
+        @assert all(x > zero(T) for x in (a, b, c))
+        return new(a, b, c, α, β, γ)
+    end
 end
+CellParameters(a::T, b::T, c::T, α::T, β::T, γ::T) where {T} = CellParameters{T}(a, b, c, α, β, γ)
 function CellParameters(a, b, c, α, β, γ, angle_iscosine::Bool = false)
     v = angle_iscosine ? (a, b, c, acos(α), acos(β), acos(γ)) : (a, b, c, α, β, γ)
     return CellParameters{Base.promote_typeof(v...)}(v...)
