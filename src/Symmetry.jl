@@ -78,6 +78,11 @@ function GeneralSeitzOperator(m::AffineMap)
     linear, translation = m.linear, m.translation
     return GeneralSeitzOperator(translation ∘ linear ∘ inv(translation))
 end # function GeneralSeitzOperator
+function GeneralSeitzOperator(m::Union{TranslationOperator,PointSymmetryOperator}, pos::AbstractVector)
+    @assert length(pos) == 3
+    translation = TranslationOperator(Translation(pos))
+    return translation ∘ m ∘ inv(translation)
+end # function GeneralSeitzOperator
 
 lastrow(T::Type{<:Real}) = [zeros(T, 3)... ones(T, 1)]
 
