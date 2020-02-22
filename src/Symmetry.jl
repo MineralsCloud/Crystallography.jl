@@ -21,31 +21,29 @@ function getsymmetry(cell::Cell, symprec::AbstractFloat = 1e-5)
     return (AffineMap(m, t) for (m, t) in zip(maps, translations))
 end
 
-abstract type SeitzOperator{T<:AbstractMatrix} end
-
-struct GeneralSeitzOperator{T} <: SeitzOperator{T}
+struct SeitzOperator{T}
     m::T
-    function GeneralSeitzOperator{T}(m) where {T}
+    function SeitzOperator{T}(m) where {T}
         @assert(size(m) == (4, 4), "The operator must be of size 4x4!")
         return new(m)
     end
 end
-GeneralSeitzOperator(m::T) where {T} = GeneralSeitzOperator{T}(m)
-function GeneralSeitzOperator(m::AffineMap)
+SeitzOperator(m::T) where {T} = SeitzOperator{T}(m)
+function SeitzOperator(m::AffineMap)
     linear, translation = m.linear, m.translation
-    return GeneralSeitzOperator(translation ∘ linear ∘ inv(translation))
-end # function GeneralSeitzOperator
-# function GeneralSeitzOperator(m::Union{TranslationOperator,PointSymmetryOperator}, pos::AbstractVector)
+    return SeitzOperator(translation ∘ linear ∘ inv(translation))
+end # function SeitzOperator
+# function SeitzOperator(m::Union{TranslationOperator,PointSymmetryOperator}, pos::AbstractVector)
 #     @assert length(pos) == 3
 #     translation = TranslationOperator(Translation(pos))
 #     return translation ∘ m ∘ inv(translation)
-# end # function GeneralSeitzOperator
+# end # function SeitzOperator
 
-IdentityOperator() = GeneralSeitzOperator(ones(Int, 4, 4))
+IdentityOperator() = SeitzOperator(ones(Int, 4, 4))
 
 function TranslationOperator(t::Translation)
     T = eltype(t)
-    return GeneralSeitzOperator(vcat(
+    return SeitzOperator(vcat(
         hcat(diagm(0 => ones(T, 3)), t.translation),
         lastrow(T),
     ))
@@ -53,10 +51,10 @@ end # function TranslationOperator
 
 function PointSymmetryOperator(m::LinearMap)
     T = eltype(m)
-    return GeneralSeitzOperator(vcat(hcat(m.linear, zeros(T, 3)), lastrow(T)))
+    return SeitzOperator(vcat(hcat(m.linear, zeros(T, 3)), lastrow(T)))
 end # function PointSymmetryOperator
 
-function istranslation(op::GeneralSeitzOperator)
+function istranslation(op::SeitzOperator)
     m = op.m
     if m[1:3, 1:3] != I || !(iszero(m[4, 1:3]) && isone(m[4, 4]))
         return false
@@ -64,7 +62,7 @@ function istranslation(op::GeneralSeitzOperator)
     return true
 end # function istranslation
 
-function ispointsymmetry(op::GeneralSeitzOperator)
+function ispointsymmetry(op::SeitzOperator)
     m = op.m
     if !(iszero(m[4, 1:3]) && iszero(m[1:3, 4]) && isone(m[4, 4]))
         return false
@@ -79,7 +77,7 @@ lastrow(T::Type{<:Real}) = [zeros(T, 3)... ones(T, 1)]
 
 Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.m*[c; 1])[1:3])
 
-Base.:∘(a::SeitzOperator, b::SeitzOperator) = GeneralSeitzOperator(a.m * b.m)
+Base.:∘(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.m * b.m)
 
 # Base.convert(::Type{Translation}, op::TranslationOperator) = Translation(collect(op.m[1:3, 4]))
 
