@@ -43,10 +43,7 @@ IdentityOperator() = SeitzOperator(ones(Int, 4, 4))
 
 function TranslationOperator(t::Translation)
     T = eltype(t)
-    return SeitzOperator(vcat(
-        hcat(diagm(0 => ones(T, 3)), t.translation),
-        lastrow(T),
-    ))
+    return SeitzOperator(vcat(hcat(diagm(0 => ones(T, 3)), t.translation), lastrow(T)))
 end # function TranslationOperator
 
 function PointSymmetryOperator(m::LinearMap)
@@ -79,9 +76,9 @@ Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.m*[c; 1
 
 Base.:∘(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.m * b.m)
 
-# Base.convert(::Type{Translation}, op::TranslationOperator) = Translation(collect(op.m[1:3, 4]))
+    # Base.convert(::Type{Translation}, op::TranslationOperator) = Translation(collect(op.m[1:3, 4]))
 
-# Base.inv(op::TranslationOperator) = TranslationOperator(inv(convert(Translation, op)))
+    # Base.inv(op::TranslationOperator) = TranslationOperator(inv(convert(Translation, op)))
 
 
 end # module Symmetry
