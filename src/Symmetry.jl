@@ -42,13 +42,15 @@ end # function SeitzOperator
 IdentityOperator() = SeitzOperator(ones(Int, 4, 4))
 
 function TranslationOperator(t::Translation)
-    T = eltype(t)
-    return SeitzOperator(vcat(hcat(diagm(0 => ones(T, 3)), t.translation), lastrow(T)))
+    m = diagm(ones(eltype(t), 4))
+    m[1:3, 4] = t.translation
+    return SeitzOperator(m)
 end # function TranslationOperator
 
-function PointSymmetryOperator(m::LinearMap)
-    T = eltype(m)
-    return SeitzOperator(vcat(hcat(m.linear, zeros(T, 3)), lastrow(T)))
+function PointSymmetryOperator(l::LinearMap)
+    m = diagm(ones(eltype(l), 4))
+    m[1:3, 1:3] = l.linear
+    return SeitzOperator(m)
 end # function PointSymmetryOperator
 
 function istranslation(op::SeitzOperator)
@@ -66,8 +68,6 @@ function ispointsymmetry(op::SeitzOperator)
     end
     return true
 end # function ispointsymmetry
-
-lastrow(T::Type{<:Real}) = [zeros(T, 3)... one(T)]
 
 # Base.eltype(t::Translation) = eltype(t.translation)
 # Base.eltype(m::LinearMap) = eltype(m.linear)
