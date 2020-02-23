@@ -67,7 +67,7 @@ function ispointsymmetry(op::SeitzOperator)
     return true
 end # function ispointsymmetry
 
-lastrow(T::Type{<:Real}) = [zeros(T, 3)... ones(T, 1)]
+lastrow(T::Type{<:Real}) = [zeros(T, 3)... one(T)]
 
 # Base.eltype(t::Translation) = eltype(t.translation)
 # Base.eltype(m::LinearMap) = eltype(m.linear)
