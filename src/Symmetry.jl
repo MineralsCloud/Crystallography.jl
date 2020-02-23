@@ -33,11 +33,12 @@ function SeitzOperator(m::AffineMap)
     linear, translation = m.linear, m.translation
     return SeitzOperator(translation ∘ linear ∘ inv(translation))
 end # function SeitzOperator
-# function SeitzOperator(m::Union{TranslationOperator,PointSymmetryOperator}, pos::AbstractVector)
-#     @assert length(pos) == 3
-#     translation = TranslationOperator(Translation(pos))
-#     return translation ∘ m ∘ inv(translation)
-# end # function SeitzOperator
+function SeitzOperator(s::SeitzOperator, pos::AbstractVector)
+    @assert length(pos) == 3
+    t = TranslationOperator(Translation(pos))
+    return t * s * inv(t)
+end # function SeitzOperator
+SeitzOperator(a:AbstractMatrix, pos::AbstractVector) = SeitzOperator(SeitzOperator(a), pos)
 
 IdentityOperator() = SeitzOperator(ones(Int, 4, 4))
 
@@ -73,8 +74,7 @@ end # function ispointsymmetry
 # Base.eltype(m::LinearMap) = eltype(m.linear)
 
 Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.m*[c; 1])[1:3])
-
-Base.:∘(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.m * b.m)
+Base.:*(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.m * b.m)
 
     # Base.convert(::Type{Translation}, op::TranslationOperator) = Translation(collect(op.m[1:3, 4]))
 
