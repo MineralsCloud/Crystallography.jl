@@ -262,35 +262,27 @@ function reciprocalof(mat::AbstractMatrix, twopi::Bool = false)
     return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocalof
 
-struct MillerIndices{S<:AbstractSpace,T<:Integer} <: FieldVector{3,T}
-    i::T
-    j::T
-    k::T
-    function MillerIndices{S,T}(i, j, k) where {S,T}
-        x = [i, j, k]
-        i, j, k = iszero(x) ? x : x .÷ gcd(x)
-        return new(i, j, k)
+struct MillerIndices{S<:AbstractSpace,T<:Integer}
+    v::NTuple{3,T}
+    function MillerIndices{S,T}(x) where {S,T}
+        y = collect(x)
+        return new(iszero(y) ? x : x .÷ gcd(y))
     end
 end
-MillerIndices{S}(i::T, j::T, k::T) where {S,T} = MillerIndices{S,T}(i, j, k)
-MillerIndices{S}(x::AbstractVector) where {S} = MillerIndices{S}(x...)
-MillerIndices{S}(x::Tuple) where {S} = MillerIndices{S}(collect(x))
+MillerIndices{S}(x::NTuple{3,T}) where {S,T} = MillerIndices{S,T}(x)
+MillerIndices{S}(i, j, k) where {S} = MillerIndices{S}((i, j, k))
+MillerIndices{S}(x::AbstractVector) where {S} = MillerIndices{S}(Tuple(x))
 
-struct MillerBravaisIndices{S<:AbstractSpace,T<:Integer} <: FieldVector{4,T}
-    i::T
-    j::T
-    k::T
-    l::T
-    function MillerBravaisIndices{S,T}(i, j, k, l) where {S,T}
-        x = [i, j, k, l]
-        i, j, k, l = iszero(x) ? x : x .÷ gcd(x)
-        return new(i, j, k, l)
+struct MillerBravaisIndices{S<:AbstractSpace,T<:Integer}
+    v::NTuple{4,T}
+    function MillerBravaisIndices{S,T}(x) where {S,T}
+        y = collect(x)
+        return new(iszero(y) ? x : x .÷ gcd(y))
     end
 end
-MillerBravaisIndices{S}(i::T, j::T, k::T, l::T) where {S,T} =
-    MillerBravaisIndices{S,T}(i, j, k, l)
-MillerBravaisIndices{S}(x::AbstractVector) where {S} = MillerBravaisIndices{S}(x...)
-MillerBravaisIndices{S}(x::Tuple) where {S} = MillerBravaisIndices{S}(collect(x))
+MillerBravaisIndices{S}(x::NTuple{4,T}) where {S,T} = MillerBravaisIndices{S,T}(x)
+MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}((i, j, k, l))
+MillerBravaisIndices{S}(x::AbstractVector) where {S} = MillerBravaisIndices{S}(Tuple(x))
 
 CrystalCoordinates(m::MillerIndices) = CrystalCoordinates(m.i, m.j, m.k)
 CrystalCoordinates(mb::MillerBravaisIndices{T}) where {T} =
