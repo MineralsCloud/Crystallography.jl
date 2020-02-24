@@ -262,25 +262,23 @@ function reciprocalof(mat::AbstractMatrix, twopi::Bool = false)
     return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocalof
 
-struct MillerIndices{S<:AbstractSpace,T<:Integer}
-    v::NTuple{3,T}
-    function MillerIndices{S,T}(x) where {S,T}
+struct MillerIndices{S<:AbstractSpace}
+    v::NTuple{3,Int}
+    function MillerIndices{S}(x) where {S}
         y = collect(x)
         return new(iszero(y) ? x : x .÷ gcd(y))
     end
 end
-MillerIndices{S}(x::NTuple{3,T}) where {S,T} = MillerIndices{S,T}(x)
 MillerIndices{S}(i, j, k) where {S} = MillerIndices{S}((i, j, k))
 MillerIndices{S}(x::AbstractVector) where {S} = MillerIndices{S}(Tuple(x))
 
-struct MillerBravaisIndices{S<:AbstractSpace,T<:Integer}
-    v::NTuple{4,T}
-    function MillerBravaisIndices{S,T}(x) where {S,T}
+struct MillerBravaisIndices{S<:AbstractSpace}
+    v::NTuple{4,Int}
+    function MillerBravaisIndices{S}(x) where {S}
         y = collect(x)
         return new(iszero(y) ? x : x .÷ gcd(y))
     end
 end
-MillerBravaisIndices{S}(x::NTuple{4,T}) where {S,T} = MillerBravaisIndices{S,T}(x)
 MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}((i, j, k, l))
 MillerBravaisIndices{S}(x::AbstractVector) where {S} = MillerBravaisIndices{S}(Tuple(x))
 
