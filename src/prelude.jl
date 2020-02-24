@@ -1,4 +1,4 @@
-using LinearAlgebra: Symmetric, cross, det, dot, norm
+using LinearAlgebra: Symmetric, cross, det, dot, norm, issymmetric
 
 using AutoHashEquals: @auto_hash_equals
 using CoordinateTransformations
@@ -220,14 +220,15 @@ CellParameters(::BravaisLattice{Hexagonal{3},Primitive}, a, b, c, args...) =
 CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, b, c, α, args...) =
     CellParameters(a, a, a, α, α, α)  # `b`, `c` are ignored.
 
-@auto_hash_equals struct MetricTensor{T<:AbstractMatrix}
-    m::T
+struct MetricTensor{T} <: AbstractMatrix{T}
+    m::Matrix{T}
     function MetricTensor{T}(m) where {T}
         @assert(size(m) == (3, 3), "The metric tensor must be of size 3×3!")
+        @assert(issymmetric(m), "The metric tensor must be symmetric!")
         return new(m)
     end
 end
-MetricTensor(m::T) where {T} = MetricTensor{T}(m)
+MetricTensor(m::AbstractMatrix{T}) where {T} = MetricTensor{T}(m)
 function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
     vecs = (v1, v2, v3)
     return MetricTensor(map(x -> dot(x...), Iterators.product(vecs, vecs)))
@@ -439,6 +440,12 @@ end # function cellvolume
 Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.m))  # `sqrt` is always positive!
+
+Base.size(::MetricTensor) = (4, 4)
+
+# Base.IndexStyle(::Type{<:MetricTensor}) = IndexLinear()
+
+Base.getindex(g::MetricTensor, i::Int) = getindex(g.m, i)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.m)))
 
