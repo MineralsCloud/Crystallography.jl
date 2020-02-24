@@ -42,17 +42,21 @@ SeitzOperator(a:AbstractMatrix, pos::AbstractVector) = SeitzOperator(SeitzOperat
 
 IdentityOperator() = SeitzOperator(ones(Int, 4, 4))
 
-function TranslationOperator(t::Translation)
-    m = diagm(ones(eltype(t), 4))
-    m[1:3, 4] = t.translation
-    return SeitzOperator(m)
+function TranslationOperator(v::AbstractVector)
+    @assert length(v) == 3
+    x = diagm(ones(eltype(v), 4))
+    x[1:3, 4] = v
+    return SeitzOperator(x)
 end # function TranslationOperator
+TranslationOperator(t::Translation) = TranslationOperator(t.translation)
 
-function PointSymmetryOperator(l::LinearMap)
-    m = diagm(ones(eltype(l), 4))
-    m[1:3, 1:3] = l.linear
-    return SeitzOperator(m)
+function PointSymmetryOperator(m::AbstractMatrix)
+    @assert size(m) == (3, 3)
+    x = diagm(ones(eltype(m), 4))
+    x[1:3, 1:3] = m
+    return SeitzOperator(x)
 end # function PointSymmetryOperator
+PointSymmetryOperator(l::LinearMap) = PointSymmetryOperator(l.linear)
 
 function istranslation(op::SeitzOperator)
     m = op.m
