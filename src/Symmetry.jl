@@ -67,4 +67,13 @@ end # function ispointsymmetry
 Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.m*[c; 1])[1:3])
 Base.:*(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.m * b.m)
 
+function Base.convert(::Type{Translation}, op::SeitzOperator)
+    @assert(istranslation(op), "operator is not a translation!")
+    return Translation(collect(op.m[1:3, 4]))
+end # function Base.convert
+function Base.convert(::Type{LinearMap}, op::SeitzOperator)
+    @assert(ispointsymmetry(op), "operator is not a point symmetry!")
+    return LinearMap(collect(op.m[1:3, 1:3]))
+end # function Base.convert
+
 end # module Symmetry
