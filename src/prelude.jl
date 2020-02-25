@@ -441,11 +441,9 @@ Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.m))  # `sqrt` is always positive!
 
-Base.size(::MetricTensor) = (4, 4)
+Base.size(::MetricTensor) = (3, 3)
 
-# Base.IndexStyle(::Type{<:MetricTensor}) = IndexLinear()
-
-Base.getindex(g::MetricTensor, i::Int) = getindex(g.m, i)
+Base.getindex(g::MetricTensor, I::Vararg{Int}) = getindex(g.m, I...)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.m)))
 
