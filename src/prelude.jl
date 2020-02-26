@@ -221,14 +221,9 @@ CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, b, c, α,
     CellParameters(a, a, a, α, α, α)  # `b`, `c` are ignored.
 
 struct MetricTensor{T} <: AbstractMatrix{T}
-    m::Matrix{T}
-    function MetricTensor{T}(m) where {T}
-        @assert(size(m) == (3, 3), "The metric tensor must be of size 3×3!")
-        @assert(issymmetric(m), "The metric tensor must be symmetric!")
-        return new(m)
-    end
+    m::SHermitianCompact{3,T}
 end
-MetricTensor(m::AbstractMatrix{T}) where {T} = MetricTensor{T}(m)
+MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
 function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
     vecs = (v1, v2, v3)
     return MetricTensor(map(x -> dot(x...), Iterators.product(vecs, vecs)))
