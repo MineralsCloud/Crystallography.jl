@@ -283,44 +283,44 @@ function makelattice(b::BravaisLattice, params...; vecform::Bool = false, view::
     return vecform ? _splitlattice(lattice) : lattice
 end # function makelattice
 makelattice(::BravaisLattice{Cubic,Primitive}, cell::CellParameters) =
-    cell[1] * [
+    Lattice(cell[1] * [
         1 0 0
         0 1 0
         0 0 1
-    ]
+    ])
 makelattice(::BravaisLattice{Cubic,FaceCentered}, cell::CellParameters) =
-    cell[1] / 2 * [
+    Lattice(cell[1] / 2 * [
         -1 0 1
         0 1 1
         -1 1 0
-    ]
+    ])
 function makelattice(
     ::BravaisLattice{Cubic,BodyCentered},
     cell::CellParameters,
     view::Int = 1,
 )
     if view == 1
-        cell[1] / 2 * [
+        Lattice(cell[1] / 2 * [
             1 1 1
             -1 1 1
             -1 -1 1
-        ]
+        ])
     elseif view == 2
-        cell[1] / 2 * [
+        Lattice(cell[1] / 2 * [
             -1 1 1
             1 -1 1
             1 1 -1
-        ]
+        ])
     else
         error("wrong `view` $view input!")
     end
 end # function makelattice
 makelattice(::BravaisLattice{Hexagonal{3},Primitive}, cell::CellParameters) =
-    cell[1] * [
+    Lattice(cell[1] * [
         1 0 0
         -1 / 2 √3 / 2 0
         0 0 cell[3] / cell[1]
-    ]
+    ])
 function makelattice(
     ::BravaisLattice{Hexagonal{3},RhombohedralCentered},
     cell::CellParameters,
@@ -331,11 +331,11 @@ function makelattice(
         tx = sqrt((1 - r) / 2)
         ty = sqrt((1 - r) / 6)
         tz = sqrt((1 + 2r) / 3)
-        cell[1] * [
+        Lattice(cell[1] * [
             tx -ty tz
             0 2ty tz
             -tx -ty tz
-        ]
+        ])
     elseif view == 2
         ap = cell[1] / √3
         c = acos(cell[4])
@@ -343,58 +343,58 @@ function makelattice(
         tz = sqrt((1 + 2c) / 3)
         u = tz - 2 * √2 * ty
         v = tz + √2 * ty
-        ap * [
+        Lattice(ap * [
             u v v
             v u v
             v v u
-        ]
+        ])
     else
         error("wrong `view` $view input!")
     end
 end
 makelattice(::BravaisLattice{Tetragonal,Primitive}, cell::CellParameters) =
-    cell[1] * [
+    Lattice(cell[1] * [
         1 0 0
         0 1 0
         0 0 cell[3] / cell[1]
-    ]
+    ])
 function makelattice(::BravaisLattice{Tetragonal,BodyCentered}, cell::CellParameters)
     r = cell[3] / cell[1]
-    return cell[1] / 2 * [
+    return Lattice(cell[1] / 2 * [
         1 -1 r
         1 1 r
         -1 -1 r
-    ]
+    ])
 end
-makelattice(::BravaisLattice{Orthorhombic,Primitive}, cell::CellParameters) = [
+makelattice(::BravaisLattice{Orthorhombic,Primitive}, cell::CellParameters) = Lattice([
     cell[1] 0 0
     0 cell[2] 0
     0 0 cell[3]
-]
+])
 # TODO: BravaisLattice{Orthorhombic,CCentered}
 function makelattice(::BravaisLattice{Orthorhombic,FaceCentered}, cell::CellParameters)
     a, b, c = cell[1:3]
-    return [
+    return Lattice([
         a 0 c
         a b 0
         0 b c
-    ] / 2
+    ] / 2)
 end
 function makelattice(::BravaisLattice{Orthorhombic,BodyCentered}, cell::CellParameters)
     a, b, c = cell[1:3]
-    return [
+    return Lattice([
         a b c
         -a b c
         -a -b c
-    ] / 2
+    ] / 2)
 end
 function makelattice(::BravaisLattice{Monoclinic,Primitive}, cell::CellParameters)
     a, b, c = cell[1:3]
-    return [
+    return Lattice([
         a 0 0
         0 b 0
         c * cos(cell[5]) 0 c * sin(cell[5])
-    ]
+    ])
 end
 # TODO: BravaisLattice{Monoclinic,BCentered}
 # TODO: BravaisLattice{Triclinic,Primitive}
