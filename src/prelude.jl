@@ -269,7 +269,7 @@ struct MillerIndices{S<:AbstractSpace} <: AbstractVector{Int}
     end
 end
 MillerIndices{S}(i, j, k) where {S} = MillerIndices{S}([i, j, k])
-MillerIndices{S}(x::AbstractVector) where {S} = MillerIndices{S}(SVector{3}(x))
+MillerIndices{S}(x::NTuple{3}) where {S} = MillerIndices{S}(collect(x))
 
 struct MillerBravaisIndices{S<:AbstractSpace} <: AbstractVector{Int}
     v::SVector{4,Int}
@@ -278,7 +278,7 @@ struct MillerBravaisIndices{S<:AbstractSpace} <: AbstractVector{Int}
     end
 end
 MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k, l])
-MillerBravaisIndices{S}(x::AbstractVector) where {S} = MillerBravaisIndices{S}(SVector{4}(x))
+MillerBravaisIndices{S}(x::NTuple{4}) where {S} = MillerBravaisIndices{S}(collect(x))
 
 CrystalCoordinates(m::MillerIndices) = CrystalCoordinates(m.i, m.j, m.k)
 CrystalCoordinates(mb::MillerBravaisIndices{T}) where {T} =
