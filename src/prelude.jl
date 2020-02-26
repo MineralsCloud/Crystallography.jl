@@ -36,7 +36,8 @@ export AbstractSpace,
     MillerIndices,
     MillerBravaisIndices,
     Cell,
-    CellParameters
+    CellParameters,
+    Lattice
 
 export pearsonsymbol,
     arithmeticclass,
@@ -219,6 +220,11 @@ CellParameters(::BravaisLattice{Hexagonal{3},Primitive}, a, b, c, args...) =
     CellParameters(a, a, c, SymPy.PI / 2, SymPy.PI / 2, 2 * SymPy.PI / 3)  # `b` is ignored.
 CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, b, c, α, args...) =
     CellParameters(a, a, a, α, α, α)  # `b`, `c` are ignored.
+
+struct Lattice{T} <: AbstractMatrix{T}
+    m::SMatrix{3,3,T}
+end
+Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) = vcat(transpose.((v1, v2, v3))...)
 
 struct MetricTensor{T} <: AbstractMatrix{T}
     m::SHermitianCompact{3,T}
@@ -432,9 +438,9 @@ Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.m))  # `sqrt` is always positive!
 
-Base.size(::MetricTensor) = (3, 3)
+Base.size(::Union{MetricTensor,Lattice}) = (3, 3)
 
-Base.getindex(g::MetricTensor, I::Vararg{Int}) = getindex(g.m, I...)
+Base.getindex(A::Union{MetricTensor,Lattice}, I::Vararg{Int}) = getindex(A.m, I...)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.m)))
 
