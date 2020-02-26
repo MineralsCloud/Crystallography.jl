@@ -224,6 +224,7 @@ CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, b, c, α,
 struct Lattice{T} <: AbstractMatrix{T}
     m::SMatrix{3,3,T}
 end
+Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
 Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) =
     vcat(transpose.((v1, v2, v3))...)
 
