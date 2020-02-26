@@ -1,8 +1,8 @@
-using LinearAlgebra: Symmetric, cross, det, dot, norm, issymmetric
+using LinearAlgebra: cross, det, dot, norm, issymmetric
 
 using AutoHashEquals: @auto_hash_equals
 using CoordinateTransformations
-using StaticArrays: FieldVector, Size
+using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
 using SymPy
 
 import LinearAlgebra
@@ -237,11 +237,7 @@ function MetricTensor(a, b, c, α, β, γ)
     g12 = a * b * cos(γ)
     g13 = a * c * cos(β)
     g23 = b * c * cos(α)
-    return MetricTensor(Symmetric([
-        a^2 g12 g13
-        g12 b^2 g23
-        g13 g23 c^2
-    ]))
+    return MetricTensor(SHermitianCompact(SVector(a^2, g12, g13, b^2, g23, c^2)))
 end
 MetricTensor(p::CellParameters) = MetricTensor(p...)
 
