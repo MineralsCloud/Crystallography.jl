@@ -1,8 +1,8 @@
-using LinearAlgebra: Symmetric, cross, det, dot, norm, issymmetric
+using LinearAlgebra: cross, det, dot, norm, issymmetric
 
 using AutoHashEquals: @auto_hash_equals
 using CoordinateTransformations
-using StaticArrays: FieldVector, Size
+using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
 using SymPy
 
 import LinearAlgebra
@@ -36,7 +36,8 @@ export AbstractSpace,
     MillerIndices,
     MillerBravaisIndices,
     Cell,
-    CellParameters
+    CellParameters,
+    Lattice
 
 export pearsonsymbol,
     arithmeticclass,
@@ -220,15 +221,17 @@ CellParameters(::BravaisLattice{Hexagonal{3},Primitive}, a, b, c, args...) =
 CellParameters(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, b, c, α, args...) =
     CellParameters(a, a, a, α, α, α)  # `b`, `c` are ignored.
 
-struct MetricTensor{T} <: AbstractMatrix{T}
-    m::Matrix{T}
-    function MetricTensor{T}(m) where {T}
-        @assert(size(m) == (3, 3), "The metric tensor must be of size 3×3!")
-        @assert(issymmetric(m), "The metric tensor must be symmetric!")
-        return new(m)
-    end
+struct Lattice{T} <: AbstractMatrix{T}
+    m::SMatrix{3,3,T}
 end
-MetricTensor(m::AbstractMatrix{T}) where {T} = MetricTensor{T}(m)
+Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
+Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) =
+    vcat(transpose.((v1, v2, v3))...)
+
+struct MetricTensor{T} <: AbstractMatrix{T}
+    m::SHermitianCompact{3,T}
+end
+MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
 function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
     vecs = (v1, v2, v3)
     return MetricTensor(map(x -> dot(x...), Iterators.product(vecs, vecs)))
@@ -237,11 +240,7 @@ function MetricTensor(a, b, c, α, β, γ)
     g12 = a * b * cos(γ)
     g13 = a * c * cos(β)
     g23 = b * c * cos(α)
-    return MetricTensor(Symmetric([
-        a^2 g12 g13
-        g12 b^2 g23
-        g13 g23 c^2
-    ]))
+    return MetricTensor(SHermitianCompact(SVector(a^2, g12, g13, b^2, g23, c^2)))
 end
 MetricTensor(p::CellParameters) = MetricTensor(p...)
 
@@ -263,29 +262,21 @@ function reciprocalof(mat::AbstractMatrix, twopi::Bool = false)
     return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocalof
 
-struct MillerIndices{S<:AbstractSpace}
-    v::NTuple{3,Int}
+struct MillerIndices{S<:AbstractSpace} <: AbstractVector{Int}
+    v::SVector{3,Int}
     function MillerIndices{S}(x) where {S}
-        y = collect(x)
-        return new(iszero(y) ? x : x .÷ gcd(y))
+        return new(iszero(x) ? x : x .÷ gcd(x))
     end
 end
-MillerIndices{S}(i, j, k) where {S} = MillerIndices{S}((i, j, k))
-MillerIndices{S}(x::AbstractVector) where {S} = MillerIndices{S}(Tuple(x))
+MillerIndices{S}(i, j, k) where {S} = MillerIndices{S}([i, j, k])
 
-struct MillerBravaisIndices{S<:AbstractSpace}
-    v::NTuple{4,Int}
+struct MillerBravaisIndices{S<:AbstractSpace} <: AbstractVector{Int}
+    v::SVector{4,Int}
     function MillerBravaisIndices{S}(x) where {S}
-        y = collect(x)
-        return new(iszero(y) ? x : x .÷ gcd(y))
+        return new(iszero(x) ? x : x .÷ gcd(x))
     end
 end
-MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}((i, j, k, l))
-MillerBravaisIndices{S}(x::AbstractVector) where {S} = MillerBravaisIndices{S}(Tuple(x))
-
-CrystalCoordinates(m::MillerIndices) = CrystalCoordinates(m.i, m.j, m.k)
-CrystalCoordinates(mb::MillerBravaisIndices{T}) where {T} =
-    CrystalCoordinates(convert(MillerIndices{T}, mb))
+MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k, l])
 
 function makelattice(b::BravaisLattice, params...; vecform::Bool = false, view::Int = 1)
     lattice = makelattice(b, CellParameters(b, params...))
@@ -441,16 +432,15 @@ Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.m))  # `sqrt` is always positive!
 
-Base.size(::MetricTensor) = (3, 3)
+Base.size(::Union{MetricTensor,Lattice}) = (3, 3)
+Base.size(::Union{MillerIndices}) = (3,)
+Base.size(::Union{MillerBravaisIndices}) = (4,)
 
-Base.getindex(g::MetricTensor, I::Vararg{Int}) = getindex(g.m, I...)
+Base.getindex(A::Union{MetricTensor,Lattice}, I::Vararg{Int}) = getindex(A.m, I...)
+Base.getindex(A::Union{MillerIndices,MillerBravaisIndices}, i::Int) = getindex(A.v, i)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.m)))
 
-Base.convert(::Type{<:MillerIndices}, mb::MillerBravaisIndices) =
-    error("unsupported conversion!")
-Base.convert(::Type{<:MillerBravaisIndices}, m::MillerIndices) =
-    error("unsupported conversion!")
 Base.convert(T::Type{<:MillerIndices}, m::MillerIndices) =
     isa(m, T) ? m : error("unsupported conversion!")
 Base.convert(T::Type{<:MillerBravaisIndices}, mb::MillerBravaisIndices) =
