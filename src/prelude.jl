@@ -443,10 +443,6 @@ Base.getindex(A::Union{MetricTensor,Lattice}, I::Vararg{Int}) = getindex(A.m, I.
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.m)))
 
-Base.convert(::Type{<:MillerIndices}, mb::MillerBravaisIndices) =
-    error("unsupported conversion!")
-Base.convert(::Type{<:MillerBravaisIndices}, m::MillerIndices) =
-    error("unsupported conversion!")
 Base.convert(T::Type{<:MillerIndices}, m::MillerIndices) =
     isa(m, T) ? m : error("unsupported conversion!")
 Base.convert(T::Type{<:MillerBravaisIndices}, mb::MillerBravaisIndices) =
