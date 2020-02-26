@@ -438,8 +438,11 @@ Calculates the cell volume from a `MetricTensor`.
 cellvolume(g::MetricTensor) = sqrt(det(g.m))  # `sqrt` is always positive!
 
 Base.size(::Union{MetricTensor,Lattice}) = (3, 3)
+Base.size(::Union{MillerIndices}) = (3,)
+Base.size(::Union{MillerBravaisIndices}) = (4,)
 
 Base.getindex(A::Union{MetricTensor,Lattice}, I::Vararg{Int}) = getindex(A.m, I...)
+Base.getindex(A::Union{MillerIndices,MillerBravaisIndices}, i::Int) = getindex(A.v, i)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.m)))
 
