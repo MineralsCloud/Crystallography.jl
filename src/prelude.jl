@@ -66,10 +66,8 @@ struct Tetragonal <: CrystalSystem{3} end
 struct Cubic <: CrystalSystem{3} end
 struct Trigonal <: CrystalSystem{3} end
 struct Hexagonal{N} <: CrystalSystem{N} end  # Could both be 2D or 3D
-function Hexagonal(N::Int = 3)
-    @assert N ∈ (2, 3)
-    return Hexagonal{N}()
-end
+Hexagonal(N::Int = 3) =
+    N ∈ (2, 3) ? Hexagonal{N}() : throw(ArgumentError("hexagonal must be 2D or 3D!"))
 
 abstract type Centering end
 struct Primitive <: Centering end
@@ -77,10 +75,8 @@ struct BodyCentered <: Centering end
 struct FaceCentered <: Centering end
 struct RhombohedralCentered <: Centering end
 struct BaseCentered{T} <: Centering end
-function BaseCentered(T::Symbol)
-    @assert T ∈ (:A, :B, :C)
-    return BaseCentered{T}()
-end # function BaseCentered
+BaseCentered(T::Symbol) = T ∈ (:A, :B, :C) ? BaseCentered{T}() :
+    throw(ArgumentError("centering must be either :A, :B, or :C!"))
 
 struct BravaisLattice{A<:CrystalSystem,B<:Centering,N} end
 BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B,1}()
