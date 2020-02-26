@@ -120,8 +120,6 @@ arithmeticclass(::BravaisLattice{Hexagonal{2}}) = "6mmh"
 
 centeringof(::BravaisLattice{C,T}) where {C,T} = T()
 
-crystalsystem(::BravaisLattice{C}) where {C} = C()
-
 dimensionof(c::CrystalSystem) = first(supertype(typeof(c)).parameters)
 dimensionof(::BravaisLattice{C}) where {C} = dimensionof(C())
 
@@ -236,6 +234,24 @@ MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k
 
 # This is a helper type and should not be exported!
 const INDICES = Union{MillerIndices,MillerBravaisIndices}
+
+crystalsystem(::BravaisLattice{C}) where {C} = C()
+function crystalsystem(p::CellParameters)
+    a, b, c, α, β, γ = p
+    if a == b == c
+        if α == β == γ
+            α == 90 ? Cubic() : Trigonal()
+        else
+            α == β == 90 && γ == 120 ? Hexagonal() : Triclinic()
+        end
+    else
+        if α == β == γ == 90
+            a == b || a == c || b == c ? Tetragonal() : Orthorhombic()
+        else
+            α == β == 90 || β == γ == 90 || α == γ == 90 ? Monoclinic() : Triclinic()
+        end
+    end
+end # function whatsystem
 
 function makelattice(p::CellParameters)
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
