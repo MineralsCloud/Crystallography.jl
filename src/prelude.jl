@@ -57,20 +57,6 @@ abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
 struct ReciprocalSpace <: AbstractSpace end
 
-abstract type AbstractCoordinates{T} <: FieldVector{3,T} end
-
-struct CrystalCoordinates{T} <: AbstractCoordinates{T}
-    x::T
-    y::T
-    z::T
-end
-
-struct CartesianCoordinates{T} <: AbstractCoordinates{T}
-    x::T
-    y::T
-    z::T
-end
-
 abstract type CrystalSystem{N} end
 struct Oblique <: CrystalSystem{2} end
 struct Rectangular <: CrystalSystem{2} end
@@ -168,18 +154,17 @@ dimensionof(::BravaisLattice{C}) where {C} = dimensionof(C())
 
 axessetting(::BravaisLattice{C,T,N}) where {C,T,N} = N
 
-struct Cell{
-    L<:AbstractVecOrMat,
-    P<:AbstractVecOrMat,
-    N<:AbstractVector,
-    M<:Union{AbstractVector,Nothing},
-}
-    lattice::L
-    positions::P
-    numbers::N
-    magmoms::M
+abstract type AbstractCoordinates{T} <: FieldVector{3,T} end
+struct CrystalCoordinates{T} <: AbstractCoordinates{T}
+    x::T
+    y::T
+    z::T
 end
-Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
+struct CartesianCoordinates{T} <: AbstractCoordinates{T}
+    x::T
+    y::T
+    z::T
+end
 
 struct CellParameters{T} <: FieldVector{6,T}
     a::T
@@ -228,6 +213,19 @@ Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
 Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) =
     vcat(transpose.((v1, v2, v3))...)
 
+struct Cell{
+    L<:AbstractVecOrMat,
+    P<:AbstractVecOrMat,
+    N<:AbstractVector,
+    M<:Union{AbstractVector,Nothing},
+}
+    lattice::L
+    positions::P
+    numbers::N
+    magmoms::M
+end
+Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
+
 struct MetricTensor{T} <: AbstractMatrix{T}
     m::SHermitianCompact{3,T}
 end
@@ -243,24 +241,6 @@ function MetricTensor(a, b, c, α, β, γ)
     return MetricTensor(SHermitianCompact(SVector(a^2, g12, g13, b^2, g23, c^2)))
 end
 MetricTensor(p::CellParameters) = MetricTensor(p...)
-
-directioncosine(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
-    dot(a, g, b) / (norm(a, g) * norm(b, g))
-
-directionangle(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
-    acos(directioncosine(a, g, b))
-
-distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = norm(b - a, g)
-
-interplanar_spacing(a::CrystalCoordinates, g::MetricTensor) = 1 / norm(a, g)
-
-function reciprocalof(mat::AbstractMatrix, twopi::Bool = false)
-    @assert size(mat) == (3, 3)
-    volume = abs(det(mat))
-    a1, a2, a3 = mat[1, :], mat[2, :], mat[3, :]
-    factor = twopi ? 2 * SymPy.PI : 1
-    return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
-end # function reciprocalof
 
 struct MillerIndices{S<:AbstractSpace} <: AbstractVector{Int}
     v::SVector{3,Int}
@@ -435,6 +415,24 @@ Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.m))  # `sqrt` is always positive!
 
+function reciprocalof(mat::AbstractMatrix, twopi::Bool = false)
+    @assert size(mat) == (3, 3)
+    volume = abs(det(mat))
+    a1, a2, a3 = mat[1, :], mat[2, :], mat[3, :]
+    factor = twopi ? 2 * SymPy.PI : 1
+    return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
+end # function reciprocalof
+
+directioncosine(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
+    dot(a, g, b) / (norm(a, g) * norm(b, g))
+
+directionangle(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
+    acos(directioncosine(a, g, b))
+
+distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = norm(b - a, g)
+
+interplanar_spacing(a::CrystalCoordinates, g::MetricTensor) = 1 / norm(a, g)
+
 Base.size(::Union{MetricTensor,Lattice}) = (3, 3)
 Base.size(::Union{MillerIndices}) = (3,)
 Base.size(::Union{MillerBravaisIndices}) = (4,)
@@ -458,6 +456,10 @@ Base.convert(
     m::MillerIndices{T},
 ) where {T<:ReciprocalSpace} = MillerBravaisIndices{T}(m[1], m[2], -(m[1] + m[2]), m[3])
 
+LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
+    a' * g.m * b
+LinearAlgebra.norm(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
+
 StaticArrays.similar_type(
     ::Type{<:CrystalCoordinates},  # Do not delete the `<:`!
     ::Type{T},
@@ -470,7 +472,3 @@ StaticArrays.similar_type(
 ) where {T} = CartesianCoordinates{T}
 StaticArrays.similar_type(::Type{<:CellParameters}, ::Type{T}, size::Size{(6,)}) where {T} =
     CellParameters{T}
-
-LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
-    a' * g.m * b
-LinearAlgebra.norm(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
