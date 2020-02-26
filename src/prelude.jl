@@ -1,7 +1,5 @@
-using LinearAlgebra: cross, det, dot, norm, issymmetric
+using LinearAlgebra: cross, det, dot, norm
 
-using AutoHashEquals: @auto_hash_equals
-using CoordinateTransformations
 using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
 using SymPy
 
