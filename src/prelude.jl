@@ -261,25 +261,23 @@ function reciprocalof(mat::AbstractMatrix, twopi::Bool = false)
     return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocalof
 
-struct MillerIndices{S<:AbstractSpace}
-    v::NTuple{3,Int}
+struct MillerIndices{S<:AbstractSpace} <: AbstractVector{Int}
+    v::SVector{3,Int}
     function MillerIndices{S}(x) where {S}
-        y = collect(x)
-        return new(iszero(y) ? x : x .÷ gcd(y))
+        return new(iszero(x) ? x : x .÷ gcd(x))
     end
 end
-MillerIndices{S}(i, j, k) where {S} = MillerIndices{S}((i, j, k))
-MillerIndices{S}(x::AbstractVector) where {S} = MillerIndices{S}(Tuple(x))
+MillerIndices{S}(i, j, k) where {S} = MillerIndices{S}([i, j, k])
+MillerIndices{S}(x::AbstractVector) where {S} = MillerIndices{S}(SVector{3}(x))
 
-struct MillerBravaisIndices{S<:AbstractSpace}
-    v::NTuple{4,Int}
+struct MillerBravaisIndices{S<:AbstractSpace} <: AbstractVector{Int}
+    v::SVector{4,Int}
     function MillerBravaisIndices{S}(x) where {S}
-        y = collect(x)
-        return new(iszero(y) ? x : x .÷ gcd(y))
+        return new(iszero(x) ? x : x .÷ gcd(x))
     end
 end
-MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}((i, j, k, l))
-MillerBravaisIndices{S}(x::AbstractVector) where {S} = MillerBravaisIndices{S}(Tuple(x))
+MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k, l])
+MillerBravaisIndices{S}(x::AbstractVector) where {S} = MillerBravaisIndices{S}(SVector{4}(x))
 
 CrystalCoordinates(m::MillerIndices) = CrystalCoordinates(m.i, m.j, m.k)
 CrystalCoordinates(mb::MillerBravaisIndices{T}) where {T} =
