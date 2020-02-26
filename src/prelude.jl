@@ -278,10 +278,6 @@ struct MillerBravaisIndices{S<:AbstractSpace} <: AbstractVector{Int}
 end
 MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k, l])
 
-CrystalCoordinates(m::MillerIndices) = CrystalCoordinates(m.i, m.j, m.k)
-CrystalCoordinates(mb::MillerBravaisIndices{T}) where {T} =
-    CrystalCoordinates(convert(MillerIndices{T}, mb))
-
 function makelattice(b::BravaisLattice, params...; vecform::Bool = false, view::Int = 1)
     lattice = makelattice(b, CellParameters(b, params...))
     return vecform ? _splitlattice(lattice) : lattice
