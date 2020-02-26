@@ -259,12 +259,11 @@ function makelattice(b::BravaisLattice, params...; vecform::Bool = false, view::
     lattice = makelattice(b, CellParameters(b, params...))
     return vecform ? _splitlattice(lattice) : lattice
 end # function makelattice
-makelattice(::BravaisLattice{Cubic,Primitive}, cell::CellParameters) =
-    Lattice(cell[1] * [
-        1 0 0
-        0 1 0
-        0 0 1
-    ])
+makelattice(::BravaisLattice{Cubic,Primitive}, cell::CellParameters) = Lattice(cell[1] * [
+    1 0 0
+    0 1 0
+    0 0 1
+])
 makelattice(::BravaisLattice{Cubic,FaceCentered}, cell::CellParameters) =
     Lattice(cell[1] / 2 * [
         -1 0 1
