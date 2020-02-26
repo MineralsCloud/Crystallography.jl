@@ -251,125 +251,20 @@ MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k
 # This is a helper type and should not be exported!
 const INDICES = Union{MillerIndices,MillerBravaisIndices}
 
-function makelattice(b::BravaisLattice, params...; vecform::Bool = false, view::Int = 1)
-    lattice = makelattice(b, CellParameters(b, params...))
-    return vecform ? _splitlattice(lattice) : lattice
+function makelattice(p::CellParameters)
+    # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
+    a, b, c, α, β, γ = p
+    v = cellvolume(CellParameters(1, 1, 1, α, β, γ))
+    # reciprocal lattice
+    a_recip = sin(α) / (a * v)
+    csg = (cos(α) * cos(β) - cos(γ)) / (sin(α) * sin(β))
+    sg = sqrt(1 - csg^2)
+
+    a1 = [1 / a_recip, -csg / sg / a_recip, cos(β) * a]
+    a2 = [0, b * sin(α), b * cos(α)]
+    a3 = [0, 0, c]
+    return Lattice(a1, a2, a3)
 end # function makelattice
-makelattice(::BravaisLattice{Cubic,Primitive}, cell::CellParameters) = Lattice(cell[1] * [
-    1 0 0
-    0 1 0
-    0 0 1
-])
-makelattice(::BravaisLattice{Cubic,FaceCentered}, cell::CellParameters) =
-    Lattice(cell[1] / 2 * [
-        -1 0 1
-        0 1 1
-        -1 1 0
-    ])
-function makelattice(
-    ::BravaisLattice{Cubic,BodyCentered},
-    cell::CellParameters,
-    view::Int = 1,
-)
-    if view == 1
-        Lattice(cell[1] / 2 * [
-            1 1 1
-            -1 1 1
-            -1 -1 1
-        ])
-    elseif view == 2
-        Lattice(cell[1] / 2 * [
-            -1 1 1
-            1 -1 1
-            1 1 -1
-        ])
-    else
-        error("wrong `view` $view input!")
-    end
-end # function makelattice
-makelattice(::BravaisLattice{Hexagonal{3},Primitive}, cell::CellParameters) =
-    Lattice(cell[1] * [
-        1 0 0
-        -1 / 2 √3 / 2 0
-        0 0 cell[3] / cell[1]
-    ])
-function makelattice(
-    ::BravaisLattice{Hexagonal{3},RhombohedralCentered},
-    cell::CellParameters,
-    view::Int = 1,
-)
-    if view == 1
-        r = cos(cell[4])
-        tx = sqrt((1 - r) / 2)
-        ty = sqrt((1 - r) / 6)
-        tz = sqrt((1 + 2r) / 3)
-        Lattice(cell[1] * [
-            tx -ty tz
-            0 2ty tz
-            -tx -ty tz
-        ])
-    elseif view == 2
-        ap = cell[1] / √3
-        c = acos(cell[4])
-        ty = sqrt((1 - c) / 6)
-        tz = sqrt((1 + 2c) / 3)
-        u = tz - 2 * √2 * ty
-        v = tz + √2 * ty
-        Lattice(ap * [
-            u v v
-            v u v
-            v v u
-        ])
-    else
-        error("wrong `view` $view input!")
-    end
-end
-makelattice(::BravaisLattice{Tetragonal,Primitive}, cell::CellParameters) =
-    Lattice(cell[1] * [
-        1 0 0
-        0 1 0
-        0 0 cell[3] / cell[1]
-    ])
-function makelattice(::BravaisLattice{Tetragonal,BodyCentered}, cell::CellParameters)
-    r = cell[3] / cell[1]
-    return Lattice(cell[1] / 2 * [
-        1 -1 r
-        1 1 r
-        -1 -1 r
-    ])
-end
-makelattice(::BravaisLattice{Orthorhombic,Primitive}, cell::CellParameters) = Lattice([
-    cell[1] 0 0
-    0 cell[2] 0
-    0 0 cell[3]
-])
-# TODO: BravaisLattice{Orthorhombic,CCentered}
-function makelattice(::BravaisLattice{Orthorhombic,FaceCentered}, cell::CellParameters)
-    a, b, c = cell[1:3]
-    return Lattice([
-        a 0 c
-        a b 0
-        0 b c
-    ] / 2)
-end
-function makelattice(::BravaisLattice{Orthorhombic,BodyCentered}, cell::CellParameters)
-    a, b, c = cell[1:3]
-    return Lattice([
-        a b c
-        -a b c
-        -a -b c
-    ] / 2)
-end
-function makelattice(::BravaisLattice{Monoclinic,Primitive}, cell::CellParameters)
-    a, b, c = cell[1:3]
-    return Lattice([
-        a 0 0
-        0 b 0
-        c * cos(cell[5]) 0 c * sin(cell[5])
-    ])
-end
-# TODO: BravaisLattice{Monoclinic,BCentered}
-# TODO: BravaisLattice{Triclinic,Primitive}
 
 # This is a helper function and should not be exported.
 _splitlattice(m::AbstractMatrix) = collect(Iterators.partition(m', 3))
