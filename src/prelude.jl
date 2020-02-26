@@ -1,7 +1,5 @@
-using LinearAlgebra: cross, det, dot, norm, issymmetric
+using LinearAlgebra: cross, det, dot, norm
 
-using AutoHashEquals: @auto_hash_equals
-using CoordinateTransformations
 using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
 using SymPy
 
@@ -57,20 +55,6 @@ abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
 struct ReciprocalSpace <: AbstractSpace end
 
-abstract type AbstractCoordinates{T} <: FieldVector{3,T} end
-
-struct CrystalCoordinates{T} <: AbstractCoordinates{T}
-    x::T
-    y::T
-    z::T
-end
-
-struct CartesianCoordinates{T} <: AbstractCoordinates{T}
-    x::T
-    y::T
-    z::T
-end
-
 abstract type CrystalSystem{N} end
 struct Oblique <: CrystalSystem{2} end
 struct Rectangular <: CrystalSystem{2} end
@@ -82,10 +66,8 @@ struct Tetragonal <: CrystalSystem{3} end
 struct Cubic <: CrystalSystem{3} end
 struct Trigonal <: CrystalSystem{3} end
 struct Hexagonal{N} <: CrystalSystem{N} end  # Could both be 2D or 3D
-function Hexagonal(N::Int = 3)
-    @assert N ∈ (2, 3)
-    return Hexagonal{N}()
-end
+Hexagonal(N::Int = 3) =
+    N ∈ (2, 3) ? Hexagonal{N}() : throw(ArgumentError("hexagonal must be 2D or 3D!"))
 
 abstract type Centering end
 struct Primitive <: Centering end
@@ -93,10 +75,8 @@ struct BodyCentered <: Centering end
 struct FaceCentered <: Centering end
 struct RhombohedralCentered <: Centering end
 struct BaseCentered{T} <: Centering end
-function BaseCentered(T::Symbol)
-    @assert T ∈ (:A, :B, :C)
-    return BaseCentered{T}()
-end # function BaseCentered
+BaseCentered(T::Symbol) = T ∈ (:A, :B, :C) ? BaseCentered{T}() :
+    throw(ArgumentError("centering must be either :A, :B, or :C!"))
 
 struct BravaisLattice{A<:CrystalSystem,B<:Centering,N} end
 BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B,1}()
@@ -168,18 +148,17 @@ dimensionof(::BravaisLattice{C}) where {C} = dimensionof(C())
 
 axessetting(::BravaisLattice{C,T,N}) where {C,T,N} = N
 
-struct Cell{
-    L<:AbstractVecOrMat,
-    P<:AbstractVecOrMat,
-    N<:AbstractVector,
-    M<:Union{AbstractVector,Nothing},
-}
-    lattice::L
-    positions::P
-    numbers::N
-    magmoms::M
+abstract type AbstractCoordinates{T} <: FieldVector{3,T} end
+struct CrystalCoordinates{T} <: AbstractCoordinates{T}
+    x::T
+    y::T
+    z::T
 end
-Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
+struct CartesianCoordinates{T} <: AbstractCoordinates{T}
+    x::T
+    y::T
+    z::T
+end
 
 struct CellParameters{T} <: FieldVector{6,T}
     a::T
@@ -228,13 +207,26 @@ Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
 Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) =
     vcat(transpose.((v1, v2, v3))...)
 
+struct Cell{
+    L<:AbstractVecOrMat,
+    P<:AbstractVecOrMat,
+    N<:AbstractVector,
+    M<:Union{AbstractVector,Nothing},
+}
+    lattice::L
+    positions::P
+    numbers::N
+    magmoms::M
+end
+Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
+
 struct MetricTensor{T} <: AbstractMatrix{T}
     m::SHermitianCompact{3,T}
 end
 MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
 function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
     vecs = (v1, v2, v3)
-    return MetricTensor(map(x -> dot(x...), Iterators.product(vecs, vecs)))
+    return MetricTensor([dot(vecs[i], vecs[j]) for i in 1:3, j in 1:3])
 end
 function MetricTensor(a, b, c, α, β, γ)
     g12 = a * b * cos(γ)
@@ -243,24 +235,6 @@ function MetricTensor(a, b, c, α, β, γ)
     return MetricTensor(SHermitianCompact(SVector(a^2, g12, g13, b^2, g23, c^2)))
 end
 MetricTensor(p::CellParameters) = MetricTensor(p...)
-
-directioncosine(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
-    dot(a, g, b) / (norm(a, g) * norm(b, g))
-
-directionangle(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
-    acos(directioncosine(a, g, b))
-
-distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = norm(b - a, g)
-
-interplanar_spacing(a::CrystalCoordinates, g::MetricTensor) = 1 / norm(a, g)
-
-function reciprocalof(mat::AbstractMatrix, twopi::Bool = false)
-    @assert size(mat) == (3, 3)
-    volume = abs(det(mat))
-    a1, a2, a3 = mat[1, :], mat[2, :], mat[3, :]
-    factor = twopi ? 2 * SymPy.PI : 1
-    return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
-end # function reciprocalof
 
 struct MillerIndices{S<:AbstractSpace} <: AbstractVector{Int}
     v::SVector{3,Int}
@@ -278,49 +252,51 @@ struct MillerBravaisIndices{S<:AbstractSpace} <: AbstractVector{Int}
 end
 MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k, l])
 
+# This is a helper type and should not be exported!
+const INDICES = Union{MillerIndices,MillerBravaisIndices}
+
 function makelattice(b::BravaisLattice, params...; vecform::Bool = false, view::Int = 1)
     lattice = makelattice(b, CellParameters(b, params...))
     return vecform ? _splitlattice(lattice) : lattice
 end # function makelattice
-makelattice(::BravaisLattice{Cubic,Primitive}, cell::CellParameters) =
-    cell[1] * [
-        1 0 0
-        0 1 0
-        0 0 1
-    ]
+makelattice(::BravaisLattice{Cubic,Primitive}, cell::CellParameters) = Lattice(cell[1] * [
+    1 0 0
+    0 1 0
+    0 0 1
+])
 makelattice(::BravaisLattice{Cubic,FaceCentered}, cell::CellParameters) =
-    cell[1] / 2 * [
+    Lattice(cell[1] / 2 * [
         -1 0 1
         0 1 1
         -1 1 0
-    ]
+    ])
 function makelattice(
     ::BravaisLattice{Cubic,BodyCentered},
     cell::CellParameters,
     view::Int = 1,
 )
     if view == 1
-        cell[1] / 2 * [
+        Lattice(cell[1] / 2 * [
             1 1 1
             -1 1 1
             -1 -1 1
-        ]
+        ])
     elseif view == 2
-        cell[1] / 2 * [
+        Lattice(cell[1] / 2 * [
             -1 1 1
             1 -1 1
             1 1 -1
-        ]
+        ])
     else
         error("wrong `view` $view input!")
     end
 end # function makelattice
 makelattice(::BravaisLattice{Hexagonal{3},Primitive}, cell::CellParameters) =
-    cell[1] * [
+    Lattice(cell[1] * [
         1 0 0
         -1 / 2 √3 / 2 0
         0 0 cell[3] / cell[1]
-    ]
+    ])
 function makelattice(
     ::BravaisLattice{Hexagonal{3},RhombohedralCentered},
     cell::CellParameters,
@@ -331,11 +307,11 @@ function makelattice(
         tx = sqrt((1 - r) / 2)
         ty = sqrt((1 - r) / 6)
         tz = sqrt((1 + 2r) / 3)
-        cell[1] * [
+        Lattice(cell[1] * [
             tx -ty tz
             0 2ty tz
             -tx -ty tz
-        ]
+        ])
     elseif view == 2
         ap = cell[1] / √3
         c = acos(cell[4])
@@ -343,58 +319,58 @@ function makelattice(
         tz = sqrt((1 + 2c) / 3)
         u = tz - 2 * √2 * ty
         v = tz + √2 * ty
-        ap * [
+        Lattice(ap * [
             u v v
             v u v
             v v u
-        ]
+        ])
     else
         error("wrong `view` $view input!")
     end
 end
 makelattice(::BravaisLattice{Tetragonal,Primitive}, cell::CellParameters) =
-    cell[1] * [
+    Lattice(cell[1] * [
         1 0 0
         0 1 0
         0 0 cell[3] / cell[1]
-    ]
+    ])
 function makelattice(::BravaisLattice{Tetragonal,BodyCentered}, cell::CellParameters)
     r = cell[3] / cell[1]
-    return cell[1] / 2 * [
+    return Lattice(cell[1] / 2 * [
         1 -1 r
         1 1 r
         -1 -1 r
-    ]
+    ])
 end
-makelattice(::BravaisLattice{Orthorhombic,Primitive}, cell::CellParameters) = [
+makelattice(::BravaisLattice{Orthorhombic,Primitive}, cell::CellParameters) = Lattice([
     cell[1] 0 0
     0 cell[2] 0
     0 0 cell[3]
-]
+])
 # TODO: BravaisLattice{Orthorhombic,CCentered}
 function makelattice(::BravaisLattice{Orthorhombic,FaceCentered}, cell::CellParameters)
     a, b, c = cell[1:3]
-    return [
+    return Lattice([
         a 0 c
         a b 0
         0 b c
-    ] / 2
+    ] / 2)
 end
 function makelattice(::BravaisLattice{Orthorhombic,BodyCentered}, cell::CellParameters)
     a, b, c = cell[1:3]
-    return [
+    return Lattice([
         a b c
         -a b c
         -a -b c
-    ] / 2
+    ] / 2)
 end
 function makelattice(::BravaisLattice{Monoclinic,Primitive}, cell::CellParameters)
     a, b, c = cell[1:3]
-    return [
+    return Lattice([
         a 0 0
         0 b 0
         c * cos(cell[5]) 0 c * sin(cell[5])
-    ]
+    ])
 end
 # TODO: BravaisLattice{Monoclinic,BCentered}
 # TODO: BravaisLattice{Triclinic,Primitive}
@@ -432,6 +408,24 @@ Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.m))  # `sqrt` is always positive!
 
+function reciprocalof(mat::AbstractMatrix, twopi::Bool = false)
+    @assert size(mat) == (3, 3)
+    volume = abs(det(mat))
+    a1, a2, a3 = mat[1, :], mat[2, :], mat[3, :]
+    factor = twopi ? 2 * SymPy.PI : 1
+    return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
+end # function reciprocalof
+
+directioncosine(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
+    dot(a, g, b) / (norm(a, g) * norm(b, g))
+
+directionangle(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
+    acos(directioncosine(a, g, b))
+
+distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = norm(b - a, g)
+
+interplanar_spacing(a::CrystalCoordinates, g::MetricTensor) = 1 / norm(a, g)
+
 Base.size(::Union{MetricTensor,Lattice}) = (3, 3)
 Base.size(::Union{MillerIndices}) = (3,)
 Base.size(::Union{MillerBravaisIndices}) = (4,)
@@ -441,10 +435,7 @@ Base.getindex(A::Union{MillerIndices,MillerBravaisIndices}, i::Int) = getindex(A
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.m)))
 
-Base.convert(T::Type{<:MillerIndices}, m::MillerIndices) =
-    isa(m, T) ? m : error("unsupported conversion!")
-Base.convert(T::Type{<:MillerBravaisIndices}, mb::MillerBravaisIndices) =
-    isa(mb, T) ? mb : error("unsupported conversion!")
+Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
 Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T<:RealSpace} =
     MillerIndices{T}(2 * mb[1] + mb[2], 2 * mb[2] + mb[1], mb[4])
 Base.convert(
@@ -458,6 +449,10 @@ Base.convert(
     m::MillerIndices{T},
 ) where {T<:ReciprocalSpace} = MillerBravaisIndices{T}(m[1], m[2], -(m[1] + m[2]), m[3])
 
+LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
+    a' * g.m * b
+LinearAlgebra.norm(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
+
 StaticArrays.similar_type(
     ::Type{<:CrystalCoordinates},  # Do not delete the `<:`!
     ::Type{T},
@@ -470,7 +465,3 @@ StaticArrays.similar_type(
 ) where {T} = CartesianCoordinates{T}
 StaticArrays.similar_type(::Type{<:CellParameters}, ::Type{T}, size::Size{(6,)}) where {T} =
     CellParameters{T}
-
-LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
-    a' * g.m * b
-LinearAlgebra.norm(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
