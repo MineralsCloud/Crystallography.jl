@@ -170,8 +170,11 @@ struct CellParameters{T} <: FieldVector{6,T}
 end
 CellParameters(a::T, b::T, c::T, α::T, β::T, γ::T) where {T} =
     CellParameters{T}(a, b, c, α, β, γ)
-function CellParameters(a, b, c, α, β, γ, angle_iscosine::Bool = false)
-    v = angle_iscosine ? (a, b, c, acos(α), acos(β), acos(γ)) : (a, b, c, α, β, γ)
+CellParameters(a, b, c, α, β, γ, angletype::Symbol = :deg) = CellParameters(a, b, c, α, β, γ, Val(angletype))
+CellParameters(a, b, c, α, β, γ, ::Val{:deg}) = CellParameters(a, b, c, α, β, γ)
+CellParameters(a, b, c, α, β, γ, ::Val{:rad}) = CellParameters(a, b, c, rad2deg(α), rad2deg(β), rad2deg(γ))
+function CellParameters(a, b, c, α, β, γ, ::Val{:cos})
+    v = (a, b, c, acos(α), acos(β), acos(γ))
     return CellParameters{Base.promote_typeof(v...)}(v...)
 end
 CellParameters(bravais::BravaisLattice) = args -> CellParameters(bravais, args...)
