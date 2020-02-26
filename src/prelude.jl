@@ -78,9 +78,8 @@ struct BaseCentered{T} <: Centering end
 BaseCentered(T::Symbol) = T ∈ (:A, :B, :C) ? BaseCentered{T}() :
     throw(ArgumentError("centering must be either :A, :B, or :C!"))
 
-struct BravaisLattice{A<:CrystalSystem,B<:Centering,N} end
-BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B,1}()
-BravaisLattice(::A, ::B, N::Integer) where {A,B} = BravaisLattice{A,B,N}()
+struct BravaisLattice{A<:CrystalSystem,B<:Centering} end
+BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B}()
 BravaisLattice(ibrav::Integer) = BravaisLattice(Val(ibrav))
 BravaisLattice(::Val{1}) = BravaisLattice(Cubic(), Primitive())
 BravaisLattice(::Val{2}) = BravaisLattice(Cubic(), FaceCentered())
@@ -181,9 +180,9 @@ end
 CellParameters(bravais::BravaisLattice) = args -> CellParameters(bravais, args...)
 CellParameters(::BravaisLattice{Triclinic}, a, b, c, α, β, γ, args...) =
     CellParameters(a, b, c, α, β, γ)  # Triclinic
-CellParameters(::BravaisLattice{Monoclinic,Primitive,1}, a, b, c, α, β, γ, args...) =
+CellParameters(::BravaisLattice{Monoclinic,Primitive}, a, b, c, α, β, γ, args...) =
     CellParameters(a, b, c, SymPy.PI / 2, SymPy.PI / 2, γ)  # `α`, `β` are ignored.
-CellParameters(::BravaisLattice{Monoclinic,Primitive,2}, a, b, c, α, β, γ, args...) =
+CellParameters(::BravaisLattice{Monoclinic,Primitive}, a, b, c, α, β, γ, args...) =
     CellParameters(a, b, c, SymPy.PI / 2, β, SymPy.PI / 2)  # `α`, `γ` are ignored.
 CellParameters(::BravaisLattice{Monoclinic,BaseCentered{:C}}, a, b, c, α, β, γ, args...) =
     CellParameters(a, b, c, SymPy.PI / 2, SymPy.PI / 2, γ)  # `α`, `β` are ignored.
