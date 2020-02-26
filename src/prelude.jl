@@ -278,6 +278,9 @@ struct MillerBravaisIndices{S<:AbstractSpace} <: AbstractVector{Int}
 end
 MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k, l])
 
+# This is a helper type and should not be exported!
+const INDICES = Union{MillerIndices,MillerBravaisIndices}
+
 function makelattice(b::BravaisLattice, params...; vecform::Bool = false, view::Int = 1)
     lattice = makelattice(b, CellParameters(b, params...))
     return vecform ? _splitlattice(lattice) : lattice
@@ -441,10 +444,7 @@ Base.getindex(A::Union{MillerIndices,MillerBravaisIndices}, i::Int) = getindex(A
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.m)))
 
-Base.convert(T::Type{<:MillerIndices}, m::MillerIndices) =
-    isa(m, T) ? m : error("unsupported conversion!")
-Base.convert(T::Type{<:MillerBravaisIndices}, mb::MillerBravaisIndices) =
-    isa(mb, T) ? mb : error("unsupported conversion!")
+Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
 Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T<:RealSpace} =
     MillerIndices{T}(2 * mb[1] + mb[2], 2 * mb[2] + mb[1], mb[4])
 Base.convert(
