@@ -262,12 +262,13 @@ function crystalsystem(p::CellParameters)
         end
     end
 end # function whatsystem
-function crystalsystem(lattice::AbstractMatrix)  # TODO
+function crystalsystem(lattice::AbstractMatrix)
     v1, v2, v3 = _splitlattice(lattice)
-    γ = acos(dot(v1, v2) / norm(v1) / norm(v2))
-    β = acos(dot(v2, v3) / norm(v2) / norm(v3))
-    α = acos(dot(v1, v3) / norm(v1) / norm(v3))
-    return crystalsystem(CellParameters(1, 1, 1, α, β, γ))
+    a, b, c = norm(v1), norm(v2), norm(v3)
+    γ = acos(dot(v1, v2) / a / b)
+    β = acos(dot(v2, v3) / b / c)
+    α = acos(dot(v1, v3) / a / c)
+    return crystalsystem(CellParameters(a, b, c, α, β, γ))
 end # function crystalsystem
 
 function makelattice(p::CellParameters)
