@@ -34,6 +34,8 @@ export AbstractSpace,
     MillerIndices,
     MillerBravaisIndices,
     Cell,
+    LatticeConstants,
+    AxisAngles,
     CellParameters,
     Lattice
 
@@ -135,29 +137,33 @@ struct CartesianCoordinates{T} <: AbstractCoordinates{T}
     z::T
 end
 
-struct CellParameters{T} <: FieldVector{6,T}
+struct LatticeConstants{T} <: FieldVector{3,T}
     a::T
     b::T
     c::T
+    function LatticeConstants{T}(a, b, c) where {T}
+        @assert all((a, b, c) .> 0)
+        return new(a, b, c)
+    end
+end
+LatticeConstants(a::T, b::T, c::T) where {T} = LatticeConstants{T}(a, b, c)
+
+struct AxisAngles{T} <: FieldVector{3,T}
     α::T
     β::T
     γ::T
-    function CellParameters{T}(a, b, c, α, β, γ) where {T}
-        @assert all(x > zero(T) for x in (a, b, c))
-        return new(a, b, c, α, β, γ)
-    end
 end
-CellParameters(a::T, b::T, c::T, α::T, β::T, γ::T) where {T} =
-    CellParameters{T}(a, b, c, α, β, γ)
-CellParameters(a, b, c, α, β, γ, angletype::Symbol = :deg) =
-    CellParameters(a, b, c, α, β, γ, Val(angletype))
-CellParameters(a, b, c, α, β, γ, ::Val{:deg}) = CellParameters(a, b, c, α, β, γ)
-CellParameters(a, b, c, α, β, γ, ::Val{:rad}) =
-    CellParameters(a, b, c, rad2deg(α), rad2deg(β), rad2deg(γ))
-function CellParameters(a, b, c, α, β, γ, ::Val{:cos})
-    v = (a, b, c, acos(α), acos(β), acos(γ))
-    return CellParameters{Base.promote_typeof(v...)}(v...)
+AxisAngles(α, β, γ, angletype::Symbol = :deg) = AxisAngles(α, β, γ, Val(angletype))
+AxisAngles(α, β, γ, ::Val{:deg}) = AxisAngles(α, β, γ)
+AxisAngles(α, β, γ, ::Val{:rad}) = AxisAngles(rad2deg.(α, β, γ)...)
+AxisAngles(α, β, γ, ::Val{:cos}) = AxisAngles(acos.(α, β, γ)...)
+
+struct CellParameters{S,T}
+    x::LatticeConstants{S}
+    y::AxisAngles{T}
 end
+CellParameters(a::S, b::S, c::S, α::T, β::T, γ::T) where {S,T} =
+    CellParameters{S,T}(LatticeConstants(a, b, c), AxisAngles(α, β, γ))
 CellParameters(bravais::BravaisLattice) = args -> CellParameters(bravais, args...)
 CellParameters(::BravaisLattice{Triclinic}, a, b, c, α, β, γ, args...) =
     CellParameters(a, b, c, α, β, γ)  # Triclinic
