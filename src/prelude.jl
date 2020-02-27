@@ -365,5 +365,3 @@ StaticArrays.similar_type(
     ::Type{T},
     size::Size{(3,)},
 ) where {T} = CartesianCoordinates{T}
-StaticArrays.similar_type(::Type{<:CellParameters}, ::Type{T}, size::Size{(6,)}) where {T} =
-    CellParameters{T}
