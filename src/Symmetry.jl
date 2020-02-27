@@ -1,10 +1,10 @@
 module Symmetry
 
-using LinearAlgebra: diagm, I
+using LinearAlgebra: I, diagm
 
 using CoordinateTransformations: AffineMap, Translation, LinearMap
 using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
-using StaticArrays: SMatrix
+using StaticArrays: SMatrix, SDiagonal
 
 using Crystallography: CrystalCoordinates, Cell
 
@@ -60,17 +60,19 @@ struct SeitzOperator{T} <: AbstractMatrix{T}
     m::SMatrix{4,4,T}
 end
 SeitzOperator(m::AbstractMatrix) = SeitzOperator(SMatrix{4,4}(m))
-SeitzOperator() = SeitzOperator(diagm([1, 1, 1, 1]))
-function SeitzOperator(m::LinearMap)
-    @assert size(m.linear) == (3, 3)
-    x = diagm(ones(eltype(m.linear), 4))
-    x[1:3, 1:3] = m.linear
+SeitzOperator() = SeitzOperator(SDiagonal(1, 1, 1, 1))
+function SeitzOperator(l::LinearMap)
+    m = l.linear
+    @assert size(m) == (3, 3)
+    x = diagm(ones(eltype(m), 4))
+    x[1:3, 1:3] = m
     return SeitzOperator(x)
 end # function PointSymmetryOperator
 function SeitzOperator(t::Translation)
-    @assert length(t.translation) == 3
-    x = diagm(ones(eltype(t.translation), 4))
-    x[1:3, 4] = t.translation
+    v = t.translation
+    @assert length(v) == 3
+    x = diagm(ones(eltype(v), 4))
+    x[1:3, 4] = v
     return SeitzOperator(x)
 end # function TranslationOperator
 SeitzOperator(m::LinearMap, t::Translation) =
