@@ -46,7 +46,7 @@ export AbstractSpace,
     BodyCenteredCubic,
     FaceCenteredCubic,
     PrimitiveHexagonal,
-    RhombohedralCenteredHexagonal,
+    RCenteredHexagonal,
     MetricTensor,
     MillerIndices,
     MillerBravaisIndices,
@@ -111,7 +111,7 @@ const PrimitiveCubic = Tuple{Cubic,Primitive}
 const BodyCenteredCubic = Tuple{Cubic,BodyCentered}
 const FaceCenteredCubic = Tuple{Cubic,FaceCentered}
 const PrimitiveHexagonal = Tuple{Hexagonal,Primitive}
-const RhombohedralCenteredHexagonal = Tuple{Hexagonal{3},RhombohedralCentered}
+const RCenteredHexagonal = Tuple{Hexagonal{3},RhombohedralCentered}
 const PrimitiveOblique = Tuple{Oblique,Primitive}
 const PrimitiveRectangular = Tuple{Rectangular,Primitive}
 const BaseCenteredRectangular = Tuple{Rectangular,BaseCentered}
@@ -159,7 +159,7 @@ arithmeticclass(::BodyCentered) = "I"
 arithmeticclass(::FaceCentered) = "F"
 arithmeticclass(::RhombohedralCentered) = "R"
 arithmeticclass(b::BravaisLattice) = arithmeticclass(first(b)) * arithmeticclass(last(b))
-arithmeticclass(::RhombohedralCenteredHexagonal) = "-3mR"
+arithmeticclass(::RCenteredHexagonal) = "-3mR"
 arithmeticclass(::PrimitiveOblique) = "2p"
 arithmeticclass(::PrimitiveRectangular) = "2mmp"
 arithmeticclass(::BaseCenteredRectangular) = "2mmc"
@@ -202,7 +202,7 @@ LatticeConstants(
 LatticeConstants(::TetragonalBravais, a, b, c) = LatticeConstants(a, a, c)
 LatticeConstants(::CubicBravais, a, b, c) = LatticeConstants(a, a, a)
 LatticeConstants(::PrimitiveHexagonal, a, b, c) = LatticeConstants(a, a, c)
-LatticeConstants(::RhombohedralCenteredHexagonal, a, b, c) = LatticeConstants(a, a, a)
+LatticeConstants(::RCenteredHexagonal, a, b, c) = LatticeConstants(a, a, a)
 
 struct AxisAngles{T} <: FieldVector{3,T}
     α::T
@@ -222,7 +222,7 @@ AxisAngles(
 ) where {T<:Union{OrthorhombicBravais,TetragonalBravais,CubicBravais}} =
     AxisAngles(90, 90, 90)
 AxisAngles(::PrimitiveHexagonal, α, β, γ) = AxisAngles(90, 90, 120)
-AxisAngles(::RhombohedralCenteredHexagonal, α, β, γ) = AxisAngles(α, α, α)
+AxisAngles(::RCenteredHexagonal, α, β, γ) = AxisAngles(α, α, α)
 
 struct CellParameters{S,T}
     x::LatticeConstants{S}
