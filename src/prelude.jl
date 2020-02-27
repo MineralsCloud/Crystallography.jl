@@ -164,30 +164,43 @@ struct AxisAngles{T} <: FieldVector{3,T}
     β::T
     γ::T
 end
-AxisAngles(α, β, γ, angletype::Symbol = :deg) = AxisAngles(α, β, γ, Val(angletype))
-AxisAngles(α, β, γ, ::Val{:deg}) = AxisAngles(α, β, γ)
-AxisAngles(α, β, γ, ::Val{:rad}) = AxisAngles(rad2deg.(α, β, γ)...)
-AxisAngles(α, β, γ, ::Val{:cos}) = AxisAngles(acos.(α, β, γ)...)
+AxisAngles(α, β, γ, unit::Symbol = :deg) = AxisAngles(Degree(α), Degree(β), Degree(γ), Val(unit))
 AxisAngles(::BravaisLattice{Triclinic}, α, β, γ) = AxisAngles(α, β, γ)
-AxisAngles(::BravaisLattice{Monoclinic,Primitive}, α, β, γ; view::Int = 1) =
-    view == 1 ? AxisAngles(90, 90, γ) : AxisAngles(90, β, 90)
-AxisAngles(::BravaisLattice{Monoclinic,BaseCentered{:C}}, α, β, γ) = AxisAngles(90, 90, γ)
-AxisAngles(::BravaisLattice{Monoclinic,BaseCentered{:B}}, α, β, γ) = AxisAngles(90, β, 90)
-AxisAngles(::BravaisLattice{T}, α, β, γ) where {T<:Union{Orthorhombic,Tetragonal,Cubic}} =
-    AxisAngles(90, 90, 90)
-AxisAngles(::BravaisLattice{Hexagonal{3},Primitive}, α, β, γ) = AxisAngles(90, 90, 120)
-AxisAngles(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, α, β, γ) =
-    AxisAngles(α, α, α)
+AxisAngles(::BravaisLattice{Monoclinic,Primitive}, α, β, γ; unit::Symbol = :deg, view::Int = 1) =
+    view == 1 ? AxisAngles(90, 90, γ, unit) : AxisAngles(90, β, 90, unit)
+AxisAngles(::BravaisLattice{Monoclinic,BaseCentered{:C}}, α, β, γ; args...) =
+    AxisAngles(90, 90, γ; args...)
+AxisAngles(::BravaisLattice{Monoclinic,BaseCentered{:B}}, α, β, γ; args...) =
+    AxisAngles(90, β, 90; args...)
+AxisAngles(
+    ::BravaisLattice{T},
+    α,
+    β,
+    γ;
+    args...,
+) where {T<:Union{Orthorhombic,Tetragonal,Cubic}} = AxisAngles(Degree(90), Degree(90), Degree(90); args...)
+AxisAngles(::BravaisLattice{Hexagonal{3},Primitive}, α, β, γ; args...) =
+    AxisAngles(90, 90, 120; args...)
+AxisAngles(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, α, β, γ; args...) =
+    AxisAngles(α, α, α; args...)
+AxisAngles(α::Degree, β::Degree, γ::Degree, ::Val{:deg}) = AxisAngles(α, β, γ)
+AxisAngles(α::Degree, β::Degree, γ::Degree, ::Val{:rad}) = AxisAngles(Radian(α), Radian(β), Radian(γ))
+AxisAngles(α::Degree, β::Degree, γ::Degree, ::Val{:cos}) = AxisAngles(Cosine(α), Cosine(β), Cosine(γ))
+AxisAngles(α::Radian, β::Radian, γ::Radian) = AxisAngles(rad2deg(α), rad2deg(β), rad2deg(γ))
+AxisAngles(α::Cosine, β::Cosine, γ::Cosine) = AxisAngles(_cos2deg(α), _cos2deg(β), _cos2deg(γ))
+
+struct Degree{N} end
+struct Radian{N} end
+struct Cosine{N} end
+_cos2deg(x) = rad2deg(acos(x))
 
 struct CellParameters{S,T}
     x::LatticeConstants{S}
     y::AxisAngles{T}
 end
-CellParameters(a::S, b::S, c::S, α::T, β::T, γ::T) where {S,T} =
-    CellParameters{S,T}(LatticeConstants(a, b, c), AxisAngles(α, β, γ))
-CellParameters(bravais::BravaisLattice) = args -> CellParameters(bravais, args...)
-CellParameters(bravais::BravaisLattice, a, b, c, α, β, γ, args...) =
-    CellParameters(LatticeConstants(bravais, a, b, c), AxisAngles(bravais, α, β, γ))
+CellParameters(a::S, b::S, c::S, α::T, β::T, γ::T; args...) where {S,T} =
+    CellParameters{S,T}(LatticeConstants(a, b, c), AxisAngles(α, β, γ; args...))
+CellParameters(x::BravaisLattice) = args -> CellParameters(x, args...)
 
 struct Lattice{T} <: AbstractMatrix{T}
     m::SMatrix{3,3,T}
