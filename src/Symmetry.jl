@@ -3,15 +3,15 @@ module Symmetry
 using LinearAlgebra: diagm, I
 
 using CoordinateTransformations: AffineMap, Translation, LinearMap
-using LibSymspg: get_symmetry
-using StaticArrays: StaticMatrix
+using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
+using StaticArrays: SMatrix
 
 using Crystallography: CrystalCoordinates, Cell
 
 export SeitzOperator
-export getsymmetry, isidentity, istranslation, ispointsymmetry
+export getsymmetry, getspacegroup, irreciprocalmesh, isidentity, istranslation, ispointsymmetry
 
-function getsymmetry(cell::Cell, symprec::AbstractFloat = 1e-5)
+function getsymmetry(cell::Cell, symprec::AbstractFloat = 1e-5; seitz::Bool = false)
     maps, translations = get_symmetry(
         cell.lattice,
         cell.positions,
@@ -19,27 +19,55 @@ function getsymmetry(cell::Cell, symprec::AbstractFloat = 1e-5)
         length(cell.numbers),
         symprec,
     )
-    return (AffineMap(m, t) for (m, t) in zip(maps, translations))
+    return if seitz
+        (SeitzOperator(LinearMap(m), Translation(t)) for (m, t) in zip(maps, translations))
+    else
+        (AffineMap(m, t) for (m, t) in zip(maps, translations))
+    end
 end
 
-struct SeitzOperator{T}
-    m::T
+function getspacegroup(cell::Cell, symprec::AbstractFloat = 1e-5)
+    return get_spacegroup(
+        cell.lattice,
+        cell.positions,
+        cell.numbers,
+        length(cell.numbers),
+        symprec,
+    )
+end # function getspacegroup
+
+function irreciprocalmesh(cell::Cell, mesh::AbstractVector{Int}, symprec::AbstractFloat = 1e-5; is_shift::AbstractVector{Bool} = falses(3), is_time_reversal::Bool = false)
+    return ir_reciprocal_mesh(
+        mesh,
+        collect(is_shift),
+        is_time_reversal,
+        cell.lattice,
+        cell.positions,
+        cell.numbers,
+        length(cell.numbers),
+        symprec,
+    )
+end # function irreciprocalmesh
+
+struct SeitzOperator{T} <: AbstractMatrix{T}
+    m::SMatrix{4,4,T}
 end
+SeitzOperator(m::AbstractMatrix) = SeitzOperator(SMatrix{4,4}(m))
 SeitzOperator() = SeitzOperator(ones(Int, 4, 4))
 function SeitzOperator(m::LinearMap)
-    @assert size(m) == (3, 3)
+    @assert size(m.linear) == (3, 3)
     x = diagm(ones(eltype(m.linear), 4))
-    x[1:3, 1:3] = m
+    x[1:3, 1:3] = m.linear
     return SeitzOperator(x)
 end # function PointSymmetryOperator
 function SeitzOperator(t::Translation)
-    @assert length(t) == 3
+    @assert length(t.translation) == 3
     x = diagm(ones(eltype(t.translation), 4))
-    x[1:3, 4] = t
+    x[1:3, 4] = t.translation
     return SeitzOperator(x)
 end # function TranslationOperator
-SeitzOperator(m::LinearMap, t::Translation) = SeitzOperator(t ∘ m ∘ inv(t))
-SeitzOperator(a::AffineMap) = SeitzOperator(a.linear, a.translation)
+SeitzOperator(m::LinearMap, t::Translation) = SeitzOperator(t) * SeitzOperator(m) * SeitzOperator(inv(t))
+SeitzOperator(a::AffineMap) = SeitzOperator(LinearMap(a.linear), Translation(a.translation))
 function SeitzOperator(s::SeitzOperator, pos::AbstractVector)
     @assert length(pos) == 3
     t = SeitzOperator(Translation(pos))
@@ -63,6 +91,10 @@ function ispointsymmetry(op::SeitzOperator)
     end
     return true
 end # function ispointsymmetry
+
+Base.size(::SeitzOperator) = (4, 4)
+
+Base.getindex(A::SeitzOperator, I::Vararg{Int}) = getindex(A.m, I...)
 
 Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.m*[c; 1])[1:3])
 Base.:*(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.m * b.m)
