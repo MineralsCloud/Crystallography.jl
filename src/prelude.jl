@@ -48,7 +48,6 @@ export pearsonsymbol,
     directionangle,
     distance,
     interplanar_spacing,
-    makelattice,
     cellvolume,
     reciprocalof
 
@@ -196,6 +195,19 @@ end
 Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
 Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) =
     vcat(transpose.((v1, v2, v3))...)
+function Lattice(p::CellParameters)
+    # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
+    a, b, c, α, β, γ = p
+    v = cellvolume(CellParameters(1, 1, 1, α, β, γ))
+    # reciprocal lattice
+    a_recip = sin(α) / (a * v)
+    csg = (cos(α) * cos(β) - cos(γ)) / (sin(α) * sin(β))
+    sg = sqrt(1 - csg^2)
+    a1 = [1 / a_recip, -csg / sg / a_recip, cos(β) * a]
+    a2 = [0, b * sin(α), b * cos(α)]
+    a3 = [0, 0, c]
+    return Lattice(a1, a2, a3)
+end # function Lattice
 
 struct Cell{
     L<:AbstractVecOrMat,
@@ -270,20 +282,6 @@ function crystalsystem(lattice::AbstractMatrix)
     α = acos(dot(v1, v3) / a / c)
     return crystalsystem(CellParameters(a, b, c, α, β, γ))
 end # function crystalsystem
-
-function makelattice(p::CellParameters)
-    # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
-    a, b, c, α, β, γ = p
-    v = cellvolume(CellParameters(1, 1, 1, α, β, γ))
-    # reciprocal lattice
-    a_recip = sin(α) / (a * v)
-    csg = (cos(α) * cos(β) - cos(γ)) / (sin(α) * sin(β))
-    sg = sqrt(1 - csg^2)
-    a1 = [1 / a_recip, -csg / sg / a_recip, cos(β) * a]
-    a2 = [0, b * sin(α), b * cos(α)]
-    a3 = [0, 0, c]
-    return Lattice(a1, a2, a3)
-end # function makelattice
 
 # This is a helper function and should not be exported.
 _splitlattice(m::AbstractMatrix) = collect(Iterators.partition(m', 3))
