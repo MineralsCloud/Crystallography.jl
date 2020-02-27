@@ -121,7 +121,7 @@ arithmeticclass(::BravaisLattice{Hexagonal{2}}) = "6mmh"
 
 centeringof(::BravaisLattice{C,T}) where {C,T} = T()
 
-dimensionof(c::CrystalSystem) = first(supertype(typeof(c)).parameters)
+dimensionof(::CrystalSystem{N}) where {N} = N
 dimensionof(::BravaisLattice{C}) where {C} = dimensionof(C())
 
 abstract type AbstractCoordinates{T} <: FieldVector{3,T} end
@@ -241,7 +241,7 @@ end
 MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
 function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
     vecs = (v1, v2, v3)
-    return MetricTensor([dot(vecs[i], vecs[j]) for i = 1:3, j = 1:3])
+    return MetricTensor([dot(vecs[i], vecs[j]) for i in 1:3, j in 1:3])
 end
 function MetricTensor(a, b, c, α, β, γ)
     g12 = a * b * cos(γ)
