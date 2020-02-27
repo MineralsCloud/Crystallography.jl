@@ -60,7 +60,7 @@ struct SeitzOperator{T} <: AbstractMatrix{T}
     m::SMatrix{4,4,T}
 end
 SeitzOperator(m::AbstractMatrix) = SeitzOperator(SMatrix{4,4}(m))
-SeitzOperator() = SeitzOperator(ones(Int, 4, 4))
+SeitzOperator() = SeitzOperator(diagm([1, 1, 1, 1]))
 function SeitzOperator(m::LinearMap)
     @assert size(m.linear) == (3, 3)
     x = diagm(ones(eltype(m.linear), 4))
