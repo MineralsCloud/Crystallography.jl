@@ -120,7 +120,13 @@ const PrimitiveHexagonal2D = Tuple{Hexagonal{2},Primitive}
 
 const TetragonalBravais = Union{PrimitiveTetragonal,BodyCenteredTetragonal}
 const CubicBravais = Union{PrimitiveCubic,BodyCenteredCubic,FaceCenteredCubic}
-const OrthorhombicBravais = Union{PrimitiveOrthorhombic,BCenteredOrthorhombic,CCenteredOrthorhombic,BodyCenteredOrthorhombic,FaceCenteredCubic}
+const OrthorhombicBravais = Union{
+    PrimitiveOrthorhombic,
+    BCenteredOrthorhombic,
+    CCenteredOrthorhombic,
+    BodyCenteredOrthorhombic,
+    FaceCenteredCubic,
+}
 const MonoclinicBravais = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
 
 pearsonsymbol(::Triclinic) = "a"
@@ -195,10 +201,8 @@ LatticeConstants(
 ) = LatticeConstants(a, b, c)
 LatticeConstants(::TetragonalBravais, a, b, c) = LatticeConstants(a, a, c)
 LatticeConstants(::CubicBravais, a, b, c) = LatticeConstants(a, a, a)
-LatticeConstants(::PrimitiveHexagonal, a, b, c) =
-    LatticeConstants(a, a, c)
-LatticeConstants(::RhombohedralCenteredHexagonal, a, b, c) =
-    LatticeConstants(a, a, a)
+LatticeConstants(::PrimitiveHexagonal, a, b, c) = LatticeConstants(a, a, c)
+LatticeConstants(::RhombohedralCenteredHexagonal, a, b, c) = LatticeConstants(a, a, a)
 
 struct AxisAngles{T} <: FieldVector{3,T}
     α::T
@@ -210,11 +214,15 @@ AxisAngles(::PrimitiveMonoclinic, α, β, γ, view::Int = 1) =
     view == 1 ? AxisAngles(90, 90, γ) : AxisAngles(90, β, 90)
 AxisAngles(::CCenteredMonoclinic, α, β, γ) = AxisAngles(90, 90, γ)
 AxisAngles(::BCenteredMonoclinic, α, β, γ) = AxisAngles(90, β, 90)
-AxisAngles(::T, α, β, γ) where {T<:Union{OrthorhombicBravais,TetragonalBravais,CubicBravais}} =
+AxisAngles(
+    ::T,
+    α,
+    β,
+    γ,
+) where {T<:Union{OrthorhombicBravais,TetragonalBravais,CubicBravais}} =
     AxisAngles(90, 90, 90)
 AxisAngles(::PrimitiveHexagonal, α, β, γ) = AxisAngles(90, 90, 120)
-AxisAngles(::RhombohedralCenteredHexagonal, α, β, γ) =
-    AxisAngles(α, α, α)
+AxisAngles(::RhombohedralCenteredHexagonal, α, β, γ) = AxisAngles(α, α, α)
 
 struct CellParameters{S,T}
     x::LatticeConstants{S}
