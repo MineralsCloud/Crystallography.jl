@@ -3,13 +3,13 @@ module Symmetry
 using LinearAlgebra: diagm, I
 
 using CoordinateTransformations: AffineMap, Translation, LinearMap
-using LibSymspg: get_symmetry, get_spacegroup
+using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
 using StaticArrays: SMatrix
 
 using Crystallography: CrystalCoordinates, Cell
 
 export SeitzOperator
-export getsymmetry, getspacegroup, isidentity, istranslation, ispointsymmetry
+export getsymmetry, getspacegroup, irreciprocalmesh, isidentity, istranslation, ispointsymmetry
 
 function getsymmetry(cell::Cell, symprec::AbstractFloat = 1e-5; seitz::Bool = false)
     maps, translations = get_symmetry(
@@ -35,6 +35,19 @@ function getspacegroup(cell::Cell, symprec::AbstractFloat = 1e-5)
         symprec,
     )
 end # function getspacegroup
+
+function irreciprocalmesh(cell::Cell, mesh::AbstractVector{Int}, symprec::AbstractFloat = 1e-5; is_shift::AbstractVector{Bool} = falses(3), is_time_reversal::Bool = false)
+    return ir_reciprocal_mesh(
+        mesh,
+        collect(is_shift),
+        is_time_reversal,
+        cell.lattice,
+        cell.positions,
+        cell.numbers,
+        length(cell.numbers),
+        symprec,
+    )
+end # function irreciprocalmesh
 
 struct SeitzOperator{T} <: AbstractMatrix{T}
     m::SMatrix{4,4,T}
