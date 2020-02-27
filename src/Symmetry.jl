@@ -11,7 +11,7 @@ using Crystallography: CrystalCoordinates, Cell
 export SeitzOperator
 export getsymmetry, isidentity, istranslation, ispointsymmetry
 
-function getsymmetry(cell::Cell, symprec::AbstractFloat = 1e-5)
+function getsymmetry(cell::Cell, symprec::AbstractFloat = 1e-5; seitz::Bool = false)
     maps, translations = get_symmetry(
         cell.lattice,
         cell.positions,
@@ -19,7 +19,11 @@ function getsymmetry(cell::Cell, symprec::AbstractFloat = 1e-5)
         length(cell.numbers),
         symprec,
     )
-    return (AffineMap(m, t) for (m, t) in zip(maps, translations))
+    return if seitz
+        (SeitzOperator(LinearMap(m), Translation(t)) for (m, t) in zip(maps, translations))
+    else
+        (AffineMap(m, t) for (m, t) in zip(maps, translations))
+    end
 end
 
 struct SeitzOperator{T} <: AbstractMatrix{T}
