@@ -48,7 +48,6 @@ export pearsonsymbol,
     directionangle,
     distance,
     interplanar_spacing,
-    makelattice,
     cellvolume,
     reciprocalof
 
@@ -122,7 +121,7 @@ arithmeticclass(::BravaisLattice{Hexagonal{2}}) = "6mmh"
 
 centeringof(::BravaisLattice{C,T}) where {C,T} = T()
 
-dimensionof(c::CrystalSystem) = first(supertype(typeof(c)).parameters)
+dimensionof(::CrystalSystem{N}) where {N} = N
 dimensionof(::BravaisLattice{C}) where {C} = dimensionof(C())
 
 abstract type AbstractCoordinates{T} <: FieldVector{3,T} end
@@ -165,12 +164,8 @@ struct AxisAngles{T} <: FieldVector{3,T}
     β::T
     γ::T
 end
-AxisAngles(α, β, γ, angletype::Symbol = :deg) = AxisAngles(α, β, γ, Val(angletype))
-AxisAngles(α, β, γ, ::Val{:deg}) = AxisAngles(α, β, γ)
-AxisAngles(α, β, γ, ::Val{:rad}) = AxisAngles(rad2deg.(α, β, γ)...)
-AxisAngles(α, β, γ, ::Val{:cos}) = AxisAngles(acos.(α, β, γ)...)
 AxisAngles(::BravaisLattice{Triclinic}, α, β, γ) = AxisAngles(α, β, γ)
-AxisAngles(::BravaisLattice{Monoclinic,Primitive}, α, β, γ; view::Int = 1) =
+AxisAngles(::BravaisLattice{Monoclinic,Primitive}, α, β, γ, view::Int = 1) =
     view == 1 ? AxisAngles(90, 90, γ) : AxisAngles(90, β, 90)
 AxisAngles(::BravaisLattice{Monoclinic,BaseCentered{:C}}, α, β, γ) = AxisAngles(90, 90, γ)
 AxisAngles(::BravaisLattice{Monoclinic,BaseCentered{:B}}, α, β, γ) = AxisAngles(90, β, 90)
@@ -184,11 +179,9 @@ struct CellParameters{S,T}
     x::LatticeConstants{S}
     y::AxisAngles{T}
 end
-CellParameters(a::S, b::S, c::S, α::T, β::T, γ::T) where {S,T} =
-    CellParameters{S,T}(LatticeConstants(a, b, c), AxisAngles(α, β, γ))
-CellParameters(bravais::BravaisLattice) = args -> CellParameters(bravais, args...)
-CellParameters(bravais::BravaisLattice, a, b, c, α, β, γ, args...) =
-    CellParameters(LatticeConstants(bravais, a, b, c), AxisAngles(bravais, α, β, γ))
+CellParameters(a::S, b::S, c::S, α::T, β::T, γ::T; args...) where {S,T} =
+    CellParameters{S,T}(LatticeConstants(a, b, c), AxisAngles(α, β, γ; args...))
+CellParameters(x::BravaisLattice) = args -> CellParameters(x, args...)
 
 struct Lattice{T} <: AbstractMatrix{T}
     m::SMatrix{3,3,T}
@@ -196,6 +189,19 @@ end
 Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
 Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) =
     vcat(transpose.((v1, v2, v3))...)
+function Lattice(p::CellParameters)
+    # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
+    a, b, c, α, β, γ = p
+    v = cellvolume(CellParameters(1, 1, 1, α, β, γ))
+    # reciprocal lattice
+    a_recip = sin(α) / (a * v)
+    csg = (cos(α) * cos(β) - cos(γ)) / (sin(α) * sin(β))
+    sg = sqrt(1 - csg^2)
+    a1 = [1 / a_recip, -csg / sg / a_recip, cos(β) * a]
+    a2 = [0, b * sin(α), b * cos(α)]
+    a3 = [0, 0, c]
+    return Lattice(a1, a2, a3)
+end # function Lattice
 
 struct Cell{
     L<:AbstractVecOrMat,
@@ -216,7 +222,7 @@ end
 MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
 function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
     vecs = (v1, v2, v3)
-    return MetricTensor([dot(vecs[i], vecs[j]) for i = 1:3, j = 1:3])
+    return MetricTensor([dot(vecs[i], vecs[j]) for i in 1:3, j in 1:3])
 end
 function MetricTensor(a, b, c, α, β, γ)
     g12 = a * b * cos(γ)
@@ -262,27 +268,14 @@ function crystalsystem(p::CellParameters)
         end
     end
 end # function whatsystem
-function crystalsystem(lattice::AbstractMatrix)  # TODO
+function crystalsystem(lattice::AbstractMatrix)
     v1, v2, v3 = _splitlattice(lattice)
-    γ = acos(dot(v1, v2) / norm(v1) / norm(v2))
-    β = acos(dot(v2, v3) / norm(v2) / norm(v3))
-    α = acos(dot(v1, v3) / norm(v1) / norm(v3))
-    return crystalsystem(CellParameters(1, 1, 1, α, β, γ))
+    a, b, c = norm(v1), norm(v2), norm(v3)
+    γ = acos(dot(v1, v2) / a / b)
+    β = acos(dot(v2, v3) / b / c)
+    α = acos(dot(v1, v3) / a / c)
+    return crystalsystem(CellParameters(a, b, c, α, β, γ))
 end # function crystalsystem
-
-function makelattice(p::CellParameters)
-    # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
-    a, b, c, α, β, γ = p
-    v = cellvolume(CellParameters(1, 1, 1, α, β, γ))
-    # reciprocal lattice
-    a_recip = sin(α) / (a * v)
-    csg = (cos(α) * cos(β) - cos(γ)) / (sin(α) * sin(β))
-    sg = sqrt(1 - csg^2)
-    a1 = [1 / a_recip, -csg / sg / a_recip, cos(β) * a]
-    a2 = [0, b * sin(α), b * cos(α)]
-    a3 = [0, 0, c]
-    return Lattice(a1, a2, a3)
-end # function makelattice
 
 # This is a helper function and should not be exported.
 _splitlattice(m::AbstractMatrix) = collect(Iterators.partition(m', 3))
