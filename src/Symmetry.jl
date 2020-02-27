@@ -3,13 +3,13 @@ module Symmetry
 using LinearAlgebra: diagm, I
 
 using CoordinateTransformations: AffineMap, Translation, LinearMap
-using LibSymspg: get_symmetry
+using LibSymspg: get_symmetry, get_spacegroup
 using StaticArrays: SMatrix
 
 using Crystallography: CrystalCoordinates, Cell
 
 export SeitzOperator
-export getsymmetry, isidentity, istranslation, ispointsymmetry
+export getsymmetry, getspacegroup, isidentity, istranslation, ispointsymmetry
 
 function getsymmetry(cell::Cell, symprec::AbstractFloat = 1e-5; seitz::Bool = false)
     maps, translations = get_symmetry(
@@ -25,6 +25,16 @@ function getsymmetry(cell::Cell, symprec::AbstractFloat = 1e-5; seitz::Bool = fa
         (AffineMap(m, t) for (m, t) in zip(maps, translations))
     end
 end
+
+function getspacegroup(cell::Cell, symprec::AbstractFloat = 1e-5)
+    return get_spacegroup(
+        cell.lattice,
+        cell.positions,
+        cell.numbers,
+        length(cell.numbers),
+        symprec,
+    )
+end # function getspacegroup
 
 struct SeitzOperator{T} <: AbstractMatrix{T}
     m::SMatrix{4,4,T}
