@@ -78,8 +78,33 @@ struct BaseCentered{T} <: Centering end
 BaseCentered(T::Symbol) = T ∈ (:A, :B, :C) ? BaseCentered{T}() :
     throw(ArgumentError("centering must be either :A, :B, or :C!"))
 
-struct BravaisLattice{A<:CrystalSystem,B<:Centering} end
-BravaisLattice(::A, ::B) where {A,B} = BravaisLattice{A,B}()
+const BravaisLattice = Tuple{CrystalSystem,Centering}
+const PrimitiveTriclinic = Tuple{Triclinic,Primitive}
+const PrimitiveMonoclinic = Tuple{Monoclinic,Primitive}
+const BCenteredMonoclinic = Tuple{Monoclinic,BaseCentered{:B}}
+const CCenteredMonoclinic = Tuple{Monoclinic,BaseCentered{:C}}
+const PrimitiveOrthorhombic = Tuple{Orthorhombic,Primitive}
+const BCenteredOrthorhombic = Tuple{Orthorhombic,BaseCentered{:B}}
+const CCenteredOrthorhombic = Tuple{Orthorhombic,BaseCentered{:C}}
+const BodyCenteredOrthorhombic = Tuple{Orthorhombic,BodyCentered}
+const FaceCenteredOrthorhombic = Tuple{Orthorhombic,FaceCentered}
+const PrimitiveTetragonal = Tuple{Tetragonal,Primitive}
+const BodyCenteredTetragonal = Tuple{Tetragonal,BodyCentered}
+const PrimitiveCubic = Tuple{Cubic,Primitive}
+const BodyCenteredCubic = Tuple{Cubic,BodyCentered}
+const FaceCenteredCubic = Tuple{Cubic,FaceCentered}
+const PrimitiveHexagonal = Tuple{Hexagonal,Primitive}
+const RhombohedralCenteredHexagonal = Tuple{Hexagonal{3},RhombohedralCentered}
+const PrimitiveOblique = Tuple{Oblique,Primitive}
+const PrimitiveRectangular = Tuple{Rectangular,Primitive}
+const BaseCenteredRectangular = Tuple{Rectangular,BaseCentered}
+const PrimitiveSquare = Tuple{Square,Primitive}
+const PrimitiveHexagonal2D = Tuple{Hexagonal{2},Primitive}
+
+const TetragonalBravais = Union{PrimitiveTetragonal,BodyCenteredTetragonal}
+const CubicBravais = Union{PrimitiveCubic,BodyCenteredCubic,FaceCenteredCubic}
+const OrthorhombicBravais = Union{PrimitiveOrthorhombic,BCenteredOrthorhombic,CCenteredOrthorhombic,BodyCenteredOrthorhombic,FaceCenteredCubic}
+const MonoclinicBravais = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
 
 pearsonsymbol(::Triclinic) = "a"
 pearsonsymbol(::Monoclinic) = "m"
@@ -93,7 +118,7 @@ pearsonsymbol(::BaseCentered{T}) where {T} = string(T)
 pearsonsymbol(::BodyCentered) = "I"
 pearsonsymbol(::FaceCentered) = "F"
 pearsonsymbol(::RhombohedralCentered) = "R"
-pearsonsymbol(::BravaisLattice{A,B}) where {A,B} = pearsonsymbol(A()) * pearsonsymbol(B())
+pearsonsymbol(b::BravaisLattice) = pearsonsymbol(first(b)) * pearsonsymbol(last(b))
 
 arithmeticclass(::Oblique) = "2"
 arithmeticclass(::Rectangular) = "2mm"
@@ -110,19 +135,18 @@ arithmeticclass(::BaseCentered) = "S"
 arithmeticclass(::BodyCentered) = "I"
 arithmeticclass(::FaceCentered) = "F"
 arithmeticclass(::RhombohedralCentered) = "R"
-arithmeticclass(::BravaisLattice{A,B}) where {A,B} =
-    arithmeticclass(A()) * arithmeticclass(B())
-arithmeticclass(::BravaisLattice{Hexagonal{3},RhombohedralCentered}) = "-3mR"
-arithmeticclass(::BravaisLattice{Oblique}) = "2p"
-arithmeticclass(::BravaisLattice{Rectangular,Primitive}) = "2mmp"
-arithmeticclass(::BravaisLattice{Rectangular,<:BaseCentered}) = "2mmc"
-arithmeticclass(::BravaisLattice{Square}) = "4mmp"
-arithmeticclass(::BravaisLattice{Hexagonal{2}}) = "6mmh"
+arithmeticclass(b::BravaisLattice) = arithmeticclass(first(b)) * arithmeticclass(last(b))
+arithmeticclass(::RhombohedralCenteredHexagonal) = "-3mR"
+arithmeticclass(::PrimitiveOblique) = "2p"
+arithmeticclass(::PrimitiveRectangular) = "2mmp"
+arithmeticclass(::BaseCenteredRectangular) = "2mmc"
+arithmeticclass(::PrimitiveSquare) = "4mmp"
+arithmeticclass(::PrimitiveHexagonal2D) = "6mmh"
 
-centeringof(::BravaisLattice{C,T}) where {C,T} = T()
+centeringof(b::BravaisLattice) = last(b)
 
 dimensionof(::CrystalSystem{N}) where {N} = N
-dimensionof(::BravaisLattice{C}) where {C} = dimensionof(C())
+dimensionof(b::BravaisLattice) = dimensionof(first(b))
 
 abstract type AbstractCoordinates{T} <: FieldVector{3,T} end
 struct CrystalCoordinates{T} <: AbstractCoordinates{T}
@@ -147,16 +171,16 @@ struct LatticeConstants{T} <: FieldVector{3,T}
 end
 LatticeConstants(a::T, b::T, c::T) where {T} = LatticeConstants{T}(a, b, c)
 LatticeConstants(
-    ::BravaisLattice{T},
+    ::Union{PrimitiveTriclinic,MonoclinicBravais,OrthorhombicBravais},
     a,
     b,
     c,
-) where {T<:Union{Triclinic,Monoclinic,Orthorhombic}} = LatticeConstants(a, b, c)
-LatticeConstants(::BravaisLattice{Tetragonal}, a, b, c) = LatticeConstants(a, a, c)
-LatticeConstants(::BravaisLattice{Cubic}, a, b, c) = LatticeConstants(a, a, a)
-LatticeConstants(::BravaisLattice{Hexagonal{3},Primitive}, a, b, c) =
+) = LatticeConstants(a, b, c)
+LatticeConstants(::TetragonalBravais, a, b, c) = LatticeConstants(a, a, c)
+LatticeConstants(::CubicBravais, a, b, c) = LatticeConstants(a, a, a)
+LatticeConstants(::PrimitiveHexagonal, a, b, c) =
     LatticeConstants(a, a, c)
-LatticeConstants(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, a, b, c) =
+LatticeConstants(::RhombohedralCenteredHexagonal, a, b, c) =
     LatticeConstants(a, a, a)
 
 struct AxisAngles{T} <: FieldVector{3,T}
@@ -164,15 +188,15 @@ struct AxisAngles{T} <: FieldVector{3,T}
     β::T
     γ::T
 end
-AxisAngles(::BravaisLattice{Triclinic}, α, β, γ) = AxisAngles(α, β, γ)
-AxisAngles(::BravaisLattice{Monoclinic,Primitive}, α, β, γ, view::Int = 1) =
+AxisAngles(::PrimitiveTriclinic, α, β, γ) = AxisAngles(α, β, γ)
+AxisAngles(::PrimitiveMonoclinic, α, β, γ, view::Int = 1) =
     view == 1 ? AxisAngles(90, 90, γ) : AxisAngles(90, β, 90)
-AxisAngles(::BravaisLattice{Monoclinic,BaseCentered{:C}}, α, β, γ) = AxisAngles(90, 90, γ)
-AxisAngles(::BravaisLattice{Monoclinic,BaseCentered{:B}}, α, β, γ) = AxisAngles(90, β, 90)
-AxisAngles(::BravaisLattice{T}, α, β, γ) where {T<:Union{Orthorhombic,Tetragonal,Cubic}} =
+AxisAngles(::CCenteredMonoclinic, α, β, γ) = AxisAngles(90, 90, γ)
+AxisAngles(::BCenteredMonoclinic, α, β, γ) = AxisAngles(90, β, 90)
+AxisAngles(::T, α, β, γ) where {T<:Union{OrthorhombicBravais,TetragonalBravais,CubicBravais}} =
     AxisAngles(90, 90, 90)
-AxisAngles(::BravaisLattice{Hexagonal{3},Primitive}, α, β, γ) = AxisAngles(90, 90, 120)
-AxisAngles(::BravaisLattice{Hexagonal{3},RhombohedralCentered}, α, β, γ) =
+AxisAngles(::PrimitiveHexagonal, α, β, γ) = AxisAngles(90, 90, 120)
+AxisAngles(::RhombohedralCenteredHexagonal, α, β, γ) =
     AxisAngles(α, α, α)
 
 struct CellParameters{S,T}
@@ -251,7 +275,7 @@ MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k
 # This is a helper type and should not be exported!
 const INDICES = Union{MillerIndices,MillerBravaisIndices}
 
-crystalsystem(::BravaisLattice{C}) where {C} = C()
+crystalsystem(b::BravaisLattice) = first(b)
 function crystalsystem(p::CellParameters)
     a, b, c, α, β, γ = p
     if a == b == c
