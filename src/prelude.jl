@@ -1,4 +1,4 @@
-using LinearAlgebra: cross, det, dot, norm
+using LinearAlgebra: Diagonal, cross, det, dot, norm
 
 using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
 using SymPy
@@ -327,6 +327,25 @@ directionangle(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
 distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = norm(b - a, g)
 
 interplanar_spacing(a::CrystalCoordinates, g::MetricTensor) = 1 / norm(a, g)
+
+"""
+    supercell(cell::AbstractMatrix, expansion::AbstractMatrix{<:Integer})
+
+Allow the supercell to be a tilted extension of `cell`.
+"""
+function supercell(cell::AbstractMatrix, expansion::AbstractMatrix{<:Integer})
+    @assert(det(expansion) != 0, "matrix `expansion` cannot be a singular integer matrix!")
+    return expansion * cell
+end # function supercell
+"""
+    supercell(cell::AbstractMatrix, expansion::AbstractVector{<:Integer})
+
+Return a supercell based on `cell` and expansion coefficients.
+"""
+function supercell(cell::AbstractMatrix, expansion::AbstractVector{<:Integer})
+    @assert length(expansion) == 3
+    return supercell(cell, Diagonal(expansion))
+end # function supercell
 
 Base.size(::Union{MetricTensor,Lattice}) = (3, 3)
 Base.size(::Union{MillerIndices}) = (3,)
