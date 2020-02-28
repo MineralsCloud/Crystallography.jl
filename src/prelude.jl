@@ -23,12 +23,12 @@ export AbstractSpace,
     Trigonal,
     Hexagonal,
     Centering,
-    BaseCentered,
+    BaseCentering,
     Primitive,
-    BodyCentered,
-    FaceCentered,
-    RhombohedralCentered,
-    BaseCentered,
+    BodyCentering,
+    FaceCentering,
+    RhombohedralCentering,
+    BaseCentering,
     BravaisLattice,
     BravaisLattice,
     PrimitiveTriclinic,
@@ -88,33 +88,33 @@ Hexagonal(N::Int = 3) =
 
 abstract type Centering end
 struct Primitive <: Centering end
-struct BodyCentered <: Centering end
-struct FaceCentered <: Centering end
-struct RhombohedralCentered <: Centering end
-struct BaseCentered{T} <: Centering end
-BaseCentered(T::Symbol) = T ∈ (:A, :B, :C) ? BaseCentered{T}() :
+struct BodyCentering <: Centering end
+struct FaceCentering <: Centering end
+struct RhombohedralCentering <: Centering end
+struct BaseCentering{T} <: Centering end
+BaseCentering(T::Symbol) = T ∈ (:A, :B, :C) ? BaseCentering{T}() :
     throw(ArgumentError("centering must be either :A, :B, or :C!"))
 
 const BravaisLattice = Tuple{CrystalSystem,Centering}
 const PrimitiveTriclinic = Tuple{Triclinic,Primitive}
 const PrimitiveMonoclinic = Tuple{Monoclinic,Primitive}
-const BCenteredMonoclinic = Tuple{Monoclinic,BaseCentered{:B}}
-const CCenteredMonoclinic = Tuple{Monoclinic,BaseCentered{:C}}
+const BCenteredMonoclinic = Tuple{Monoclinic,BaseCentering{:B}}
+const CCenteredMonoclinic = Tuple{Monoclinic,BaseCentering{:C}}
 const PrimitiveOrthorhombic = Tuple{Orthorhombic,Primitive}
-const BCenteredOrthorhombic = Tuple{Orthorhombic,BaseCentered{:B}}
-const CCenteredOrthorhombic = Tuple{Orthorhombic,BaseCentered{:C}}
-const BodyCenteredOrthorhombic = Tuple{Orthorhombic,BodyCentered}
-const FaceCenteredOrthorhombic = Tuple{Orthorhombic,FaceCentered}
+const BCenteredOrthorhombic = Tuple{Orthorhombic,BaseCentering{:B}}
+const CCenteredOrthorhombic = Tuple{Orthorhombic,BaseCentering{:C}}
+const BodyCenteredOrthorhombic = Tuple{Orthorhombic,BodyCentering}
+const FaceCenteredOrthorhombic = Tuple{Orthorhombic,FaceCentering}
 const PrimitiveTetragonal = Tuple{Tetragonal,Primitive}
-const BodyCenteredTetragonal = Tuple{Tetragonal,BodyCentered}
+const BodyCenteredTetragonal = Tuple{Tetragonal,BodyCentering}
 const PrimitiveCubic = Tuple{Cubic,Primitive}
-const BodyCenteredCubic = Tuple{Cubic,BodyCentered}
-const FaceCenteredCubic = Tuple{Cubic,FaceCentered}
+const BodyCenteredCubic = Tuple{Cubic,BodyCentering}
+const FaceCenteredCubic = Tuple{Cubic,FaceCentering}
 const PrimitiveHexagonal = Tuple{Hexagonal,Primitive}
-const RCenteredHexagonal = Tuple{Hexagonal{3},RhombohedralCentered}
+const RCenteredHexagonal = Tuple{Hexagonal{3},RhombohedralCentering}
 const PrimitiveOblique = Tuple{Oblique,Primitive}
 const PrimitiveRectangular = Tuple{Rectangular,Primitive}
-const BaseCenteredRectangular = Tuple{Rectangular,BaseCentered}
+const BaseCenteredRectangular = Tuple{Rectangular,BaseCentering}
 const PrimitiveSquare = Tuple{Square,Primitive}
 const PrimitiveHexagonal2D = Tuple{Hexagonal{2},Primitive}
 
@@ -137,10 +137,10 @@ pearsonsymbol(::Cubic) = "c"
 pearsonsymbol(::Hexagonal) = "h"
 pearsonsymbol(::Trigonal) = "h"
 pearsonsymbol(::Primitive) = "P"
-pearsonsymbol(::BaseCentered{T}) where {T} = string(T)
-pearsonsymbol(::BodyCentered) = "I"
-pearsonsymbol(::FaceCentered) = "F"
-pearsonsymbol(::RhombohedralCentered) = "R"
+pearsonsymbol(::BaseCentering{T}) where {T} = string(T)
+pearsonsymbol(::BodyCentering) = "I"
+pearsonsymbol(::FaceCentering) = "F"
+pearsonsymbol(::RhombohedralCentering) = "R"
 pearsonsymbol(b::BravaisLattice) = pearsonsymbol(first(b)) * pearsonsymbol(last(b))
 
 arithmeticclass(::Oblique) = "2"
@@ -154,10 +154,10 @@ arithmeticclass(::Tetragonal) = "4/mmm"
 arithmeticclass(::Hexagonal{3}) = "6/mmm"
 arithmeticclass(::Cubic) = "m-3m"
 arithmeticclass(::Primitive) = "P"
-arithmeticclass(::BaseCentered) = "S"
-arithmeticclass(::BodyCentered) = "I"
-arithmeticclass(::FaceCentered) = "F"
-arithmeticclass(::RhombohedralCentered) = "R"
+arithmeticclass(::BaseCentering) = "S"
+arithmeticclass(::BodyCentering) = "I"
+arithmeticclass(::FaceCentering) = "F"
+arithmeticclass(::RhombohedralCentering) = "R"
 arithmeticclass(b::BravaisLattice) = arithmeticclass(first(b)) * arithmeticclass(last(b))
 arithmeticclass(::RCenteredHexagonal) = "-3mR"
 arithmeticclass(::PrimitiveOblique) = "2p"
@@ -421,8 +421,8 @@ Base.convert(
 
 Base.:*(a::CrystalSystem, b::Centering) = error("combination $a & $b is not a Bravais lattice!")
 Base.:*(a::Triclinic, b::Primitive) = (a, b)
-Base.:*(a::Monoclinic, b::Union{Primitive,BaseCentered}) = (a, b)
-Base.:*(a::Orthorhombic, b::Union{Primitive,BaseCentered,BodyCentered,FaceCentered}) = (a, b)
+Base.:*(a::Monoclinic, b::Union{Primitive,BaseCentering}) = (a, b)
+Base.:*(a::Orthorhombic, b::Union{Primitive,BaseCentering,BodyCentering,FaceCentering}) = (a, b)
 
 Base.:*(a::Centering, b::CrystalSystem) = b * a
 
