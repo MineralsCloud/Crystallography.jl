@@ -228,9 +228,11 @@ struct CellParameters{S,T}
     x::LatticeConstants{S}
     y::AxisAngles{T}
 end
-CellParameters(a::S, b::S, c::S, α::T, β::T, γ::T; args...) where {S,T} =
-    CellParameters{S,T}(LatticeConstants(a, b, c), AxisAngles(α, β, γ; args...))
+CellParameters(a::S, b::S, c::S, α::T, β::T, γ::T) where {S,T} =
+    CellParameters{S,T}(LatticeConstants(a, b, c), AxisAngles(α, β, γ))
 CellParameters(x::BravaisLattice) = args -> CellParameters(x, args...)
+CellParameters(x::BravaisLattice, a, b, c, α, β, γ) =
+    CellParameters(LatticeConstants(x, a, b, c), AxisAngles(x, α, β, γ))
 
 struct Lattice{T} <: AbstractMatrix{T}
     m::SMatrix{3,3,T}
@@ -271,7 +273,7 @@ end
 MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
 function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
     vecs = (v1, v2, v3)
-    return MetricTensor([dot(vecs[i], vecs[j]) for i = 1:3, j = 1:3])
+    return MetricTensor([dot(vecs[i], vecs[j]) for i in 1:3, j in 1:3])
 end
 function MetricTensor(a, b, c, α, β, γ)
     g12 = a * b * cos(γ)
@@ -279,7 +281,7 @@ function MetricTensor(a, b, c, α, β, γ)
     g23 = b * c * cos(α)
     return MetricTensor(SHermitianCompact(SVector(a^2, g12, g13, b^2, g23, c^2)))
 end
-MetricTensor(p::CellParameters) = MetricTensor(p...)
+MetricTensor(p::CellParameters) = MetricTensor(p.x..., p.y...)
 
 struct MillerIndices{S<:AbstractSpace} <: AbstractVector{Int}
     v::SVector{3,Int}
@@ -419,8 +421,12 @@ Base.convert(
     m::MillerIndices{T},
 ) where {T<:ReciprocalSpace} = MillerBravaisIndices{T}(m[1], m[2], -(m[1] + m[2]), m[3])
 
-Base.:*(a::CrystalSystem, b::Centering) = error("combination $a & $b is not a Bravais lattice!")
-Base.:*(a::Union{Triclinic,Monoclinic,Orthorhombic,Tetragonal,Cubic,Hexagonal{3}}, b::Primitive) = (a, b)
+Base.:*(a::CrystalSystem, b::Centering) =
+    error("combination $a & $b is not a Bravais lattice!")
+Base.:*(
+    a::Union{Triclinic,Monoclinic,Orthorhombic,Tetragonal,Cubic,Hexagonal{3}},
+    b::Primitive,
+) = (a, b)
 Base.:*(a::Union{Monoclinic,Orthorhombic}, b::BaseCentering) = (a, b)
 Base.:*(a::Tetragonal, b::BodyCentering) = (a, b)
 Base.:*(a::Union{Cubic,Orthorhombic}, b::Union{BodyCentering,FaceCentering}) = (a, b)
