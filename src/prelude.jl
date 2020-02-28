@@ -427,6 +427,9 @@ Base.:*(a::Union{Cubic,Orthorhombic}, b::Union{BodyCentering,FaceCentering}) = (
 Base.:*(a::Hexagonal{3}, b::Union{RhombohedralCentering}) = (a, b)
 Base.:*(a::Centering, b::CrystalSystem) = b * a
 
+Base.iterate(c::CellParameters) = iterate(c.x)
+Base.iterate(c::CellParameters, state) = state > 3 ? iterate(c.y, state - 3) : iterate(c.x, state)
+
 LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
     a' * g.m * b
 LinearAlgebra.norm(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
