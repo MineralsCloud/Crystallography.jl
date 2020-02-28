@@ -420,10 +420,11 @@ Base.convert(
 ) where {T<:ReciprocalSpace} = MillerBravaisIndices{T}(m[1], m[2], -(m[1] + m[2]), m[3])
 
 Base.:*(a::CrystalSystem, b::Centering) = error("combination $a & $b is not a Bravais lattice!")
-Base.:*(a::Triclinic, b::Primitive) = (a, b)
-Base.:*(a::Monoclinic, b::Union{Primitive,BaseCentering}) = (a, b)
-Base.:*(a::Orthorhombic, b::Union{Primitive,BaseCentering,BodyCentering,FaceCentering}) = (a, b)
-
+Base.:*(a::Union{Triclinic,Monoclinic,Orthorhombic,Tetragonal,Cubic,Hexagonal{3}}, b::Primitive) = (a, b)
+Base.:*(a::Union{Monoclinic,Orthorhombic}, b::BaseCentering) = (a, b)
+Base.:*(a::Tetragonal, b::BodyCentering) = (a, b)
+Base.:*(a::Union{Cubic,Orthorhombic}, b::Union{BodyCentering,FaceCentering}) = (a, b)
+Base.:*(a::Hexagonal{3}, b::Union{RhombohedralCentering}) = (a, b)
 Base.:*(a::Centering, b::CrystalSystem) = b * a
 
 LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
