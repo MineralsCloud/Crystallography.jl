@@ -273,7 +273,7 @@ end
 MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
 function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
     vecs = (v1, v2, v3)
-    return MetricTensor([dot(vecs[i], vecs[j]) for i in 1:3, j in 1:3])
+    return MetricTensor([dot(vecs[i], vecs[j]) for i = 1:3, j = 1:3])
 end
 function MetricTensor(a, b, c, α, β, γ)
     g12 = a * b * cos(γ)
@@ -434,7 +434,8 @@ Base.:*(a::Hexagonal{3}, b::Union{RhombohedralCentering}) = (a, b)
 Base.:*(a::Centering, b::CrystalSystem) = b * a
 
 Base.iterate(c::CellParameters) = iterate(c.x)
-Base.iterate(c::CellParameters, state) = state > 3 ? iterate(c.y, state - 3) : iterate(c.x, state)
+Base.iterate(c::CellParameters, state) =
+    state > 3 ? iterate(c.y, state - 3) : iterate(c.x, state)
 
 LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
     a' * g.m * b
