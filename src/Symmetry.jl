@@ -8,7 +8,7 @@ using StaticArrays: SMatrix, SDiagonal
 
 using Crystallography: CrystalCoordinates, Cell
 
-export SeitzOperator
+export SeitzOperator, IdentityOperator
 export getsymmetry,
     getspacegroup, irreciprocalmesh, isidentity, istranslation, ispointsymmetry
 
@@ -60,7 +60,6 @@ struct SeitzOperator{T} <: AbstractMatrix{T}
     m::SMatrix{4,4,T}
 end
 SeitzOperator(m::AbstractMatrix) = SeitzOperator(SMatrix{4,4}(m))
-SeitzOperator() = SeitzOperator(SDiagonal(1, 1, 1, 1))
 function SeitzOperator(l::LinearMap)
     m = l.linear
     @assert size(m) == (3, 3)
@@ -83,6 +82,7 @@ function SeitzOperator(s::SeitzOperator, pos::AbstractVector)
     t = SeitzOperator(Translation(pos))
     return t * s * inv(t)
 end # function SeitzOperator
+const IdentityOperator = SeitzOperator(SDiagonal(1, 1, 1, 1))
 
 isidentity(op::SeitzOperator) = op.m == I
 
