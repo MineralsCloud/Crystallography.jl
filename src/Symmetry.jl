@@ -118,4 +118,6 @@ function Base.convert(::Type{LinearMap}, op::SeitzOperator)
     return LinearMap(collect(op.m[1:3, 1:3]))
 end # function Base.convert
 
+Base.inv(op::SeitzOperator) = SeitzOperator(Base.inv(op.m))
+
 end # module Symmetry
