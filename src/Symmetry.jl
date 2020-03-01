@@ -1,6 +1,6 @@
 module Symmetry
 
-using LinearAlgebra: I, diagm
+using LinearAlgebra: I, diagm, det
 
 using CoordinateTransformations: AffineMap, Translation, LinearMap
 using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
@@ -96,7 +96,7 @@ end # function istranslation
 
 function ispointsymmetry(op::SeitzOperator)
     m = op.m
-    if !(iszero(m[4, 1:3]) && iszero(m[1:3, 4]) && isone(m[4, 4]))
+    if !(iszero(m[4, 1:3]) && iszero(m[1:3, 4]) && isone(m[4, 4]) && abs(det(m[1:3, 1:3])) == 1)
         return false
     end
     return true
