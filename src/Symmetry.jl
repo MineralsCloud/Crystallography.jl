@@ -56,7 +56,7 @@ function irreciprocalmesh(
     )
 end # function irreciprocalmesh
 
-struct SeitzOperator{T} <: AbstractMatrix{T}
+struct SeitzOperator{T}
     m::SMatrix{4,4,T}
 end
 SeitzOperator(m::AbstractMatrix) = SeitzOperator(SMatrix{4,4}(m))
@@ -101,8 +101,6 @@ function ispointsymmetry(op::SeitzOperator)
     end
     return true
 end # function ispointsymmetry
-
-Base.size(::SeitzOperator) = (4, 4)
 
 Base.getindex(A::SeitzOperator, I::Vararg{Int}) = getindex(A.m, I...)
 
