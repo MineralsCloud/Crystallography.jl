@@ -4,11 +4,11 @@ using LinearAlgebra: I, diagm, det
 
 using CoordinateTransformations: AffineMap, Translation, LinearMap
 using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
-using StaticArrays: SMatrix, SDiagonal
+using StaticArrays: SVector, SMatrix, SDiagonal
 
 using Crystallography: CrystalCoordinates, Cell
 
-export SeitzOperator, IdentityOperator
+export SeitzOperator
 export getsymmetry,
     getspacegroup, irreciprocalmesh, isidentity, istranslation, ispointsymmetry
 
@@ -82,7 +82,6 @@ function SeitzOperator(s::SeitzOperator, pos::AbstractVector)
     t = SeitzOperator(Translation(pos))
     return t * s * inv(t)
 end # function SeitzOperator
-const IdentityOperator = SeitzOperator(SDiagonal(1, 1, 1, 1))
 
 isidentity(op::SeitzOperator) = op.m == I
 
@@ -104,6 +103,11 @@ end # function ispointsymmetry
 
 Base.getindex(A::SeitzOperator, I::Vararg{Int}) = getindex(A.m, I...)
 
+Base.one(::Type{SeitzOperator{T}}) where {T} = SeitzOperator(SDiagonal(SVector{4}(ones(T, 4))))
+Base.one(A::SeitzOperator) = one(typeof(A))
+
+Base.inv(op::SeitzOperator) = SeitzOperator(Base.inv(op.m))
+
 Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.m*[c; 1])[1:3])
 Base.:*(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.m * b.m)
 
@@ -115,7 +119,5 @@ function Base.convert(::Type{LinearMap}, op::SeitzOperator)
     @assert(ispointsymmetry(op), "operator is not a point symmetry!")
     return LinearMap(collect(op.m[1:3, 1:3]))
 end # function Base.convert
-
-Base.inv(op::SeitzOperator) = SeitzOperator(Base.inv(op.m))
 
 end # module Symmetry
