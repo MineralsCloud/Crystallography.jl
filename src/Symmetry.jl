@@ -1,14 +1,14 @@
 module Symmetry
 
-using LinearAlgebra: diagm, I
+using LinearAlgebra: I, diagm, det
 
 using CoordinateTransformations: AffineMap, Translation, LinearMap
 using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
-using StaticArrays: SMatrix
+using StaticArrays: SMatrix, SDiagonal
 
 using Crystallography: CrystalCoordinates, Cell
 
-export SeitzOperator
+export SeitzOperator, IdentityOperator
 export getsymmetry,
     getspacegroup, irreciprocalmesh, isidentity, istranslation, ispointsymmetry
 
@@ -56,21 +56,22 @@ function irreciprocalmesh(
     )
 end # function irreciprocalmesh
 
-struct SeitzOperator{T} <: AbstractMatrix{T}
+struct SeitzOperator{T}
     m::SMatrix{4,4,T}
 end
 SeitzOperator(m::AbstractMatrix) = SeitzOperator(SMatrix{4,4}(m))
-SeitzOperator() = SeitzOperator(ones(Int, 4, 4))
-function SeitzOperator(m::LinearMap)
-    @assert size(m.linear) == (3, 3)
-    x = diagm(ones(eltype(m.linear), 4))
-    x[1:3, 1:3] = m.linear
+function SeitzOperator(l::LinearMap)
+    m = l.linear
+    @assert size(m) == (3, 3)
+    x = diagm(ones(eltype(m), 4))
+    x[1:3, 1:3] = m
     return SeitzOperator(x)
 end # function PointSymmetryOperator
 function SeitzOperator(t::Translation)
-    @assert length(t.translation) == 3
-    x = diagm(ones(eltype(t.translation), 4))
-    x[1:3, 4] = t.translation
+    v = t.translation
+    @assert length(v) == 3
+    x = diagm(ones(eltype(v), 4))
+    x[1:3, 4] = v
     return SeitzOperator(x)
 end # function TranslationOperator
 SeitzOperator(m::LinearMap, t::Translation) =
@@ -81,6 +82,7 @@ function SeitzOperator(s::SeitzOperator, pos::AbstractVector)
     t = SeitzOperator(Translation(pos))
     return t * s * inv(t)
 end # function SeitzOperator
+const IdentityOperator = SeitzOperator(SDiagonal(1, 1, 1, 1))
 
 isidentity(op::SeitzOperator) = op.m == I
 
@@ -94,13 +96,11 @@ end # function istranslation
 
 function ispointsymmetry(op::SeitzOperator)
     m = op.m
-    if !(iszero(m[4, 1:3]) && iszero(m[1:3, 4]) && isone(m[4, 4]))
+    if !(iszero(m[4, 1:3]) && iszero(m[1:3, 4]) && isone(m[4, 4]) && abs(det(m[1:3, 1:3])) == 1)
         return false
     end
     return true
 end # function ispointsymmetry
-
-Base.size(::SeitzOperator) = (4, 4)
 
 Base.getindex(A::SeitzOperator, I::Vararg{Int}) = getindex(A.m, I...)
 
@@ -115,5 +115,7 @@ function Base.convert(::Type{LinearMap}, op::SeitzOperator)
     @assert(ispointsymmetry(op), "operator is not a point symmetry!")
     return LinearMap(collect(op.m[1:3, 1:3]))
 end # function Base.convert
+
+Base.inv(op::SeitzOperator) = SeitzOperator(Base.inv(op.m))
 
 end # module Symmetry
