@@ -64,8 +64,8 @@ export AbstractSpace,
     AxisAngles,
     CellParameters,
     Lattice
-export crystalsystem,
-    directioncosine, directionangle, distance, interplanar_spacing, cellvolume, reciprocalof
+export directioncosine,
+    directionangle, distance, interplanar_spacing, cellvolume, reciprocalof
 
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
