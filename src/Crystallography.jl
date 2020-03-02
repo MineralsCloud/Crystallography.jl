@@ -36,7 +36,7 @@ export CrystalSystem,
     FaceCenteredCubic,
     PrimitiveHexagonal,
     RCenteredHexagonal
-export pearsonsymbol, arithmeticclass, centeringof, dimensionof
+export pearsonsymbol, arithmeticclass, centeringof, dimensionof, crystalsystem
 
 abstract type CrystalSystem{N} end
 struct Oblique <: CrystalSystem{2} end
@@ -136,6 +136,8 @@ centeringof(b::BravaisLattice) = last(b)
 
 dimensionof(::CrystalSystem{N}) where {N} = N
 dimensionof(b::BravaisLattice) = dimensionof(first(b))
+
+crystalsystem(b::BravaisLattice) = first(b)
 
 include("Crystals.jl")
 include("Symmetry.jl")

@@ -49,6 +49,7 @@ using Crystallography:
 
 import LinearAlgebra
 import StaticArrays
+import Crystallography
 
 export AbstractSpace,
     RealSpace,
@@ -201,8 +202,7 @@ MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k
 # This is a helper type and should not be exported!
 const INDICES = Union{MillerIndices,MillerBravaisIndices}
 
-crystalsystem(b::BravaisLattice) = first(b)
-function crystalsystem(p::CellParameters)
+function Crystallography.crystalsystem(p::CellParameters)
     a, b, c, α, β, γ = p
     if a == b == c
         if α == β == γ
@@ -218,7 +218,7 @@ function crystalsystem(p::CellParameters)
         end
     end
 end # function whatsystem
-function crystalsystem(lattice::AbstractMatrix)
+function Crystallography.crystalsystem(lattice::AbstractMatrix)
     v1, v2, v3 = _splitlattice(lattice)
     a, b, c = norm(v1), norm(v2), norm(v3)
     γ = acos(dot(v1, v2) / a / b)
