@@ -36,10 +36,7 @@ export CrystalSystem,
     FaceCenteredCubic,
     PrimitiveHexagonal,
     RCenteredHexagonal
-export pearsonsymbol,
-    arithmeticclass,
-    centeringof,
-    dimensionof
+export pearsonsymbol, arithmeticclass, centeringof, dimensionof
 
 abstract type CrystalSystem{N} end
 struct Oblique <: CrystalSystem{2} end

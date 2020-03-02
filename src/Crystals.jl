@@ -5,7 +5,8 @@ using LinearAlgebra: Diagonal, cross, det, dot, norm
 using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
 using SymPy
 
-using Crystallography: CrystalSystem,
+using Crystallography:
+    CrystalSystem,
     Oblique,
     Rectangular,
     Square,
@@ -63,12 +64,7 @@ export AbstractSpace,
     CellParameters,
     Lattice
 export crystalsystem,
-    directioncosine,
-    directionangle,
-    distance,
-    interplanar_spacing,
-    cellvolume,
-    reciprocalof
+    directioncosine, directionangle, distance, interplanar_spacing, cellvolume, reciprocalof
 
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
@@ -324,7 +320,8 @@ Base.convert(
     m::MillerIndices{T},
 ) where {T<:ReciprocalSpace} = MillerBravaisIndices{T}(m[1], m[2], -(m[1] + m[2]), m[3])
 
-Base.:*(a::CrystalSystem, b::Centering) = error("combination $a & $b is not a Bravais lattice!")
+Base.:*(a::CrystalSystem, b::Centering) =
+    error("combination $a & $b is not a Bravais lattice!")
 Base.:*(
     a::Union{Triclinic,Monoclinic,Orthorhombic,Tetragonal,Cubic,Hexagonal{3}},
     b::Primitive,
@@ -336,7 +333,8 @@ Base.:*(a::Hexagonal{3}, b::Union{RhombohedralCentering}) = (a, b)
 Base.:*(a::Centering, b::CrystalSystem) = b * a
 
 Base.iterate(c::CellParameters) = iterate(c.x)
-Base.iterate(c::CellParameters, state) = state > 3 ? iterate(c.y, state - 3) : iterate(c.x, state)
+Base.iterate(c::CellParameters, state) =
+    state > 3 ? iterate(c.y, state - 3) : iterate(c.x, state)
 
 LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
     a' * g.m * b
