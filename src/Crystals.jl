@@ -25,7 +25,7 @@ export AbstractSpace,
     CellParameters,
     Lattice
 export directioncosine,
-    directionangle, distance, interplanar_spacing, cellvolume, reciprocalof
+    directionangle, distance, interplanar_spacing, cellvolume, reciprocalof, @m_str, @mb_str
 
 const TETRAGONAL = Union{PrimitiveTetragonal,BodyCenteredTetragonal}
 const CUBIC = Union{PrimitiveCubic,BodyCenteredCubic,FaceCenteredCubic}
@@ -147,22 +147,49 @@ MetricTensor(p::CellParameters) = MetricTensor(p.x..., p.y...)
 
 struct MillerIndices{S<:AbstractSpace} <: AbstractVector{Int}
     v::SVector{3,Int}
-    function MillerIndices{S}(x) where {S}
-        return new(iszero(x) ? x : x .÷ gcd(x))
-    end
+    MillerIndices{S}(v) where {S} = new(iszero(v) ? v : v .÷ gcd(v))
 end
 MillerIndices{S}(i, j, k) where {S} = MillerIndices{S}([i, j, k])
 
 struct MillerBravaisIndices{S<:AbstractSpace} <: AbstractVector{Int}
     v::SVector{4,Int}
-    function MillerBravaisIndices{S}(x) where {S}
-        return new(iszero(x) ? x : x .÷ gcd(x))
+    function MillerBravaisIndices{S}(v) where {S}
+        @assert(
+            v[3] == -v[1] - v[2],
+            "the 3rd index of `MillerBravaisIndices` should equal to the negation of the first two!"
+        )
+        return new(iszero(v) ? v : v .÷ gcd(v))
     end
 end
 MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k, l])
 
 # This is a helper type and should not be exported!
 const INDICES = Union{MillerIndices,MillerBravaisIndices}
+
+# This is a helper function and should not be exported!
+function _indices_str(r::Regex, s::AbstractString, ::Type{T}) where {T<:INDICES}
+    m = match(r, strip(s))
+    isnothing(m) && error("not a valid expression!")
+    brackets = first(m.captures) * last(m.captures)
+    x = (parse(Int, x) for x in m.captures[2:(end-1)])
+    if brackets ∈ ("()", "{}")
+        return T{ReciprocalSpace}(x...)
+    elseif brackets ∈ ("[]", "<>")
+        return T{RealSpace}(x...)
+    else
+        error("not a valid expression!")
+    end
+end # function _indices_str
+
+macro m_str(s)
+    r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
+    _indices_str(r, s, MillerIndices)
+end
+
+macro mb_str(s)
+    r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
+    _indices_str(r, s, MillerBravaisIndices)
+end
 
 function Crystallography.crystalsystem(p::CellParameters)
     a, b, c, α, β, γ = p
