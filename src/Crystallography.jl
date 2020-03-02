@@ -84,17 +84,6 @@ const BaseCenteredRectangular = Tuple{Rectangular,BaseCentering}
 const PrimitiveSquare = Tuple{Square,Primitive}
 const PrimitiveHexagonal2D = Tuple{Hexagonal{2},Primitive}
 
-const TetragonalBravais = Union{PrimitiveTetragonal,BodyCenteredTetragonal}
-const CubicBravais = Union{PrimitiveCubic,BodyCenteredCubic,FaceCenteredCubic}
-const OrthorhombicBravais = Union{
-    PrimitiveOrthorhombic,
-    BCenteredOrthorhombic,
-    CCenteredOrthorhombic,
-    BodyCenteredOrthorhombic,
-    FaceCenteredCubic,
-}
-const MonoclinicBravais = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
-
 pearsonsymbol(::Triclinic) = "a"
 pearsonsymbol(::Monoclinic) = "m"
 pearsonsymbol(::Orthorhombic) = "o"

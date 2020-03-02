@@ -5,47 +5,7 @@ using LinearAlgebra: Diagonal, cross, det, dot, norm
 using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
 using SymPy
 
-using Crystallography:
-    CrystalSystem,
-    Oblique,
-    Rectangular,
-    Square,
-    Triclinic,
-    Monoclinic,
-    Orthorhombic,
-    Tetragonal,
-    Cubic,
-    Trigonal,
-    Hexagonal,
-    Centering,
-    BaseCentering,
-    Primitive,
-    BodyCentering,
-    FaceCentering,
-    RhombohedralCentering,
-    BaseCentering,
-    BravaisLattice,
-    BravaisLattice,
-    PrimitiveTriclinic,
-    PrimitiveMonoclinic,
-    BCenteredMonoclinic,
-    CCenteredMonoclinic,
-    PrimitiveOrthorhombic,
-    BCenteredOrthorhombic,
-    CCenteredOrthorhombic,
-    BodyCenteredOrthorhombic,
-    FaceCenteredOrthorhombic,
-    PrimitiveTetragonal,
-    BodyCenteredTetragonal,
-    PrimitiveCubic,
-    BodyCenteredCubic,
-    FaceCenteredCubic,
-    PrimitiveHexagonal,
-    RCenteredHexagonal,
-    MonoclinicBravais,
-    OrthorhombicBravais,
-    TetragonalBravais,
-    CubicBravais
+using Crystallography
 
 import LinearAlgebra
 import StaticArrays
@@ -64,8 +24,19 @@ export AbstractSpace,
     AxisAngles,
     CellParameters,
     Lattice
-export crystalsystem,
-    directioncosine, directionangle, distance, interplanar_spacing, cellvolume, reciprocalof
+export directioncosine,
+    directionangle, distance, interplanar_spacing, cellvolume, reciprocalof
+
+const TETRAGONAL = Union{PrimitiveTetragonal,BodyCenteredTetragonal}
+const CUBIC = Union{PrimitiveCubic,BodyCenteredCubic,FaceCenteredCubic}
+const ORTHORHOMBIC = Union{
+    PrimitiveOrthorhombic,
+    BCenteredOrthorhombic,
+    CCenteredOrthorhombic,
+    BodyCenteredOrthorhombic,
+    FaceCenteredCubic,
+}
+const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
 
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
@@ -93,14 +64,10 @@ struct LatticeConstants{T} <: FieldVector{3,T}
     end
 end
 LatticeConstants(a::T, b::T, c::T) where {T} = LatticeConstants{T}(a, b, c)
-LatticeConstants(
-    ::Union{PrimitiveTriclinic,MonoclinicBravais,OrthorhombicBravais},
-    a,
-    b,
-    c,
-) = LatticeConstants(a, b, c)
-LatticeConstants(::TetragonalBravais, a, b, c) = LatticeConstants(a, a, c)
-LatticeConstants(::CubicBravais, a, b, c) = LatticeConstants(a, a, a)
+LatticeConstants(::Union{PrimitiveTriclinic,MONOCLINIC,ORTHORHOMBIC}, a, b, c) =
+    LatticeConstants(a, b, c)
+LatticeConstants(::TETRAGONAL, a, b, c) = LatticeConstants(a, a, c)
+LatticeConstants(::CUBIC, a, b, c) = LatticeConstants(a, a, a)
 LatticeConstants(::PrimitiveHexagonal, a, b, c) = LatticeConstants(a, a, c)
 LatticeConstants(::RCenteredHexagonal, a, b, c) = LatticeConstants(a, a, a)
 
@@ -114,12 +81,7 @@ AxisAngles(::PrimitiveMonoclinic, α, β, γ, view::Int = 1) =
     view == 1 ? AxisAngles(90, 90, γ) : AxisAngles(90, β, 90)
 AxisAngles(::CCenteredMonoclinic, α, β, γ) = AxisAngles(90, 90, γ)
 AxisAngles(::BCenteredMonoclinic, α, β, γ) = AxisAngles(90, β, 90)
-AxisAngles(
-    ::T,
-    α,
-    β,
-    γ,
-) where {T<:Union{OrthorhombicBravais,TetragonalBravais,CubicBravais}} =
+AxisAngles(::T, α, β, γ) where {T<:Union{ORTHORHOMBIC,TETRAGONAL,CUBIC}} =
     AxisAngles(90, 90, 90)
 AxisAngles(::PrimitiveHexagonal, α, β, γ) = AxisAngles(90, 90, 120)
 AxisAngles(::RCenteredHexagonal, α, β, γ) = AxisAngles(α, α, α)
