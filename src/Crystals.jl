@@ -147,17 +147,15 @@ MetricTensor(p::CellParameters) = MetricTensor(p.x..., p.y...)
 
 struct MillerIndices{S<:AbstractSpace} <: AbstractVector{Int}
     v::SVector{3,Int}
-    function MillerIndices{S}(x) where {S}
-        return new(iszero(x) ? x : x .÷ gcd(x))
-    end
+    MillerIndices{S}(v) where {S} = new(iszero(v) ? v : v .÷ gcd(v))
 end
 MillerIndices{S}(i, j, k) where {S} = MillerIndices{S}([i, j, k])
 
 struct MillerBravaisIndices{S<:AbstractSpace} <: AbstractVector{Int}
     v::SVector{4,Int}
-    function MillerBravaisIndices{S}(x) where {S}
-        @assert(x[3] == -x[1] - x[2], "the 3rd index of `MillerBravaisIndices` should equal to the negation of the first two!")
-        return new(iszero(x) ? x : x .÷ gcd(x))
+    function MillerBravaisIndices{S}(v) where {S}
+        @assert(v[3] == -v[1] - v[2], "the 3rd index of `MillerBravaisIndices` should equal to the negation of the first two!")
+        return new(iszero(v) ? v : v .÷ gcd(v))
     end
 end
 MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k, l])
