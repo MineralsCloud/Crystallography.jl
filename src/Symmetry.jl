@@ -6,7 +6,7 @@ using CoordinateTransformations: AffineMap, Translation, LinearMap
 using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
 using StaticArrays: SVector, SMatrix, SDiagonal
 
-using Crystallography: CrystalCoordinates, Cell
+using Crystallography.Crystals: CrystalCoordinates, Cell
 
 export SeitzOperator
 export getsymmetry,
