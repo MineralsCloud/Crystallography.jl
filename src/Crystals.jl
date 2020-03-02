@@ -154,7 +154,10 @@ MillerIndices{S}(i, j, k) where {S} = MillerIndices{S}([i, j, k])
 struct MillerBravaisIndices{S<:AbstractSpace} <: AbstractVector{Int}
     v::SVector{4,Int}
     function MillerBravaisIndices{S}(v) where {S}
-        @assert(v[3] == -v[1] - v[2], "the 3rd index of `MillerBravaisIndices` should equal to the negation of the first two!")
+        @assert(
+            v[3] == -v[1] - v[2],
+            "the 3rd index of `MillerBravaisIndices` should equal to the negation of the first two!"
+        )
         return new(iszero(v) ? v : v .÷ gcd(v))
     end
 end
@@ -168,7 +171,7 @@ function _indices_str(r::Regex, s::AbstractString, ::Type{T}) where {T<:INDICES}
     m = match(r, strip(s))
     isnothing(m) && error("not a valid expression!")
     brackets = first(m.captures) * last(m.captures)
-    x = (parse(Int, x) for x in m.captures[2:(end - 1)])
+    x = (parse(Int, x) for x in m.captures[2:(end-1)])
     if brackets ∈ ("()", "{}")
         return T{ReciprocalSpace}(x...)
     elseif brackets ∈ ("[]", "<>")
