@@ -5,47 +5,7 @@ using LinearAlgebra: Diagonal, cross, det, dot, norm
 using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
 using SymPy
 
-using Crystallography:
-    CrystalSystem,
-    Oblique,
-    Rectangular,
-    Square,
-    Triclinic,
-    Monoclinic,
-    Orthorhombic,
-    Tetragonal,
-    Cubic,
-    Trigonal,
-    Hexagonal,
-    Centering,
-    BaseCentering,
-    Primitive,
-    BodyCentering,
-    FaceCentering,
-    RhombohedralCentering,
-    BaseCentering,
-    BravaisLattice,
-    BravaisLattice,
-    PrimitiveTriclinic,
-    PrimitiveMonoclinic,
-    BCenteredMonoclinic,
-    CCenteredMonoclinic,
-    PrimitiveOrthorhombic,
-    BCenteredOrthorhombic,
-    CCenteredOrthorhombic,
-    BodyCenteredOrthorhombic,
-    FaceCenteredOrthorhombic,
-    PrimitiveTetragonal,
-    BodyCenteredTetragonal,
-    PrimitiveCubic,
-    BodyCenteredCubic,
-    FaceCenteredCubic,
-    PrimitiveHexagonal,
-    RCenteredHexagonal,
-    MonoclinicBravais,
-    OrthorhombicBravais,
-    TetragonalBravais,
-    CubicBravais
+using Crystallography
 
 import LinearAlgebra
 import StaticArrays
@@ -66,6 +26,17 @@ export AbstractSpace,
     Lattice
 export directioncosine,
     directionangle, distance, interplanar_spacing, cellvolume, reciprocalof
+
+const TetragonalBravais = Union{PrimitiveTetragonal,BodyCenteredTetragonal}
+const CubicBravais = Union{PrimitiveCubic,BodyCenteredCubic,FaceCenteredCubic}
+const OrthorhombicBravais = Union{
+    PrimitiveOrthorhombic,
+    BCenteredOrthorhombic,
+    CCenteredOrthorhombic,
+    BodyCenteredOrthorhombic,
+    FaceCenteredCubic,
+}
+const MonoclinicBravais = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
 
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
