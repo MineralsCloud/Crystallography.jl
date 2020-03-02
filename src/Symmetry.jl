@@ -6,7 +6,7 @@ using CoordinateTransformations: AffineMap, Translation, LinearMap
 using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
 using StaticArrays: SVector, SMatrix, SDiagonal
 
-using Crystallography: CrystalCoordinates, Cell
+using Crystallography.Crystals: CrystalCoordinates, Cell
 
 export SeitzOperator
 export getsymmetry,
@@ -95,7 +95,10 @@ end # function istranslation
 
 function ispointsymmetry(op::SeitzOperator)
     m = op.m
-    if !(iszero(m[4, 1:3]) && iszero(m[1:3, 4]) && isone(m[4, 4]) && abs(det(m[1:3, 1:3])) == 1)
+    if !(
+        iszero(m[4, 1:3]) &&
+        iszero(m[1:3, 4]) && isone(m[4, 4]) && abs(det(m[1:3, 1:3])) == 1
+    )
         return false
     end
     return true
@@ -103,7 +106,8 @@ end # function ispointsymmetry
 
 Base.getindex(A::SeitzOperator, I::Vararg{Int}) = getindex(A.m, I...)
 
-Base.one(::Type{SeitzOperator{T}}) where {T} = SeitzOperator(SDiagonal(SVector{4}(ones(T, 4))))
+Base.one(::Type{SeitzOperator{T}}) where {T} =
+    SeitzOperator(SDiagonal(SVector{4}(ones(T, 4))))
 Base.one(A::SeitzOperator) = one(typeof(A))
 
 Base.inv(op::SeitzOperator) = SeitzOperator(Base.inv(op.m))

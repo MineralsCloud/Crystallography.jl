@@ -1,16 +1,11 @@
+module Crystals
+
 using LinearAlgebra: Diagonal, cross, det, dot, norm
 
 using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
 using SymPy
 
-import LinearAlgebra
-import StaticArrays
-
-export AbstractSpace,
-    RealSpace,
-    ReciprocalSpace,
-    CrystalCoordinates,
-    CartesianCoordinates,
+using Crystallography:
     CrystalSystem,
     Oblique,
     Rectangular,
@@ -47,6 +42,20 @@ export AbstractSpace,
     FaceCenteredCubic,
     PrimitiveHexagonal,
     RCenteredHexagonal,
+    MonoclinicBravais,
+    OrthorhombicBravais,
+    TetragonalBravais,
+    CubicBravais
+
+import LinearAlgebra
+import StaticArrays
+import Crystallography
+
+export AbstractSpace,
+    RealSpace,
+    ReciprocalSpace,
+    CrystalCoordinates,
+    CartesianCoordinates,
     MetricTensor,
     MillerIndices,
     MillerBravaisIndices,
@@ -55,121 +64,12 @@ export AbstractSpace,
     AxisAngles,
     CellParameters,
     Lattice
-
-export pearsonsymbol,
-    arithmeticclass,
-    centeringof,
-    crystalsystem,
-    dimensionof,
-    directioncosine,
-    directionangle,
-    distance,
-    interplanar_spacing,
-    cellvolume,
-    reciprocalof
+export crystalsystem,
+    directioncosine, directionangle, distance, interplanar_spacing, cellvolume, reciprocalof
 
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
 struct ReciprocalSpace <: AbstractSpace end
-
-abstract type CrystalSystem{N} end
-struct Oblique <: CrystalSystem{2} end
-struct Rectangular <: CrystalSystem{2} end
-struct Square <: CrystalSystem{2} end
-struct Triclinic <: CrystalSystem{3} end
-struct Monoclinic <: CrystalSystem{3} end
-struct Orthorhombic <: CrystalSystem{3} end
-struct Tetragonal <: CrystalSystem{3} end
-struct Cubic <: CrystalSystem{3} end
-struct Trigonal <: CrystalSystem{3} end
-struct Hexagonal{N} <: CrystalSystem{N} end  # Could both be 2D or 3D
-Hexagonal(N::Int = 3) =
-    N ∈ (2, 3) ? Hexagonal{N}() : throw(ArgumentError("hexagonal must be 2D or 3D!"))
-
-abstract type Centering end
-struct Primitive <: Centering end
-struct BodyCentering <: Centering end
-struct FaceCentering <: Centering end
-struct RhombohedralCentering <: Centering end
-struct BaseCentering{T} <: Centering end
-BaseCentering(T::Symbol) = T ∈ (:A, :B, :C) ? BaseCentering{T}() :
-    throw(ArgumentError("centering must be either :A, :B, or :C!"))
-
-const BravaisLattice = Tuple{CrystalSystem,Centering}
-const PrimitiveTriclinic = Tuple{Triclinic,Primitive}
-const PrimitiveMonoclinic = Tuple{Monoclinic,Primitive}
-const BCenteredMonoclinic = Tuple{Monoclinic,BaseCentering{:B}}
-const CCenteredMonoclinic = Tuple{Monoclinic,BaseCentering{:C}}
-const PrimitiveOrthorhombic = Tuple{Orthorhombic,Primitive}
-const BCenteredOrthorhombic = Tuple{Orthorhombic,BaseCentering{:B}}
-const CCenteredOrthorhombic = Tuple{Orthorhombic,BaseCentering{:C}}
-const BodyCenteredOrthorhombic = Tuple{Orthorhombic,BodyCentering}
-const FaceCenteredOrthorhombic = Tuple{Orthorhombic,FaceCentering}
-const PrimitiveTetragonal = Tuple{Tetragonal,Primitive}
-const BodyCenteredTetragonal = Tuple{Tetragonal,BodyCentering}
-const PrimitiveCubic = Tuple{Cubic,Primitive}
-const BodyCenteredCubic = Tuple{Cubic,BodyCentering}
-const FaceCenteredCubic = Tuple{Cubic,FaceCentering}
-const PrimitiveHexagonal = Tuple{Hexagonal,Primitive}
-const RCenteredHexagonal = Tuple{Hexagonal{3},RhombohedralCentering}
-const PrimitiveOblique = Tuple{Oblique,Primitive}
-const PrimitiveRectangular = Tuple{Rectangular,Primitive}
-const BaseCenteredRectangular = Tuple{Rectangular,BaseCentering}
-const PrimitiveSquare = Tuple{Square,Primitive}
-const PrimitiveHexagonal2D = Tuple{Hexagonal{2},Primitive}
-
-const TetragonalBravais = Union{PrimitiveTetragonal,BodyCenteredTetragonal}
-const CubicBravais = Union{PrimitiveCubic,BodyCenteredCubic,FaceCenteredCubic}
-const OrthorhombicBravais = Union{
-    PrimitiveOrthorhombic,
-    BCenteredOrthorhombic,
-    CCenteredOrthorhombic,
-    BodyCenteredOrthorhombic,
-    FaceCenteredCubic,
-}
-const MonoclinicBravais = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
-
-pearsonsymbol(::Triclinic) = "a"
-pearsonsymbol(::Monoclinic) = "m"
-pearsonsymbol(::Orthorhombic) = "o"
-pearsonsymbol(::Tetragonal) = "t"
-pearsonsymbol(::Cubic) = "c"
-pearsonsymbol(::Hexagonal) = "h"
-pearsonsymbol(::Trigonal) = "h"
-pearsonsymbol(::Primitive) = "P"
-pearsonsymbol(::BaseCentering{T}) where {T} = string(T)
-pearsonsymbol(::BodyCentering) = "I"
-pearsonsymbol(::FaceCentering) = "F"
-pearsonsymbol(::RhombohedralCentering) = "R"
-pearsonsymbol(b::BravaisLattice) = pearsonsymbol(first(b)) * pearsonsymbol(last(b))
-
-arithmeticclass(::Oblique) = "2"
-arithmeticclass(::Rectangular) = "2mm"
-arithmeticclass(::Square) = "4mm"
-arithmeticclass(::Hexagonal{2}) = "6mm"
-arithmeticclass(::Triclinic) = "-1"
-arithmeticclass(::Monoclinic) = "2/m"
-arithmeticclass(::Orthorhombic) = "mmm"
-arithmeticclass(::Tetragonal) = "4/mmm"
-arithmeticclass(::Hexagonal{3}) = "6/mmm"
-arithmeticclass(::Cubic) = "m-3m"
-arithmeticclass(::Primitive) = "P"
-arithmeticclass(::BaseCentering) = "S"
-arithmeticclass(::BodyCentering) = "I"
-arithmeticclass(::FaceCentering) = "F"
-arithmeticclass(::RhombohedralCentering) = "R"
-arithmeticclass(b::BravaisLattice) = arithmeticclass(first(b)) * arithmeticclass(last(b))
-arithmeticclass(::RCenteredHexagonal) = "-3mR"
-arithmeticclass(::PrimitiveOblique) = "2p"
-arithmeticclass(::PrimitiveRectangular) = "2mmp"
-arithmeticclass(::BaseCenteredRectangular) = "2mmc"
-arithmeticclass(::PrimitiveSquare) = "4mmp"
-arithmeticclass(::PrimitiveHexagonal2D) = "6mmh"
-
-centeringof(b::BravaisLattice) = last(b)
-
-dimensionof(::CrystalSystem{N}) where {N} = N
-dimensionof(b::BravaisLattice) = dimensionof(first(b))
 
 abstract type AbstractCoordinates{T} <: FieldVector{3,T} end
 struct CrystalCoordinates{T} <: AbstractCoordinates{T}
@@ -302,8 +202,7 @@ MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k
 # This is a helper type and should not be exported!
 const INDICES = Union{MillerIndices,MillerBravaisIndices}
 
-crystalsystem(b::BravaisLattice) = first(b)
-function crystalsystem(p::CellParameters)
+function Crystallography.crystalsystem(p::CellParameters)
     a, b, c, α, β, γ = p
     if a == b == c
         if α == β == γ
@@ -319,7 +218,7 @@ function crystalsystem(p::CellParameters)
         end
     end
 end # function whatsystem
-function crystalsystem(lattice::AbstractMatrix)
+function Crystallography.crystalsystem(lattice::AbstractMatrix)
     v1, v2, v3 = _splitlattice(lattice)
     a, b, c = norm(v1), norm(v2), norm(v3)
     γ = acos(dot(v1, v2) / a / b)
@@ -434,7 +333,8 @@ Base.:*(a::Hexagonal{3}, b::Union{RhombohedralCentering}) = (a, b)
 Base.:*(a::Centering, b::CrystalSystem) = b * a
 
 Base.iterate(c::CellParameters) = iterate(c.x)
-Base.iterate(c::CellParameters, state) = state > 3 ? iterate(c.y, state - 3) : iterate(c.x, state)
+Base.iterate(c::CellParameters, state) =
+    state > 3 ? iterate(c.y, state - 3) : iterate(c.x, state)
 
 LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
     a' * g.m * b
@@ -450,3 +350,5 @@ StaticArrays.similar_type(
     ::Type{T},
     size::Size{(3,)},
 ) where {T} = CartesianCoordinates{T}
+
+end # module Crystals
