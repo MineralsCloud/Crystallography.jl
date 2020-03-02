@@ -164,34 +164,29 @@ MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k
 # This is a helper type and should not be exported!
 const INDICES = Union{MillerIndices,MillerBravaisIndices}
 
-macro m_str(s)
-    r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
+# This is a helper function and should not be exported!
+function _indices_str(r::Regex, s::AbstractString, ::Type{T}) where {T<:INDICES}
     m = match(r, strip(s))
     isnothing(m) && error("not a valid expression!")
     brackets = first(m.captures) * last(m.captures)
     x = (parse(Int, x) for x in m.captures[2:(end - 1)])
     if brackets ∈ ("()", "{}")
-        return MillerIndices{ReciprocalSpace}(x...)
+        return T{ReciprocalSpace}(x...)
     elseif brackets ∈ ("[]", "<>")
-        return MillerIndices{RealSpace}(x...)
+        return T{RealSpace}(x...)
     else
         error("not a valid expression!")
     end
+end # function _indices_str
+
+macro m_str(s)
+    r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
+    _indices_str(r, s, MillerIndices)
 end
 
 macro mb_str(s)
     r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
-    m = match(r, strip(s))
-    isnothing(m) && error("not a valid expression!")
-    brackets = first(m.captures) * last(m.captures)
-    x = (parse(Int, x) for x in m.captures[2:(end - 1)])
-    if brackets ∈ ("()", "{}")
-        return MillerBravaisIndices{ReciprocalSpace}(x...)
-    elseif brackets ∈ ("[]", "<>")
-        return MillerBravaisIndices{RealSpace}(x...)
-    else
-        error("not a valid expression!")
-    end
+    _indices_str(r, s, MillerBravaisIndices)
 end
 
 function Crystallography.crystalsystem(p::CellParameters)
