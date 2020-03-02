@@ -27,16 +27,16 @@ export AbstractSpace,
 export directioncosine,
     directionangle, distance, interplanar_spacing, cellvolume, reciprocalof
 
-const TetragonalBravais = Union{PrimitiveTetragonal,BodyCenteredTetragonal}
-const CubicBravais = Union{PrimitiveCubic,BodyCenteredCubic,FaceCenteredCubic}
-const OrthorhombicBravais = Union{
+const TETRAGONAL = Union{PrimitiveTetragonal,BodyCenteredTetragonal}
+const CUBIC = Union{PrimitiveCubic,BodyCenteredCubic,FaceCenteredCubic}
+const ORTHORHOMBIC = Union{
     PrimitiveOrthorhombic,
     BCenteredOrthorhombic,
     CCenteredOrthorhombic,
     BodyCenteredOrthorhombic,
     FaceCenteredCubic,
 }
-const MonoclinicBravais = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
+const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
 
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
@@ -64,14 +64,10 @@ struct LatticeConstants{T} <: FieldVector{3,T}
     end
 end
 LatticeConstants(a::T, b::T, c::T) where {T} = LatticeConstants{T}(a, b, c)
-LatticeConstants(
-    ::Union{PrimitiveTriclinic,MonoclinicBravais,OrthorhombicBravais},
-    a,
-    b,
-    c,
-) = LatticeConstants(a, b, c)
-LatticeConstants(::TetragonalBravais, a, b, c) = LatticeConstants(a, a, c)
-LatticeConstants(::CubicBravais, a, b, c) = LatticeConstants(a, a, a)
+LatticeConstants(::Union{PrimitiveTriclinic,MONOCLINIC,ORTHORHOMBIC}, a, b, c) =
+    LatticeConstants(a, b, c)
+LatticeConstants(::TETRAGONAL, a, b, c) = LatticeConstants(a, a, c)
+LatticeConstants(::CUBIC, a, b, c) = LatticeConstants(a, a, a)
 LatticeConstants(::PrimitiveHexagonal, a, b, c) = LatticeConstants(a, a, c)
 LatticeConstants(::RCenteredHexagonal, a, b, c) = LatticeConstants(a, a, a)
 
@@ -85,12 +81,7 @@ AxisAngles(::PrimitiveMonoclinic, α, β, γ, view::Int = 1) =
     view == 1 ? AxisAngles(90, 90, γ) : AxisAngles(90, β, 90)
 AxisAngles(::CCenteredMonoclinic, α, β, γ) = AxisAngles(90, 90, γ)
 AxisAngles(::BCenteredMonoclinic, α, β, γ) = AxisAngles(90, β, 90)
-AxisAngles(
-    ::T,
-    α,
-    β,
-    γ,
-) where {T<:Union{OrthorhombicBravais,TetragonalBravais,CubicBravais}} =
+AxisAngles(::T, α, β, γ) where {T<:Union{ORTHORHOMBIC,TETRAGONAL,CUBIC}} =
     AxisAngles(90, 90, 90)
 AxisAngles(::PrimitiveHexagonal, α, β, γ) = AxisAngles(90, 90, 120)
 AxisAngles(::RCenteredHexagonal, α, β, γ) = AxisAngles(α, α, α)
