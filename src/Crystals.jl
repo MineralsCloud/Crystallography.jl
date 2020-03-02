@@ -25,7 +25,7 @@ export AbstractSpace,
     CellParameters,
     Lattice
 export directioncosine,
-    directionangle, distance, interplanar_spacing, cellvolume, reciprocalof
+    directionangle, distance, interplanar_spacing, cellvolume, reciprocalof, @m_str
 
 const TETRAGONAL = Union{PrimitiveTetragonal,BodyCenteredTetragonal}
 const CUBIC = Union{PrimitiveCubic,BodyCenteredCubic,FaceCenteredCubic}
@@ -163,6 +163,21 @@ MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k
 
 # This is a helper type and should not be exported!
 const INDICES = Union{MillerIndices,MillerBravaisIndices}
+
+macro m_str(s)
+    r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
+    m = match(r, strip(s))
+    isnothing(m) && error("not a valid expression!")
+    brackets = first(m.captures) * last(m.captures)
+    x = (parse(Int, x) for x in m.captures[2:4])
+    if brackets ∈ ("()", "{}")
+        return MillerIndices{ReciprocalSpace}(x...)
+    elseif brackets ∈ ("[]", "<>")
+        return MillerIndices{RealSpace}(x...)
+    else
+        error("not a valid expression!")
+    end
+end
 
 function Crystallography.crystalsystem(p::CellParameters)
     a, b, c, α, β, γ = p
