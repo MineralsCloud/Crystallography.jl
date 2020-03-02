@@ -156,6 +156,7 @@ MillerIndices{S}(i, j, k) where {S} = MillerIndices{S}([i, j, k])
 struct MillerBravaisIndices{S<:AbstractSpace} <: AbstractVector{Int}
     v::SVector{4,Int}
     function MillerBravaisIndices{S}(x) where {S}
+        @assert(x[3] == -x[1] - x[2], "the 3rd index of `MillerBravaisIndices` should equal to the negation of the first two!")
         return new(iszero(x) ? x : x .÷ gcd(x))
     end
 end
