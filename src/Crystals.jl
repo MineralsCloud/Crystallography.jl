@@ -249,7 +249,7 @@ Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.m))  # `sqrt` is always positive!
 
-function reciprocalof(mat::AbstractMatrix, twopi::Bool = false)
+function reciprocalof(mat::Lattice, twopi::Bool = false)
     @assert size(mat) == (3, 3)
     volume = abs(det(mat))
     a1, a2, a3 = mat[1, :], mat[2, :], mat[3, :]
