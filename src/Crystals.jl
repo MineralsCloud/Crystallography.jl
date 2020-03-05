@@ -142,6 +142,7 @@ struct Cell{
     magmoms::M
 end
 Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
+Cell(lattice::Lattice, positions, numbers, args...) = Cell(lattice.data, positions, numbers, args...)
 
 struct MetricTensor{T} <: AbstractMatrix{T}
     data::SHermitianCompact{3,T}
