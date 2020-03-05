@@ -226,14 +226,13 @@ function _checkpositive(v)  # This is a helper function and should not be export
 end # function _checkpositive
 
 """
-    cellvolume(param::CellParameters)
+    cellvolume(a, b, c, α, β, γ)
+    cellvolume(p::CellParameters)
 
 Calculates the cell volume from a set of `CellParameters`.
 """
-function cellvolume(param::CellParameters)
-    a, b, c, α, β, γ = param
-    return a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
-end # function cellvolume
+cellvolume(a, b, c, α, β, γ) = a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
+cellvolume(p::CellParameters) = cellvolume(p...)
 """
     cellvolume(m::AbstractMatrix)
 
