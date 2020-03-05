@@ -131,7 +131,7 @@ end
 Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
 
 struct MetricTensor{T} <: AbstractMatrix{T}
-    m::SHermitianCompact{3,T}
+    data::SHermitianCompact{3,T}
 end
 MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
 function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
@@ -147,13 +147,13 @@ end
 MetricTensor(p::CellParameters) = MetricTensor(p.x..., p.y...)
 
 struct MillerIndices{S<:AbstractSpace} <: AbstractVector{Int}
-    v::SVector{3,Int}
+    data::SVector{3,Int}
     MillerIndices{S}(v) where {S} = new(iszero(v) ? v : v .÷ gcd(v))
 end
 MillerIndices{S}(i, j, k) where {S} = MillerIndices{S}([i, j, k])
 
 struct MillerBravaisIndices{S<:AbstractSpace} <: AbstractVector{Int}
-    v::SVector{4,Int}
+    data::SVector{4,Int}
     function MillerBravaisIndices{S}(v) where {S}
         @assert(
             v[3] == -v[1] - v[2],
@@ -247,7 +247,7 @@ end # function cellvolume
 
 Calculates the cell volume from a `MetricTensor`.
 """
-cellvolume(g::MetricTensor) = sqrt(det(g.m))  # `sqrt` is always positive!
+cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
 
 function reciprocalof(mat::Lattice, twopi::Bool = false)
     @assert size(mat) == (3, 3)
@@ -287,14 +287,14 @@ function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
 end # function supercell
 
 Base.size(::Union{MetricTensor,Lattice}) = (3, 3)
-Base.size(::Union{MillerIndices}) = (3,)
-Base.size(::Union{MillerBravaisIndices}) = (4,)
+Base.size(::MillerIndices) = (3,)
+Base.size(::MillerBravaisIndices) = (4,)
+Base.size(::CellParameters) = (6,)
 
-Base.getindex(A::Union{MetricTensor,Lattice}, I::Vararg{Int}) = getindex(A.m, I...)
-Base.getindex(A::Union{MillerIndices,MillerBravaisIndices}, i::Int) = getindex(A.v, i)
-Base.getindex(A::CellParameters, i::Int) = getindex(A.data, i)
+Base.getindex(A::Union{MetricTensor,Lattice}, I::Vararg{Int}) = getindex(A.data, I...)
+Base.getindex(A::Union{MillerIndices,MillerBravaisIndices,CellParameters}, i::Int) = getindex(A.data, i)
 
-Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.m)))
+Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
 
 Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
 Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T<:RealSpace} =
@@ -325,7 +325,7 @@ Base.:*(a::Centering, b::CrystalSystem) = b * a
 Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
 
 LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
-    a' * g.m * b
+    a' * g.data * b
 LinearAlgebra.norm(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
 
 StaticArrays.similar_type(
