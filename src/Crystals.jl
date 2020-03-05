@@ -268,20 +268,20 @@ distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = norm(b
 interplanar_spacing(a::CrystalCoordinates, g::MetricTensor) = 1 / norm(a, g)
 
 """
-    supercell(cell::AbstractMatrix, expansion::AbstractMatrix{<:Integer})
+    supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
 
 Allow the supercell to be a tilted extension of `cell`.
 """
-function supercell(cell::AbstractMatrix, expansion::AbstractMatrix{<:Integer})
+function supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
     @assert(det(expansion) != 0, "matrix `expansion` cannot be a singular integer matrix!")
     return expansion * cell
 end # function supercell
 """
-    supercell(cell::AbstractMatrix, expansion::AbstractVector{<:Integer})
+    supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
 
 Return a supercell based on `cell` and expansion coefficients.
 """
-function supercell(cell::AbstractMatrix, expansion::AbstractVector{<:Integer})
+function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
     @assert length(expansion) == 3
     return supercell(cell, Diagonal(expansion))
 end # function supercell
