@@ -158,7 +158,7 @@ function MetricTensor(a, b, c, α, β, γ)
     g23 = b * c * cos(α)
     return MetricTensor(SHermitianCompact(SVector(a^2, g12, g13, b^2, g23, c^2)))
 end
-MetricTensor(p::CellParameters) = MetricTensor(p.x..., p.y...)
+MetricTensor(p::CellParameters) = MetricTensor(p...)
 
 struct MillerIndices{S<:AbstractSpace} <: AbstractVector{Int}
     data::SVector{3,Int}
