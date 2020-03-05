@@ -2,6 +2,7 @@ module Crystals
 
 using LinearAlgebra: Diagonal, cross, det, dot, norm
 
+using CoordinateTransformations: Transformation, IdentityTransformation
 using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
 using SymPy
 
@@ -9,6 +10,7 @@ using Crystallography
 
 import LinearAlgebra
 import StaticArrays
+import CoordinateTransformations
 import Crystallography
 
 export AbstractSpace,
@@ -23,7 +25,12 @@ export AbstractSpace,
     LatticeConstants,
     AxisAngles,
     CellParameters,
-    Lattice
+    Lattice,
+    RealFromReciprocal,
+    ReciprocalFromReal,
+    CrystalFromCartesian,
+    CartesianFromCrystal,
+    CrystalFromCrystal
 export directioncosine,
     directionangle, distance, interplanar_spacing, cellvolume, reciprocalof, @m_str, @mb_str
 
@@ -37,6 +44,12 @@ const ORTHORHOMBIC = Union{
     FaceCenteredCubic,
 }
 const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
+
+struct RealFromReciprocal <: Transformation end
+struct ReciprocalFromReal <: Transformation end
+struct CartesianFromCrystal <: Transformation end
+struct CrystalFromCartesian <: Transformation end
+struct CrystalFromCrystal <: Transformation end
 
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
@@ -295,6 +308,36 @@ Base.getindex(A::Union{MetricTensor,Lattice}, I::Vararg{Int}) = getindex(A.data,
 Base.getindex(A::Union{MillerIndices,MillerBravaisIndices,CellParameters}, i::Int) = getindex(A.data, i)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
+Base.inv(::RealFromReciprocal) = ReciprocalFromReal()
+Base.inv(::ReciprocalFromReal) = RealFromReciprocal()
+Base.inv(::CartesianFromCrystal) = CrystalFromCartesian()
+Base.inv(::CrystalFromCartesian) = CartesianFromCrystal()
+
+CoordinateTransformations.compose(::RealFromReciprocal, ::ReciprocalFromReal) = IdentityTransformation()
+CoordinateTransformations.compose(::ReciprocalFromReal, ::RealFromReciprocal) = IdentityTransformation()
+CoordinateTransformations.compose(::CrystalFromCartesian, ::CartesianFromCrystal) = IdentityTransformation()
+CoordinateTransformations.compose(::CartesianFromCrystal, ::CrystalFromCartesian) = IdentityTransformation()
+
+(::CrystalFromCartesian)(to::Lattice) = to.m
+(::CartesianFromCrystal)(from::Lattice) = from.m'
+(::CrystalFromCrystal)(to::Lattice, from::Lattice) = to * from
+
+Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
+Base.inv(::RealFromReciprocal) = ReciprocalFromReal()
+Base.inv(::ReciprocalFromReal) = RealFromReciprocal()
+Base.inv(::CartesianFromCrystal) = CrystalFromCartesian()
+Base.inv(::CrystalFromCartesian) = CartesianFromCrystal()
+
+CoordinateTransformations.compose(::RealFromReciprocal, ::ReciprocalFromReal) = IdentityTransformation()
+CoordinateTransformations.compose(::ReciprocalFromReal, ::RealFromReciprocal) = IdentityTransformation()
+CoordinateTransformations.compose(::CrystalFromCartesian, ::CartesianFromCrystal) = IdentityTransformation()
+CoordinateTransformations.compose(::CartesianFromCrystal, ::CrystalFromCartesian) = IdentityTransformation()
+
+(::CrystalFromCartesian)(to::Lattice) = to.m
+(::CartesianFromCrystal)(from::Lattice) = from.m'
+(::CrystalFromCrystal)(to::Lattice, from::Lattice) = to * from
+
+Base.convert(::Type{CrystalCoordinates}, v::AbstractVector) = CrystalFromCartesian()(v)
 
 Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
 Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T<:RealSpace} =
