@@ -57,7 +57,7 @@ function irreciprocalmesh(
 end # function irreciprocalmesh
 
 struct SeitzOperator{T}
-    m::SMatrix{4,4,T}
+    data::SMatrix{4,4,T}
 end
 SeitzOperator(m::AbstractMatrix) = SeitzOperator(SMatrix{4,4}(m))
 function SeitzOperator(l::LinearMap)
@@ -83,10 +83,10 @@ function SeitzOperator(s::SeitzOperator, pos::AbstractVector)
     return t * s * inv(t)
 end # function SeitzOperator
 
-isidentity(op::SeitzOperator) = op.m == I
+isidentity(op::SeitzOperator) = op.data == I
 
 function istranslation(op::SeitzOperator)
-    m = op.m
+    m = op.data
     if m[1:3, 1:3] != I || !(iszero(m[4, 1:3]) && isone(m[4, 4]))
         return false
     end
@@ -94,7 +94,7 @@ function istranslation(op::SeitzOperator)
 end # function istranslation
 
 function ispointsymmetry(op::SeitzOperator)
-    m = op.m
+    m = op.data
     if !(
         iszero(m[4, 1:3]) &&
         iszero(m[1:3, 4]) && isone(m[4, 4]) && abs(det(m[1:3, 1:3])) == 1
@@ -104,24 +104,24 @@ function ispointsymmetry(op::SeitzOperator)
     return true
 end # function ispointsymmetry
 
-Base.getindex(A::SeitzOperator, I::Vararg{Int}) = getindex(A.m, I...)
+Base.getindex(A::SeitzOperator, I::Vararg{Int}) = getindex(A.data, I...)
 
 Base.one(::Type{SeitzOperator{T}}) where {T} =
     SeitzOperator(SDiagonal(SVector{4}(ones(T, 4))))
 Base.one(A::SeitzOperator) = one(typeof(A))
 
-Base.inv(op::SeitzOperator) = SeitzOperator(Base.inv(op.m))
+Base.inv(op::SeitzOperator) = SeitzOperator(Base.inv(op.data))
 
-Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.m*[c; 1])[1:3])
-Base.:*(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.m * b.m)
+Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.data*[c; 1])[1:3])
+Base.:*(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.data * b.data)
 
 function Base.convert(::Type{Translation}, op::SeitzOperator)
     @assert(istranslation(op), "operator is not a translation!")
-    return Translation(collect(op.m[1:3, 4]))
+    return Translation(collect(op.data[1:3, 4]))
 end # function Base.convert
 function Base.convert(::Type{LinearMap}, op::SeitzOperator)
     @assert(ispointsymmetry(op), "operator is not a point symmetry!")
-    return LinearMap(collect(op.m[1:3, 1:3]))
+    return LinearMap(collect(op.data[1:3, 1:3]))
 end # function Base.convert
 
 end # module Symmetry

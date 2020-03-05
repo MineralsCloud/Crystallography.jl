@@ -87,24 +87,24 @@ AxisAngles(::PrimitiveHexagonal, α, β, γ) = AxisAngles(90, 90, 120)
 AxisAngles(::RCenteredHexagonal, α, β, γ) = AxisAngles(α, α, α)
 
 struct CellParameters{S,T}
-    x::LatticeConstants{S}
-    y::AxisAngles{T}
+    data::Tuple{S,S,S,T,T,T}
 end
-CellParameters(a::S, b::S, c::S, α::T, β::T, γ::T) where {S,T} =
-    CellParameters{S,T}(LatticeConstants(a, b, c), AxisAngles(α, β, γ))
+CellParameters(a, b, c, α, β, γ) = CellParameters((a, b, c, α, β, γ))
+CellParameters(a::LatticeConstants, b::AxisAngles) = CellParameters(a..., b...)
 CellParameters(x::BravaisLattice) = args -> CellParameters(x, args...)
 CellParameters(x::BravaisLattice, a, b, c, α, β, γ) =
     CellParameters(LatticeConstants(x, a, b, c), AxisAngles(x, α, β, γ))
 
-struct Lattice{T} <: AbstractMatrix{T}
-    m::SMatrix{3,3,T}
+struct Lattice{T}
+    data::SVector{3,SVector{3,T}}
 end
-Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
-Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) =
-    vcat(transpose.((v1, v2, v3))...)
-function Lattice(p::CellParameters)
+Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) = Lattice(SVector(map(SVector{3}, (v1, v2, v3))))
+function Lattice(m::AbstractMatrix, rowmajor::Bool = false)
+    m = rowmajor ? m' : m
+    return Lattice(Iterators.partition(m, 3)...)
+end # function Lattice
+function Lattice(a, b, c, α, β, γ)
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
-    a, b, c, α, β, γ = p
     v = cellvolume(CellParameters(1, 1, 1, α, β, γ))
     # reciprocal lattice
     a_recip = sin(α) / (a * v)
@@ -115,6 +115,7 @@ function Lattice(p::CellParameters)
     a3 = [0, 0, c]
     return Lattice(a1, a2, a3)
 end # function Lattice
+Lattice(p::CellParameters) = Lattice(p...)
 
 struct Cell{
     L<:AbstractVecOrMat,
@@ -130,7 +131,7 @@ end
 Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
 
 struct MetricTensor{T} <: AbstractMatrix{T}
-    m::SHermitianCompact{3,T}
+    data::SHermitianCompact{3,T}
 end
 MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
 function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
@@ -146,13 +147,13 @@ end
 MetricTensor(p::CellParameters) = MetricTensor(p.x..., p.y...)
 
 struct MillerIndices{S<:AbstractSpace} <: AbstractVector{Int}
-    v::SVector{3,Int}
+    data::SVector{3,Int}
     MillerIndices{S}(v) where {S} = new(iszero(v) ? v : v .÷ gcd(v))
 end
 MillerIndices{S}(i, j, k) where {S} = MillerIndices{S}([i, j, k])
 
 struct MillerBravaisIndices{S<:AbstractSpace} <: AbstractVector{Int}
-    v::SVector{4,Int}
+    data::SVector{4,Int}
     function MillerBravaisIndices{S}(v) where {S}
         @assert(
             v[3] == -v[1] - v[2],
@@ -225,14 +226,13 @@ function _checkpositive(v)  # This is a helper function and should not be export
 end # function _checkpositive
 
 """
-    cellvolume(param::CellParameters)
+    cellvolume(a, b, c, α, β, γ)
+    cellvolume(p::CellParameters)
 
 Calculates the cell volume from a set of `CellParameters`.
 """
-function cellvolume(param::CellParameters)
-    a, b, c, α, β, γ = param
-    return a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
-end # function cellvolume
+cellvolume(a, b, c, α, β, γ) = a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
+cellvolume(p::CellParameters) = cellvolume(p...)
 """
     cellvolume(m::AbstractMatrix)
 
@@ -247,9 +247,9 @@ end # function cellvolume
 
 Calculates the cell volume from a `MetricTensor`.
 """
-cellvolume(g::MetricTensor) = sqrt(det(g.m))  # `sqrt` is always positive!
+cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
 
-function reciprocalof(mat::AbstractMatrix, twopi::Bool = false)
+function reciprocalof(mat::Lattice, twopi::Bool = false)
     @assert size(mat) == (3, 3)
     volume = abs(det(mat))
     a1, a2, a3 = mat[1, :], mat[2, :], mat[3, :]
@@ -268,32 +268,33 @@ distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = norm(b
 interplanar_spacing(a::CrystalCoordinates, g::MetricTensor) = 1 / norm(a, g)
 
 """
-    supercell(cell::AbstractMatrix, expansion::AbstractMatrix{<:Integer})
+    supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
 
 Allow the supercell to be a tilted extension of `cell`.
 """
-function supercell(cell::AbstractMatrix, expansion::AbstractMatrix{<:Integer})
+function supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
     @assert(det(expansion) != 0, "matrix `expansion` cannot be a singular integer matrix!")
     return expansion * cell
 end # function supercell
 """
-    supercell(cell::AbstractMatrix, expansion::AbstractVector{<:Integer})
+    supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
 
 Return a supercell based on `cell` and expansion coefficients.
 """
-function supercell(cell::AbstractMatrix, expansion::AbstractVector{<:Integer})
+function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
     @assert length(expansion) == 3
     return supercell(cell, Diagonal(expansion))
 end # function supercell
 
 Base.size(::Union{MetricTensor,Lattice}) = (3, 3)
-Base.size(::Union{MillerIndices}) = (3,)
-Base.size(::Union{MillerBravaisIndices}) = (4,)
+Base.size(::MillerIndices) = (3,)
+Base.size(::MillerBravaisIndices) = (4,)
+Base.size(::CellParameters) = (6,)
 
-Base.getindex(A::Union{MetricTensor,Lattice}, I::Vararg{Int}) = getindex(A.m, I...)
-Base.getindex(A::Union{MillerIndices,MillerBravaisIndices}, i::Int) = getindex(A.v, i)
+Base.getindex(A::Union{MetricTensor,Lattice}, I::Vararg{Int}) = getindex(A.data, I...)
+Base.getindex(A::Union{MillerIndices,MillerBravaisIndices,CellParameters}, i::Int) = getindex(A.data, i)
 
-Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.m)))
+Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
 
 Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
 Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T<:RealSpace} =
@@ -321,12 +322,10 @@ Base.:*(a::Union{Cubic,Orthorhombic}, b::Union{BodyCentering,FaceCentering}) = (
 Base.:*(a::Hexagonal{3}, b::Union{RhombohedralCentering}) = (a, b)
 Base.:*(a::Centering, b::CrystalSystem) = b * a
 
-Base.iterate(c::CellParameters) = iterate(c.x)
-Base.iterate(c::CellParameters, state) =
-    state > 3 ? iterate(c.y, state - 3) : iterate(c.x, state)
+Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
 
 LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
-    a' * g.m * b
+    a' * g.data * b
 LinearAlgebra.norm(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
 
 StaticArrays.similar_type(
