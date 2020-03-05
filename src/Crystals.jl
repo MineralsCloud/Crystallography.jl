@@ -319,9 +319,9 @@ CoordinateTransformations.compose(::ReciprocalFromReal, ::RealFromReciprocal) = 
 CoordinateTransformations.compose(::CrystalFromCartesian, ::CartesianFromCrystal) = IdentityTransformation()
 CoordinateTransformations.compose(::CartesianFromCrystal, ::CrystalFromCartesian) = IdentityTransformation()
 
-(::CrystalFromCartesian)(to::Lattice) = to.data
-(::CartesianFromCrystal)(from::Lattice) = from.data'
-(::CrystalFromCrystal)(to::Lattice, from::Lattice) = to * from
+(::CrystalFromCartesian)(to::Lattice) = convert(Matrix{eltype(to)}, to)
+(::CartesianFromCrystal)(from::Lattice) = convert(Matrix{eltype(from)}, from)'
+(::CrystalFromCrystal)(to::Lattice, from::Lattice) = convert(Matrix{eltype(to)}, to) * convert(Matrix{eltype(from)}, from)
 
 Base.convert(::Type{CrystalCoordinates}, v::AbstractVector) = CrystalFromCartesian()(v)
 
