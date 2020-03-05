@@ -319,23 +319,8 @@ CoordinateTransformations.compose(::ReciprocalFromReal, ::RealFromReciprocal) = 
 CoordinateTransformations.compose(::CrystalFromCartesian, ::CartesianFromCrystal) = IdentityTransformation()
 CoordinateTransformations.compose(::CartesianFromCrystal, ::CrystalFromCartesian) = IdentityTransformation()
 
-(::CrystalFromCartesian)(to::Lattice) = to.m
-(::CartesianFromCrystal)(from::Lattice) = from.m'
-(::CrystalFromCrystal)(to::Lattice, from::Lattice) = to * from
-
-Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
-Base.inv(::RealFromReciprocal) = ReciprocalFromReal()
-Base.inv(::ReciprocalFromReal) = RealFromReciprocal()
-Base.inv(::CartesianFromCrystal) = CrystalFromCartesian()
-Base.inv(::CrystalFromCartesian) = CartesianFromCrystal()
-
-CoordinateTransformations.compose(::RealFromReciprocal, ::ReciprocalFromReal) = IdentityTransformation()
-CoordinateTransformations.compose(::ReciprocalFromReal, ::RealFromReciprocal) = IdentityTransformation()
-CoordinateTransformations.compose(::CrystalFromCartesian, ::CartesianFromCrystal) = IdentityTransformation()
-CoordinateTransformations.compose(::CartesianFromCrystal, ::CrystalFromCartesian) = IdentityTransformation()
-
-(::CrystalFromCartesian)(to::Lattice) = to.m
-(::CartesianFromCrystal)(from::Lattice) = from.m'
+(::CrystalFromCartesian)(to::Lattice) = to.data
+(::CartesianFromCrystal)(from::Lattice) = from.data'
 (::CrystalFromCrystal)(to::Lattice, from::Lattice) = to * from
 
 Base.convert(::Type{CrystalCoordinates}, v::AbstractVector) = CrystalFromCartesian()(v)
