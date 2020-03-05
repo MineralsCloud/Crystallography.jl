@@ -96,15 +96,16 @@ CellParameters(x::BravaisLattice) = args -> CellParameters(x, args...)
 CellParameters(x::BravaisLattice, a, b, c, α, β, γ) =
     CellParameters(LatticeConstants(x, a, b, c), AxisAngles(x, α, β, γ))
 
-struct Lattice{T} <: AbstractMatrix{T}
-    m::SMatrix{3,3,T}
+struct Lattice{T}
+    data::SVector{3,SVector{3,T}}
 end
-Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
-Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) =
-    vcat(transpose.((v1, v2, v3))...)
-function Lattice(p::CellParameters)
+Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) = Lattice(SVector(map(SVector{3}, (v1, v2, v3))))
+function Lattice(m::AbstractMatrix, rowmajor::Bool = false)
+    m = rowmajor ? m' : m
+    return Lattice(Iterators.partition(m, 3)...)
+end # function Lattice
+function Lattice(a, b, c, α, β, γ)
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
-    a, b, c, α, β, γ = p
     v = cellvolume(CellParameters(1, 1, 1, α, β, γ))
     # reciprocal lattice
     a_recip = sin(α) / (a * v)
@@ -115,6 +116,7 @@ function Lattice(p::CellParameters)
     a3 = [0, 0, c]
     return Lattice(a1, a2, a3)
 end # function Lattice
+Lattice(p::CellParameters) = Lattice(p...)
 
 struct Cell{
     L<:AbstractVecOrMat,
