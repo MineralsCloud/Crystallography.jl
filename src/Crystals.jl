@@ -87,11 +87,10 @@ AxisAngles(::PrimitiveHexagonal, α, β, γ) = AxisAngles(90, 90, 120)
 AxisAngles(::RCenteredHexagonal, α, β, γ) = AxisAngles(α, α, α)
 
 struct CellParameters{S,T}
-    x::LatticeConstants{S}
-    y::AxisAngles{T}
+    data::Tuple{S,S,S,T,T,T}
 end
-CellParameters(a::S, b::S, c::S, α::T, β::T, γ::T) where {S,T} =
-    CellParameters{S,T}(LatticeConstants(a, b, c), AxisAngles(α, β, γ))
+CellParameters(a, b, c, α, β, γ) = CellParameters((a, b, c, α, β, γ))
+CellParameters(a::LatticeConstants, b::AxisAngles) = CellParameters(a..., b...)
 CellParameters(x::BravaisLattice) = args -> CellParameters(x, args...)
 CellParameters(x::BravaisLattice, a, b, c, α, β, γ) =
     CellParameters(LatticeConstants(x, a, b, c), AxisAngles(x, α, β, γ))
@@ -294,6 +293,7 @@ Base.size(::Union{MillerBravaisIndices}) = (4,)
 
 Base.getindex(A::Union{MetricTensor,Lattice}, I::Vararg{Int}) = getindex(A.m, I...)
 Base.getindex(A::Union{MillerIndices,MillerBravaisIndices}, i::Int) = getindex(A.v, i)
+Base.getindex(A::CellParameters, i::Int) = getindex(A.data, i)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.m)))
 
@@ -323,9 +323,7 @@ Base.:*(a::Union{Cubic,Orthorhombic}, b::Union{BodyCentering,FaceCentering}) = (
 Base.:*(a::Hexagonal{3}, b::Union{RhombohedralCentering}) = (a, b)
 Base.:*(a::Centering, b::CrystalSystem) = b * a
 
-Base.iterate(c::CellParameters) = iterate(c.x)
-Base.iterate(c::CellParameters, state) =
-    state > 3 ? iterate(c.y, state - 3) : iterate(c.x, state)
+Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
 
 LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
     a' * g.m * b
