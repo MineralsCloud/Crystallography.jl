@@ -35,7 +35,7 @@ export CrystalSystem,
     FaceCenteredCubic,
     PrimitiveHexagonal,
     RCenteredHexagonal
-export pearsonsymbol, arithmeticclass, centeringof, crystalsystem
+export pearsonsymbol, arithmeticclass, centering, crystalsystem
 
 abstract type CrystalSystem end
 struct Triclinic <: CrystalSystem end
@@ -87,7 +87,8 @@ pearsonsymbol(::BaseCentering{T}) where {T} = string(T)
 pearsonsymbol(::BodyCentering) = "I"
 pearsonsymbol(::FaceCentering) = "F"
 pearsonsymbol(::RhombohedralCentering) = "R"
-pearsonsymbol(b::BravaisLattice) = pearsonsymbol(crystalsystem(b)) * pearsonsymbol(centeringof(b))
+pearsonsymbol(b::BravaisLattice) =
+    pearsonsymbol(crystalsystem(b)) * pearsonsymbol(centering(b))
 
 arithmeticclass(::Triclinic) = "-1"
 arithmeticclass(::Monoclinic) = "2/m"
@@ -100,10 +101,11 @@ arithmeticclass(::BaseCentering) = "S"
 arithmeticclass(::BodyCentering) = "I"
 arithmeticclass(::FaceCentering) = "F"
 arithmeticclass(::RhombohedralCentering) = "R"
-arithmeticclass(b::BravaisLattice) = arithmeticclass(crystalsystem(b)) * arithmeticclass(centeringof(b))
+arithmeticclass(b::BravaisLattice) =
+    arithmeticclass(crystalsystem(b)) * arithmeticclass(centering(b))
 arithmeticclass(::RCenteredHexagonal) = "-3mR"
 
-centeringof(b::BravaisLattice) = last(b)
+centering(b::BravaisLattice) = last(b)
 
 crystalsystem(b::BravaisLattice) = first(b)
 
