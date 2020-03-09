@@ -15,6 +15,7 @@ makedocs(;
         "Home" => "index.md",
         "Manual" => Any["Installation"=>"install.md", "Development"=>"develop.md"],
         "API by modules" => Any[
+            "`Crystallography` module"=>"Crystallography.md",
             "`Crystallography.Symmetry` module"=>"Symmetry.md",
         ],
     ],
