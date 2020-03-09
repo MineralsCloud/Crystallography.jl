@@ -106,8 +106,8 @@ struct Lattice{T}
 end
 Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) = Lattice(SVector(map(SVector{3}, (v1, v2, v3))))
 function Lattice(m::AbstractMatrix, rowmajor::Bool = false)
-    m = rowmajor ? m' : m
-    return Lattice(Iterators.partition(m, 3)...)
+    f = rowmajor ? transpose : identity
+    return Lattice(Iterators.partition(f(m), 3)...)
 end # function Lattice
 function Lattice(a, b, c, α, β, γ)
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
