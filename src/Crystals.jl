@@ -324,18 +324,6 @@ Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:RealSpace} =
 Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:ReciprocalSpace} =
     MillerBravais{T}(m[1], m[2], -(m[1] + m[2]), m[3])
 
-Base.:*(a::CrystalSystem, b::Centering) =
-    error("combination $a & $b is not a Bravais lattice!")
-Base.:*(
-    a::Union{Triclinic,Monoclinic,Orthorhombic,Tetragonal,Cubic,Hexagonal},
-    b::Primitive,
-) = (a, b)
-Base.:*(a::Union{Monoclinic,Orthorhombic}, b::BaseCentering) = (a, b)
-Base.:*(a::Tetragonal, b::BodyCentering) = (a, b)
-Base.:*(a::Union{Cubic,Orthorhombic}, b::Union{BodyCentering,FaceCentering}) = (a, b)
-Base.:*(a::Hexagonal, b::Union{RhombohedralCentering}) = (a, b)
-Base.:*(a::Centering, b::CrystalSystem) = b * a
-
 Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
 
 LinearAlgebra.dot(a::Crystal, g::MetricTensor, b::Crystal) = a' * g.data * b
