@@ -451,6 +451,14 @@ Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:RealSpace} =
     MillerBravais{T}(2 * m[1] - m[2], 2 * m[2] - m[1], -(m[1] + m[2]), 3 * m[3])
 Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:ReciprocalSpace} =
     MillerBravais{T}(m[1], m[2], -(m[1] + m[2]), m[3])
+function Base.convert(::Type{CellParameters}, g::MetricTensor)
+    data = g.data
+    a2, b2, c2, ab, ac, bc = data[1, 1], data[2, 2], data[3, 3], data[1, 2], data[1, 3], data[2, 3]
+    a, b, c = map(sqrt, (a2, b2, c2))
+    γ, β, α = acos(ab / (a * b)), acos(ac / (a * c)), acos(bc / (b * c))
+    return CellParameters(a, b, c, α, β, γ)
+end # function Base.convert
+Base.convert(::Type{Lattice}, g::MetricTensor) = Lattice(convert(CellParameters, g))
 
 Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
 
