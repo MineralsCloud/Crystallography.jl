@@ -244,10 +244,9 @@ Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
 
-function reciprocalof(mat::Lattice, twopi::Bool = false)
-    @assert size(mat) == (3, 3)
-    volume = abs(det(mat))
-    a1, a2, a3 = mat[1, :], mat[2, :], mat[3, :]
+function reciprocalof(lattice::Lattice, twopi::Bool = false)
+    volume = cellvolume(lattice)
+    a1, a2, a3 = lattice.data
     factor = twopi ? 2 * SymPy.PI : 1
     return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocalof
