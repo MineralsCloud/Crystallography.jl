@@ -229,17 +229,19 @@ end # function crystalsystem
     cellvolume(a, b, c, α, β, γ)
     cellvolume(p::CellParameters)
 
-Calculates the cell volume from a set of `CellParameters`.
+Calculates the cell volume from 6 cell parameters.
 """
 cellvolume(a, b, c, α, β, γ) =
     a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
 cellvolume(p::CellParameters) = cellvolume(p...)
 """
     cellvolume(l::Lattice)
+    cellvolume(c::Cell)
 
-Calculates the cell volume from a general 3×3 matrix.
+Calculates the cell volume from a `Lattice` or a `Cell`.
 """
 cellvolume(l::Lattice) = abs(det(convert(Matrix{eltype(l)}, l)))
+cellvolume(c::Cell) = cellvolume(c.lattice)
 """
     cellvolume(g::MetricTensor)
 
