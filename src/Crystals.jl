@@ -2,6 +2,7 @@ module Crystals
 
 using LinearAlgebra: Diagonal, cross, det, dot, norm
 
+using CoordinateTransformations: Transformation, IdentityTransformation
 using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
 using SymPy
 
@@ -9,6 +10,7 @@ using Crystallography
 
 import LinearAlgebra
 import StaticArrays
+import CoordinateTransformations
 import Crystallography
 
 export AbstractSpace,
@@ -23,7 +25,12 @@ export AbstractSpace,
     LatticeConstants,
     AxisAngles,
     CellParameters,
-    Lattice
+    Lattice,
+    RealFromReciprocal,
+    ReciprocalFromReal,
+    CrystalFromCartesian,
+    CartesianFromCrystal,
+    CrystalFromCrystal
 export directioncosine,
     directionangle, distance, interplanar_spacing, cellvolume, reciprocalof, @m_str, @mb_str
 
@@ -37,6 +44,12 @@ const ORTHORHOMBIC = Union{
     FaceCenteredCubic,
 }
 const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
+
+struct RealFromReciprocal <: Transformation end
+struct ReciprocalFromReal <: Transformation end
+struct CartesianFromCrystal <: Transformation end
+struct CrystalFromCartesian <: Transformation end
+struct CrystalFromCrystal <: Transformation end
 
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
@@ -129,6 +142,7 @@ struct Cell{
     magmoms::M
 end
 Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
+Cell(lattice::Lattice, positions, numbers, args...) = Cell(lattice.data, positions, numbers, args...)
 
 struct MetricTensor{T} <: AbstractMatrix{T}
     data::SHermitianCompact{3,T}
@@ -144,7 +158,7 @@ function MetricTensor(a, b, c, α, β, γ)
     g23 = b * c * cos(α)
     return MetricTensor(SHermitianCompact(SVector(a^2, g12, g13, b^2, g23, c^2)))
 end
-MetricTensor(p::CellParameters) = MetricTensor(p.x..., p.y...)
+MetricTensor(p::CellParameters) = MetricTensor(p...)
 
 struct MillerIndices{S<:AbstractSpace} <: AbstractVector{Int}
     data::SVector{3,Int}
@@ -295,6 +309,23 @@ Base.getindex(A::Union{MetricTensor,Lattice}, I::Vararg{Int}) = getindex(A.data,
 Base.getindex(A::Union{MillerIndices,MillerBravaisIndices,CellParameters}, i::Int) = getindex(A.data, i)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
+Base.inv(::RealFromReciprocal) = ReciprocalFromReal()
+Base.inv(::ReciprocalFromReal) = RealFromReciprocal()
+Base.inv(::CartesianFromCrystal) = CrystalFromCartesian()
+Base.inv(::CrystalFromCartesian) = CartesianFromCrystal()
+
+CoordinateTransformations.compose(::RealFromReciprocal, ::ReciprocalFromReal) = IdentityTransformation()
+CoordinateTransformations.compose(::ReciprocalFromReal, ::RealFromReciprocal) = IdentityTransformation()
+CoordinateTransformations.compose(::CrystalFromCartesian, ::CartesianFromCrystal) = IdentityTransformation()
+CoordinateTransformations.compose(::CartesianFromCrystal, ::CrystalFromCartesian) = IdentityTransformation()
+
+(::CrystalFromCartesian)(to::Lattice) = convert(Matrix{eltype(to)}, to)
+(::CartesianFromCrystal)(from::Lattice) = convert(Matrix{eltype(from)}, from)'
+(::CrystalFromCrystal)(to::Lattice, from::Lattice) = convert(Matrix{eltype(to)}, to) * convert(Matrix{eltype(from)}, from)
+
+Base.convert(::Type{CrystalCoordinates}, v::AbstractVector) = CrystalFromCartesian()(v)
+
+Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
 
 Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
 Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T<:RealSpace} =
