@@ -74,6 +74,7 @@ const BodyCenteredCubic = Tuple{Cubic,BodyCentering}
 const FaceCenteredCubic = Tuple{Cubic,FaceCentering}
 const PrimitiveHexagonal = Tuple{Hexagonal,Primitive}
 const RCenteredHexagonal = Tuple{Hexagonal,RhombohedralCentering}
+(::Type{Tuple{A,B}})() where {A<:CrystalSystem,B<:Centering} = (A(), B())
 
 pearsonsymbol(::Triclinic) = "a"
 pearsonsymbol(::Monoclinic) = "m"
