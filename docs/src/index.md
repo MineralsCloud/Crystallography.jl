@@ -1,4 +1,8 @@
-# Crystallography.jl
+```@meta
+CurrentModule = Crystallography
+```
+
+# Crystallography
 
 ```@index
 ```
