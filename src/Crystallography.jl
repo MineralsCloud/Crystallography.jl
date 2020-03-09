@@ -428,10 +428,10 @@ CoordinateTransformations.compose(::CartesianFromCrystal, ::CrystalFromCartesian
 (::CrystalFromCrystal)(to::Lattice, from::Lattice) =
     convert(Matrix{eltype(to)}, to) * convert(Matrix{eltype(from)}, from)
 
-Base.convert(::Type{Crystal}, v::AbstractVector) = CrystalFromCartesian()(v)
-
+Base.convert(::Type{Crystal}, lattice::Lattice, v::AbstractVector) = Crystal(CrystalFromCartesian()(lattice) * v)
+Base.convert(::Type{T}, lattice::Lattice, v::Crystal) where {T<:AbstractVector} = T(CartesianFromCrystal()(lattice) * collect(v))
+Base.convert(::Type{Crystal}, from::Lattice, to::Lattice, v::Crystal) = CrystalFromCrystal()(to, from) * v
 Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
-
 Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
 Base.convert(::Type{Miller{T}}, mb::MillerBravais{T}) where {T<:RealSpace} =
     Miller{T}(2 * mb[1] + mb[2], 2 * mb[2] + mb[1], mb[4])
