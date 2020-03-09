@@ -404,8 +404,9 @@ Base.size(::Miller) = (3,)
 Base.size(::MillerBravais) = (4,)
 Base.size(::CellParameters) = (6,)
 
-Base.getindex(A::Union{MetricTensor,Lattice}, I::Vararg{Int}) = getindex(A.data, I...)
-Base.getindex(A::Union{Miller,MillerBravais,CellParameters}, i::Int) = getindex(A.data, i)
+Base.getindex(A::MetricTensor, I::Vararg{Int}) = getindex(A.data, I...)
+Base.getindex(A::Union{Miller,MillerBravais,CellParameters,Lattice}, i::Int) = getindex(A.data, i)
+Base.getindex(A::Lattice, i::Int, j::Int) = getindex(getindex(A.data, i), j)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
 Base.inv(::RealFromReciprocal) = ReciprocalFromReal()
