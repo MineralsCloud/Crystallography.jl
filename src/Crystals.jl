@@ -103,7 +103,8 @@ CellParameters(x::BravaisLattice, a, b, c, α, β, γ) =
 struct Lattice{T}
     data::SVector{3,SVector{3,T}}
 end
-Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) = Lattice(SVector(map(SVector{3}, (v1, v2, v3))))
+Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) =
+    Lattice(SVector(map(SVector{3}, (v1, v2, v3))))
 function Lattice(m::AbstractMatrix, rowmajor::Bool = false)
     f = rowmajor ? transpose : identity
     return Lattice(Iterators.partition(f(m), 3)...)
@@ -134,7 +135,8 @@ struct Cell{
     magmoms::M
 end
 Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
-Cell(lattice::Lattice, positions, numbers, args...) = Cell(lattice.data, positions, numbers, args...)
+Cell(lattice::Lattice, positions, numbers, args...) =
+    Cell(lattice.data, positions, numbers, args...)
 
 struct MetricTensor{T} <: AbstractMatrix{T}
     data::SHermitianCompact{3,T}
@@ -229,7 +231,8 @@ end # function crystalsystem
 
 Calculates the cell volume from a set of `CellParameters`.
 """
-cellvolume(a, b, c, α, β, γ) = a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
+cellvolume(a, b, c, α, β, γ) =
+    a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
 cellvolume(p::CellParameters) = cellvolume(p...)
 """
     cellvolume(l::Lattice)
@@ -254,8 +257,7 @@ end # function reciprocalof
 directioncosine(a::Crystal, g::MetricTensor, b::Crystal) =
     dot(a, g, b) / (norm(a, g) * norm(b, g))
 
-directionangle(a::Crystal, g::MetricTensor, b::Crystal) =
-    acos(directioncosine(a, g, b))
+directionangle(a::Crystal, g::MetricTensor, b::Crystal) = acos(directioncosine(a, g, b))
 
 distance(a::Crystal, g::MetricTensor, b::Crystal) = norm(b - a, g)
 
@@ -294,14 +296,19 @@ Base.inv(::ReciprocalFromReal) = RealFromReciprocal()
 Base.inv(::CartesianFromCrystal) = CrystalFromCartesian()
 Base.inv(::CrystalFromCartesian) = CartesianFromCrystal()
 
-CoordinateTransformations.compose(::RealFromReciprocal, ::ReciprocalFromReal) = IdentityTransformation()
-CoordinateTransformations.compose(::ReciprocalFromReal, ::RealFromReciprocal) = IdentityTransformation()
-CoordinateTransformations.compose(::CrystalFromCartesian, ::CartesianFromCrystal) = IdentityTransformation()
-CoordinateTransformations.compose(::CartesianFromCrystal, ::CrystalFromCartesian) = IdentityTransformation()
+CoordinateTransformations.compose(::RealFromReciprocal, ::ReciprocalFromReal) =
+    IdentityTransformation()
+CoordinateTransformations.compose(::ReciprocalFromReal, ::RealFromReciprocal) =
+    IdentityTransformation()
+CoordinateTransformations.compose(::CrystalFromCartesian, ::CartesianFromCrystal) =
+    IdentityTransformation()
+CoordinateTransformations.compose(::CartesianFromCrystal, ::CrystalFromCartesian) =
+    IdentityTransformation()
 
 (::CrystalFromCartesian)(to::Lattice) = convert(Matrix{eltype(to)}, to)
 (::CartesianFromCrystal)(from::Lattice) = convert(Matrix{eltype(from)}, from)'
-(::CrystalFromCrystal)(to::Lattice, from::Lattice) = convert(Matrix{eltype(to)}, to) * convert(Matrix{eltype(from)}, from)
+(::CrystalFromCrystal)(to::Lattice, from::Lattice) =
+    convert(Matrix{eltype(to)}, to) * convert(Matrix{eltype(from)}, from)
 
 Base.convert(::Type{Crystal}, v::AbstractVector) = CrystalFromCartesian()(v)
 
@@ -310,16 +317,12 @@ Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.da
 Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
 Base.convert(::Type{Miller{T}}, mb::MillerBravais{T}) where {T<:RealSpace} =
     Miller{T}(2 * mb[1] + mb[2], 2 * mb[2] + mb[1], mb[4])
-Base.convert(
-    ::Type{Miller{T}},
-    mb::MillerBravais{T},
-) where {T<:ReciprocalSpace} = Miller{T}(mb[1], mb[2], mb[4])
+Base.convert(::Type{Miller{T}}, mb::MillerBravais{T}) where {T<:ReciprocalSpace} =
+    Miller{T}(mb[1], mb[2], mb[4])
 Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:RealSpace} =
     MillerBravais{T}(2 * m[1] - m[2], 2 * m[2] - m[1], -(m[1] + m[2]), 3 * m[3])
-Base.convert(
-    ::Type{MillerBravais{T}},
-    m::Miller{T},
-) where {T<:ReciprocalSpace} = MillerBravais{T}(m[1], m[2], -(m[1] + m[2]), m[3])
+Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:ReciprocalSpace} =
+    MillerBravais{T}(m[1], m[2], -(m[1] + m[2]), m[3])
 
 Base.:*(a::CrystalSystem, b::Centering) =
     error("combination $a & $b is not a Bravais lattice!")
@@ -335,8 +338,7 @@ Base.:*(a::Centering, b::CrystalSystem) = b * a
 
 Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
 
-LinearAlgebra.dot(a::Crystal, g::MetricTensor, b::Crystal) =
-    a' * g.data * b
+LinearAlgebra.dot(a::Crystal, g::MetricTensor, b::Crystal) = a' * g.data * b
 LinearAlgebra.norm(a::Crystal, g::MetricTensor) = sqrt(dot(a, g, a))
 
 StaticArrays.similar_type(
