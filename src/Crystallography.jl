@@ -207,9 +207,9 @@ AxisAngles(::PrimitiveHexagonal, α, β, γ) = AxisAngles(90, 90, 120)
 AxisAngles(::RCenteredHexagonal, α, β, γ) = AxisAngles(α, α, α)
 
 struct CellParameters{S,T}
-    data::Tuple{S,S,S,T,T,T}
+    data::NamedTuple{(:a, :b, :c, :α, :β, :γ),Tuple{S,S,S,T,T,T}}
 end
-CellParameters(a, b, c, α, β, γ) = CellParameters((a, b, c, α, β, γ))
+CellParameters(a, b, c, α, β, γ) = CellParameters((a = a, b = b, c = c, α = α, β = β, γ = γ))
 CellParameters(a::LatticeConstants, b::AxisAngles) = CellParameters(a..., b...)
 CellParameters(x::BravaisLattice) = args -> CellParameters(x, args...)
 CellParameters(x::BravaisLattice, a, b, c, α, β, γ) =
@@ -405,7 +405,7 @@ Base.size(::MillerBravais) = (4,)
 Base.size(::CellParameters) = (6,)
 
 Base.getindex(A::MetricTensor, I::Vararg{Int}) = getindex(A.data, I...)
-Base.getindex(A::Union{Miller,MillerBravais,CellParameters,Lattice}, i::Int) = getindex(A.data, i)
+Base.getindex(A::Union{Miller,MillerBravais,CellParameters,Lattice,CellParameters}, i::Int) = getindex(A.data, i)
 Base.getindex(A::Lattice, i::Int, j::Int) = getindex(getindex(A.data, i), j)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
@@ -445,6 +445,12 @@ Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:ReciprocalSpace} 
 Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
 
 Base.eltype(::Lattice{T}) where {T} = T
+
+Base.firstindex(::CellParameters) = 1
+
+Base.lastindex(::CellParameters) = 6
+
+Base.getproperty(p::CellParameters, name::Symbol) = name ∈ (:a, :b, :c, :α, :β, :γ) ? getfield(p.data, name) : getfield(p, name)
 
 LinearAlgebra.dot(a::Crystal, g::MetricTensor, b::Crystal) = a' * g.data * b
 LinearAlgebra.norm(a::Crystal, g::MetricTensor) = sqrt(dot(a, g, a))
