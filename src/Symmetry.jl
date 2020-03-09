@@ -6,7 +6,7 @@ using CoordinateTransformations: AffineMap, Translation, LinearMap
 using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
 using StaticArrays: SVector, SMatrix, SDiagonal
 
-using Crystallography.Crystals: CrystalCoordinates, Cell
+using Crystallography.Crystals: Crystal, Cell
 
 export SeitzOperator
 export getsymmetry,
@@ -147,7 +147,7 @@ Base.one(A::SeitzOperator) = one(typeof(A))
 
 Base.inv(op::SeitzOperator) = SeitzOperator(Base.inv(op.data))
 
-Base.:*(m::SeitzOperator, c::CrystalCoordinates) = CrystalCoordinates((m.data*[c; 1])[1:3])
+Base.:*(m::SeitzOperator, c::Crystal) = Crystal((m.data*[c; 1])[1:3])
 Base.:*(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.data * b.data)
 
 function Base.convert(::Type{Translation}, op::SeitzOperator)

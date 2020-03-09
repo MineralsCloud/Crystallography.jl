@@ -1,6 +1,7 @@
 module Crystallography
 
-export Triclinic,
+export CrystalSystem,
+    Triclinic,
     Monoclinic,
     Orthorhombic,
     Tetragonal,
