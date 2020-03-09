@@ -207,9 +207,13 @@ AxisAngles(::PrimitiveHexagonal, α, β, γ) = AxisAngles(90, 90, 120)
 AxisAngles(::RCenteredHexagonal, α, β, γ) = AxisAngles(α, α, α)
 
 struct CellParameters{S,T}
-    data::Tuple{S,S,S,T,T,T}
+    data::NamedTuple{(:a, :b, :c, :α, :β, :γ),Tuple{S,S,S,T,T,T}}
 end
-CellParameters(a, b, c, α, β, γ) = CellParameters((a, b, c, α, β, γ))
+function CellParameters(a, b, c, α, β, γ)
+    a, b, c = promote(a, b, c)
+    α, β, γ = promote(α, β, γ)
+    return CellParameters((a = a, b = b, c = c, α = α, β = β, γ = γ))
+end
 CellParameters(a::LatticeConstants, b::AxisAngles) = CellParameters(a..., b...)
 CellParameters(x::BravaisLattice) = args -> CellParameters(x, args...)
 CellParameters(x::BravaisLattice, a, b, c, α, β, γ) =
@@ -405,7 +409,10 @@ Base.size(::MillerBravais) = (4,)
 Base.size(::CellParameters) = (6,)
 
 Base.getindex(A::MetricTensor, I::Vararg{Int}) = getindex(A.data, I...)
-Base.getindex(A::Union{Miller,MillerBravais,CellParameters,Lattice}, i::Int) = getindex(A.data, i)
+Base.getindex(
+    A::Union{Miller,MillerBravais,CellParameters,Lattice,CellParameters},
+    i::Int,
+) = getindex(A.data, i)
 Base.getindex(A::Lattice, i::Int, j::Int) = getindex(getindex(A.data, i), j)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
@@ -428,9 +435,12 @@ CoordinateTransformations.compose(::CartesianFromCrystal, ::CrystalFromCartesian
 (::CrystalFromCrystal)(to::Lattice, from::Lattice) =
     convert(Matrix{eltype(to)}, to) * convert(Matrix{eltype(from)}, from)
 
-Base.convert(::Type{Crystal}, lattice::Lattice, v::AbstractVector) = Crystal(CrystalFromCartesian()(lattice) * v)
-Base.convert(::Type{T}, lattice::Lattice, v::Crystal) where {T<:AbstractVector} = T(CartesianFromCrystal()(lattice) * collect(v))
-Base.convert(::Type{Crystal}, from::Lattice, to::Lattice, v::Crystal) = CrystalFromCrystal()(to, from) * v
+Base.convert(::Type{Crystal}, lattice::Lattice, v::AbstractVector) =
+    Crystal(CrystalFromCartesian()(lattice) * v)
+Base.convert(::Type{T}, lattice::Lattice, v::Crystal) where {T<:AbstractVector} =
+    T(CartesianFromCrystal()(lattice) * collect(v))
+Base.convert(::Type{Crystal}, from::Lattice, to::Lattice, v::Crystal) =
+    CrystalFromCrystal()(to, from) * v
 Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
 Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
 Base.convert(::Type{Miller{T}}, mb::MillerBravais{T}) where {T<:RealSpace} =
@@ -441,10 +451,25 @@ Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:RealSpace} =
     MillerBravais{T}(2 * m[1] - m[2], 2 * m[2] - m[1], -(m[1] + m[2]), 3 * m[3])
 Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:ReciprocalSpace} =
     MillerBravais{T}(m[1], m[2], -(m[1] + m[2]), m[3])
+function Base.convert(::Type{CellParameters}, g::MetricTensor)
+    data = g.data
+    a2, b2, c2, ab, ac, bc = data[1, 1], data[2, 2], data[3, 3], data[1, 2], data[1, 3], data[2, 3]
+    a, b, c = map(sqrt, (a2, b2, c2))
+    γ, β, α = acos(ab / (a * b)), acos(ac / (a * c)), acos(bc / (b * c))
+    return CellParameters(a, b, c, α, β, γ)
+end # function Base.convert
+Base.convert(::Type{Lattice}, g::MetricTensor) = Lattice(convert(CellParameters, g))
 
 Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
 
 Base.eltype(::Lattice{T}) where {T} = T
+
+Base.firstindex(::CellParameters) = 1
+
+Base.lastindex(::CellParameters) = 6
+
+Base.getproperty(p::CellParameters, name::Symbol) =
+    name ∈ (:a, :b, :c, :α, :β, :γ) ? getfield(p.data, name) : getfield(p, name)
 
 LinearAlgebra.dot(a::Crystal, g::MetricTensor, b::Crystal) = a' * g.data * b
 LinearAlgebra.norm(a::Crystal, g::MetricTensor) = sqrt(dot(a, g, a))
