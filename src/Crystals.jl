@@ -17,7 +17,6 @@ export AbstractSpace,
     RealSpace,
     ReciprocalSpace,
     CrystalCoordinates,
-    CartesianCoordinates,
     MetricTensor,
     MillerIndices,
     MillerBravaisIndices,
@@ -55,13 +54,7 @@ abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
 struct ReciprocalSpace <: AbstractSpace end
 
-abstract type AbstractCoordinates{T} <: FieldVector{3,T} end
-struct CrystalCoordinates{T} <: AbstractCoordinates{T}
-    x::T
-    y::T
-    z::T
-end
-struct CartesianCoordinates{T} <: AbstractCoordinates{T}
+struct CrystalCoordinates{T} <: FieldVector{3,T}
     x::T
     y::T
     z::T
@@ -361,10 +354,5 @@ StaticArrays.similar_type(
     ::Type{T},
     size::Size{(3,)},
 ) where {T} = CrystalCoordinates{T}
-StaticArrays.similar_type(
-    ::Type{<:CartesianCoordinates},  # Do not delete the `<:`!
-    ::Type{T},
-    size::Size{(3,)},
-) where {T} = CartesianCoordinates{T}
 
 end # module Crystals
