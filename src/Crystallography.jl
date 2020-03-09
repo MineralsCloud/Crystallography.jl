@@ -22,9 +22,11 @@ export CrystalSystem,
     BravaisLattice,
     PrimitiveTriclinic,
     PrimitiveMonoclinic,
+    ACenteredMonoclinic,
     BCenteredMonoclinic,
     CCenteredMonoclinic,
     PrimitiveOrthorhombic,
+    ACenteredOrthorhombic,
     BCenteredOrthorhombic,
     CCenteredOrthorhombic,
     BodyCenteredOrthorhombic,
@@ -64,9 +66,11 @@ BaseCentering(T::Symbol) = T ∈ (:A, :B, :C) ? BaseCentering{T}() :
 const BravaisLattice = Tuple{CrystalSystem,Centering}
 const PrimitiveTriclinic = Tuple{Triclinic,Primitive}
 const PrimitiveMonoclinic = Tuple{Monoclinic,Primitive}
+const ACenteredMonoclinic = Tuple{Monoclinic,BaseCentering{:A}}
 const BCenteredMonoclinic = Tuple{Monoclinic,BaseCentering{:B}}
 const CCenteredMonoclinic = Tuple{Monoclinic,BaseCentering{:C}}
 const PrimitiveOrthorhombic = Tuple{Orthorhombic,Primitive}
+const ACenteredOrthorhombic = Tuple{Orthorhombic,BaseCentering{:A}}
 const BCenteredOrthorhombic = Tuple{Orthorhombic,BaseCentering{:B}}
 const CCenteredOrthorhombic = Tuple{Orthorhombic,BaseCentering{:C}}
 const BodyCenteredOrthorhombic = Tuple{Orthorhombic,BodyCentering}
