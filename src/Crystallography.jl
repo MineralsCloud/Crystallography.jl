@@ -209,7 +209,11 @@ AxisAngles(::RCenteredHexagonal, α, β, γ) = AxisAngles(α, α, α)
 struct CellParameters{S,T}
     data::NamedTuple{(:a, :b, :c, :α, :β, :γ),Tuple{S,S,S,T,T,T}}
 end
-CellParameters(a, b, c, α, β, γ) = CellParameters((a = a, b = b, c = c, α = α, β = β, γ = γ))
+function CellParameters(a, b, c, α, β, γ)
+    a, b, c = promote(a, b, c)
+    α, β, γ = promote(α, β, γ)
+    return CellParameters((a = a, b = b, c = c, α = α, β = β, γ = γ))
+end
 CellParameters(a::LatticeConstants, b::AxisAngles) = CellParameters(a..., b...)
 CellParameters(x::BravaisLattice) = args -> CellParameters(x, args...)
 CellParameters(x::BravaisLattice, a, b, c, α, β, γ) =
