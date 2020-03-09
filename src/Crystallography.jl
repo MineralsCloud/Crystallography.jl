@@ -444,6 +444,8 @@ Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:ReciprocalSpace} 
 
 Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
 
+Base.eltype(::Lattice{T}) where {T} = T
+
 LinearAlgebra.dot(a::Crystal, g::MetricTensor, b::Crystal) = a' * g.data * b
 LinearAlgebra.norm(a::Crystal, g::MetricTensor) = sqrt(dot(a, g, a))
 
