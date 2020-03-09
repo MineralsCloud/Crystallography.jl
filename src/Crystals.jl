@@ -15,7 +15,7 @@ import Crystallography
 
 export RealSpace,
     ReciprocalSpace,
-    CrystalCoordinates,
+    Crystal,
     MetricTensor,
     Miller,
     MillerBravais,
@@ -53,7 +53,7 @@ abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
 struct ReciprocalSpace <: AbstractSpace end
 
-struct CrystalCoordinates{T} <: FieldVector{3,T}
+struct Crystal{T} <: FieldVector{3,T}
     x::T
     y::T
     z::T
@@ -251,15 +251,15 @@ function reciprocalof(lattice::Lattice, twopi::Bool = false)
     return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocalof
 
-directioncosine(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
+directioncosine(a::Crystal, g::MetricTensor, b::Crystal) =
     dot(a, g, b) / (norm(a, g) * norm(b, g))
 
-directionangle(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
+directionangle(a::Crystal, g::MetricTensor, b::Crystal) =
     acos(directioncosine(a, g, b))
 
-distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = norm(b - a, g)
+distance(a::Crystal, g::MetricTensor, b::Crystal) = norm(b - a, g)
 
-interplanar_spacing(a::CrystalCoordinates, g::MetricTensor) = 1 / norm(a, g)
+interplanar_spacing(a::Crystal, g::MetricTensor) = 1 / norm(a, g)
 
 """
     supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
@@ -303,7 +303,7 @@ CoordinateTransformations.compose(::CartesianFromCrystal, ::CrystalFromCartesian
 (::CartesianFromCrystal)(from::Lattice) = convert(Matrix{eltype(from)}, from)'
 (::CrystalFromCrystal)(to::Lattice, from::Lattice) = convert(Matrix{eltype(to)}, to) * convert(Matrix{eltype(from)}, from)
 
-Base.convert(::Type{CrystalCoordinates}, v::AbstractVector) = CrystalFromCartesian()(v)
+Base.convert(::Type{Crystal}, v::AbstractVector) = CrystalFromCartesian()(v)
 
 Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
 
@@ -335,14 +335,14 @@ Base.:*(a::Centering, b::CrystalSystem) = b * a
 
 Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
 
-LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
+LinearAlgebra.dot(a::Crystal, g::MetricTensor, b::Crystal) =
     a' * g.data * b
-LinearAlgebra.norm(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
+LinearAlgebra.norm(a::Crystal, g::MetricTensor) = sqrt(dot(a, g, a))
 
 StaticArrays.similar_type(
-    ::Type{<:CrystalCoordinates},  # Do not delete the `<:`!
+    ::Type{<:Crystal},  # Do not delete the `<:`!
     ::Type{T},
     size::Size{(3,)},
-) where {T} = CrystalCoordinates{T}
+) where {T} = Crystal{T}
 
 end # module Crystals
