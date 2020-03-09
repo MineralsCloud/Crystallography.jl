@@ -223,11 +223,6 @@ function Crystallography.crystalsystem(lattice::Lattice)
     return crystalsystem(CellParameters(a, b, c, α, β, γ))
 end # function crystalsystem
 
-function _checkpositive(v)  # This is a helper function and should not be exported.
-    v <= zero(v) && @warn "The volume of the cell is not positive! Check your input!"
-    return v
-end # function _checkpositive
-
 """
     cellvolume(a, b, c, α, β, γ)
     cellvolume(p::CellParameters)
@@ -237,14 +232,11 @@ Calculates the cell volume from a set of `CellParameters`.
 cellvolume(a, b, c, α, β, γ) = a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
 cellvolume(p::CellParameters) = cellvolume(p...)
 """
-    cellvolume(m::AbstractMatrix)
+    cellvolume(l::Lattice)
 
 Calculates the cell volume from a general 3×3 matrix.
 """
-function cellvolume(m::AbstractMatrix)
-    @assert(size(m) == (3, 3), "The matrix must be of size 3×3!")
-    return _checkpositive(det(m))
-end # function cellvolume
+cellvolume(l::Lattice) = abs(det(convert(Matrix{eltype(l)}, l)))
 """
     cellvolume(g::MetricTensor)
 
