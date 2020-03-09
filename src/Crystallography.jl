@@ -87,7 +87,7 @@ pearsonsymbol(::BaseCentering{T}) where {T} = string(T)
 pearsonsymbol(::BodyCentering) = "I"
 pearsonsymbol(::FaceCentering) = "F"
 pearsonsymbol(::RhombohedralCentering) = "R"
-pearsonsymbol(b::BravaisLattice) = pearsonsymbol(first(b)) * pearsonsymbol(last(b))
+pearsonsymbol(b::BravaisLattice) = pearsonsymbol(crystalsystem(b)) * pearsonsymbol(centeringof(b))
 
 arithmeticclass(::Triclinic) = "-1"
 arithmeticclass(::Monoclinic) = "2/m"
@@ -100,7 +100,7 @@ arithmeticclass(::BaseCentering) = "S"
 arithmeticclass(::BodyCentering) = "I"
 arithmeticclass(::FaceCentering) = "F"
 arithmeticclass(::RhombohedralCentering) = "R"
-arithmeticclass(b::BravaisLattice) = arithmeticclass(first(b)) * arithmeticclass(last(b))
+arithmeticclass(b::BravaisLattice) = arithmeticclass(crystalsystem(b)) * arithmeticclass(centeringof(b))
 arithmeticclass(::RCenteredHexagonal) = "-3mR"
 
 centeringof(b::BravaisLattice) = last(b)
