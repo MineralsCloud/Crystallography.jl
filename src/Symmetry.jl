@@ -74,8 +74,10 @@ function SeitzOperator(t::Translation)
     x[1:3, 4] = v
     return SeitzOperator(x)
 end # function TranslationOperator
-SeitzOperator(m::LinearMap, t::Translation) =
-    SeitzOperator(t) * SeitzOperator(m) * SeitzOperator(inv(t))
+function SeitzOperator(l::LinearMap, t::Translation)
+    m, v = l.linear, t.translation
+    return SeitzOperator(vcat(hcat(m, v), [zeros(eltype(m), 3)... one(eltype(v))]))
+end # function SeitzOperator
 SeitzOperator(a::AffineMap) = SeitzOperator(LinearMap(a.linear), Translation(a.translation))
 function SeitzOperator(s::SeitzOperator, pos::AbstractVector)
     @assert length(pos) == 3
