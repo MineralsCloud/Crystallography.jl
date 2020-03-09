@@ -56,6 +56,11 @@ function irreciprocalmesh(
     )
 end # function irreciprocalmesh
 
+"""
+    SeitzOperator(m::AbstractMatrix)
+
+Construct a `SeitzOperator` from a 4×4 matrix.
+"""
 struct SeitzOperator{T}
     data::SMatrix{4,4,T}
 end
@@ -74,9 +79,39 @@ function SeitzOperator(t::Translation)
     x[1:3, 4] = v
     return SeitzOperator(x)
 end # function TranslationOperator
-SeitzOperator(m::LinearMap, t::Translation) =
-    SeitzOperator(t) * SeitzOperator(m) * SeitzOperator(inv(t))
+"""
+    SeitzOperator(l::LinearMap, t::Translation)
+    SeitzOperator(a::AffineMap)
+    SeitzOperator(l::LinearMap)
+    SeitzOperator(t::Translation)
+
+Construct a `SeitzOperator` from `LinearMap`s, `Translation`s or `AffineMap`s by the
+following equation:
+
+```math
+S = \\left(
+\\begin{array}{ccc|c}
+& & & \\\\
+& R & & {\\boldsymbol \\tau} \\\\
+& & & \\\\
+\\hline 0 & 0 & 0 & 1
+\\end{array}
+\\right),
+```
+
+where ``R`` is a `LinearMap` and ``{\\boldsymbol \\tau}`` is a `Translation`.
+"""
+function SeitzOperator(l::LinearMap, t::Translation)
+    m, v = l.linear, t.translation
+    return SeitzOperator(vcat(hcat(m, v), [zeros(eltype(m), 3)... one(eltype(v))]))
+end # function SeitzOperator
 SeitzOperator(a::AffineMap) = SeitzOperator(LinearMap(a.linear), Translation(a.translation))
+"""
+    SeitzOperator(s::SeitzOperator, pos::AbstractVector)
+
+Construct a `SeitzOperator` that locates at `pos` from a `SeitzOperator` passing through the
+origin.
+"""
 function SeitzOperator(s::SeitzOperator, pos::AbstractVector)
     @assert length(pos) == 3
     t = SeitzOperator(Translation(pos))
