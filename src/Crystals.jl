@@ -222,17 +222,14 @@ function Crystallography.crystalsystem(p::CellParameters)
         end
     end
 end # function whatsystem
-function Crystallography.crystalsystem(lattice::AbstractMatrix)
-    v1, v2, v3 = _splitlattice(lattice)
+function Crystallography.crystalsystem(lattice::Lattice)
+    v1, v2, v3 = lattice.data
     a, b, c = norm(v1), norm(v2), norm(v3)
     γ = acos(dot(v1, v2) / a / b)
     β = acos(dot(v2, v3) / b / c)
     α = acos(dot(v1, v3) / a / c)
     return crystalsystem(CellParameters(a, b, c, α, β, γ))
 end # function crystalsystem
-
-# This is a helper function and should not be exported.
-_splitlattice(m::AbstractMatrix) = collect(Iterators.partition(m', 3))
 
 function _checkpositive(v)  # This is a helper function and should not be exported.
     v <= zero(v) && @warn "The volume of the cell is not positive! Check your input!"
