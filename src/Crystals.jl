@@ -13,14 +13,12 @@ import StaticArrays
 import CoordinateTransformations
 import Crystallography
 
-export AbstractSpace,
-    RealSpace,
+export RealSpace,
     ReciprocalSpace,
-    CrystalCoordinates,
-    CartesianCoordinates,
+    Crystal,
     MetricTensor,
-    MillerIndices,
-    MillerBravaisIndices,
+    Miller,
+    MillerBravais,
     Cell,
     LatticeConstants,
     AxisAngles,
@@ -55,13 +53,7 @@ abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
 struct ReciprocalSpace <: AbstractSpace end
 
-abstract type AbstractCoordinates{T} <: FieldVector{3,T} end
-struct CrystalCoordinates{T} <: AbstractCoordinates{T}
-    x::T
-    y::T
-    z::T
-end
-struct CartesianCoordinates{T} <: AbstractCoordinates{T}
+struct Crystal{T} <: FieldVector{3,T}
     x::T
     y::T
     z::T
@@ -113,8 +105,8 @@ struct Lattice{T}
 end
 Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) = Lattice(SVector(map(SVector{3}, (v1, v2, v3))))
 function Lattice(m::AbstractMatrix, rowmajor::Bool = false)
-    m = rowmajor ? m' : m
-    return Lattice(Iterators.partition(m, 3)...)
+    f = rowmajor ? transpose : identity
+    return Lattice(Iterators.partition(f(m), 3)...)
 end # function Lattice
 function Lattice(a, b, c, α, β, γ)
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
@@ -160,26 +152,26 @@ function MetricTensor(a, b, c, α, β, γ)
 end
 MetricTensor(p::CellParameters) = MetricTensor(p...)
 
-struct MillerIndices{S<:AbstractSpace} <: AbstractVector{Int}
+struct Miller{S<:AbstractSpace} <: AbstractVector{Int}
     data::SVector{3,Int}
-    MillerIndices{S}(v) where {S} = new(iszero(v) ? v : v .÷ gcd(v))
+    Miller{S}(v) where {S} = new(iszero(v) ? v : v .÷ gcd(v))
 end
-MillerIndices{S}(i, j, k) where {S} = MillerIndices{S}([i, j, k])
+Miller{S}(i, j, k) where {S} = Miller{S}([i, j, k])
 
-struct MillerBravaisIndices{S<:AbstractSpace} <: AbstractVector{Int}
+struct MillerBravais{S<:AbstractSpace} <: AbstractVector{Int}
     data::SVector{4,Int}
-    function MillerBravaisIndices{S}(v) where {S}
+    function MillerBravais{S}(v) where {S}
         @assert(
             v[3] == -v[1] - v[2],
-            "the 3rd index of `MillerBravaisIndices` should equal to the negation of the first two!"
+            "the 3rd index of `MillerBravais` should equal to the negation of the first two!"
         )
         return new(iszero(v) ? v : v .÷ gcd(v))
     end
 end
-MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k, l])
+MillerBravais{S}(i, j, k, l) where {S} = MillerBravais{S}([i, j, k, l])
 
 # This is a helper type and should not be exported!
-const INDICES = Union{MillerIndices,MillerBravaisIndices}
+const INDICES = Union{Miller,MillerBravais}
 
 # This is a helper function and should not be exported!
 function _indices_str(r::Regex, s::AbstractString, ::Type{T}) where {T<:INDICES}
@@ -198,12 +190,12 @@ end # function _indices_str
 
 macro m_str(s)
     r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
-    _indices_str(r, s, MillerIndices)
+    _indices_str(r, s, Miller)
 end
 
 macro mb_str(s)
     r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
-    _indices_str(r, s, MillerBravaisIndices)
+    _indices_str(r, s, MillerBravais)
 end
 
 function Crystallography.crystalsystem(p::CellParameters)
@@ -222,22 +214,14 @@ function Crystallography.crystalsystem(p::CellParameters)
         end
     end
 end # function whatsystem
-function Crystallography.crystalsystem(lattice::AbstractMatrix)
-    v1, v2, v3 = _splitlattice(lattice)
+function Crystallography.crystalsystem(lattice::Lattice)
+    v1, v2, v3 = lattice.data
     a, b, c = norm(v1), norm(v2), norm(v3)
     γ = acos(dot(v1, v2) / a / b)
     β = acos(dot(v2, v3) / b / c)
     α = acos(dot(v1, v3) / a / c)
     return crystalsystem(CellParameters(a, b, c, α, β, γ))
 end # function crystalsystem
-
-# This is a helper function and should not be exported.
-_splitlattice(m::AbstractMatrix) = collect(Iterators.partition(m', 3))
-
-function _checkpositive(v)  # This is a helper function and should not be exported.
-    v <= zero(v) && @warn "The volume of the cell is not positive! Check your input!"
-    return v
-end # function _checkpositive
 
 """
     cellvolume(a, b, c, α, β, γ)
@@ -248,14 +232,11 @@ Calculates the cell volume from a set of `CellParameters`.
 cellvolume(a, b, c, α, β, γ) = a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
 cellvolume(p::CellParameters) = cellvolume(p...)
 """
-    cellvolume(m::AbstractMatrix)
+    cellvolume(l::Lattice)
 
 Calculates the cell volume from a general 3×3 matrix.
 """
-function cellvolume(m::AbstractMatrix)
-    @assert(size(m) == (3, 3), "The matrix must be of size 3×3!")
-    return _checkpositive(det(m))
-end # function cellvolume
+cellvolume(l::Lattice) = abs(det(convert(Matrix{eltype(l)}, l)))
 """
     cellvolume(g::MetricTensor)
 
@@ -263,23 +244,22 @@ Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
 
-function reciprocalof(mat::Lattice, twopi::Bool = false)
-    @assert size(mat) == (3, 3)
-    volume = abs(det(mat))
-    a1, a2, a3 = mat[1, :], mat[2, :], mat[3, :]
+function reciprocalof(lattice::Lattice, twopi::Bool = false)
+    volume = cellvolume(lattice)
+    a1, a2, a3 = lattice.data
     factor = twopi ? 2 * SymPy.PI : 1
     return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocalof
 
-directioncosine(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
+directioncosine(a::Crystal, g::MetricTensor, b::Crystal) =
     dot(a, g, b) / (norm(a, g) * norm(b, g))
 
-directionangle(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
+directionangle(a::Crystal, g::MetricTensor, b::Crystal) =
     acos(directioncosine(a, g, b))
 
-distance(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) = norm(b - a, g)
+distance(a::Crystal, g::MetricTensor, b::Crystal) = norm(b - a, g)
 
-interplanar_spacing(a::CrystalCoordinates, g::MetricTensor) = 1 / norm(a, g)
+interplanar_spacing(a::Crystal, g::MetricTensor) = 1 / norm(a, g)
 
 """
     supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
@@ -301,12 +281,12 @@ function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
 end # function supercell
 
 Base.size(::Union{MetricTensor,Lattice}) = (3, 3)
-Base.size(::MillerIndices) = (3,)
-Base.size(::MillerBravaisIndices) = (4,)
+Base.size(::Miller) = (3,)
+Base.size(::MillerBravais) = (4,)
 Base.size(::CellParameters) = (6,)
 
 Base.getindex(A::Union{MetricTensor,Lattice}, I::Vararg{Int}) = getindex(A.data, I...)
-Base.getindex(A::Union{MillerIndices,MillerBravaisIndices,CellParameters}, i::Int) = getindex(A.data, i)
+Base.getindex(A::Union{Miller,MillerBravais,CellParameters}, i::Int) = getindex(A.data, i)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
 Base.inv(::RealFromReciprocal) = ReciprocalFromReal()
@@ -323,51 +303,46 @@ CoordinateTransformations.compose(::CartesianFromCrystal, ::CrystalFromCartesian
 (::CartesianFromCrystal)(from::Lattice) = convert(Matrix{eltype(from)}, from)'
 (::CrystalFromCrystal)(to::Lattice, from::Lattice) = convert(Matrix{eltype(to)}, to) * convert(Matrix{eltype(from)}, from)
 
-Base.convert(::Type{CrystalCoordinates}, v::AbstractVector) = CrystalFromCartesian()(v)
+Base.convert(::Type{Crystal}, v::AbstractVector) = CrystalFromCartesian()(v)
 
 Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
 
 Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
-Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T<:RealSpace} =
-    MillerIndices{T}(2 * mb[1] + mb[2], 2 * mb[2] + mb[1], mb[4])
+Base.convert(::Type{Miller{T}}, mb::MillerBravais{T}) where {T<:RealSpace} =
+    Miller{T}(2 * mb[1] + mb[2], 2 * mb[2] + mb[1], mb[4])
 Base.convert(
-    ::Type{MillerIndices{T}},
-    mb::MillerBravaisIndices{T},
-) where {T<:ReciprocalSpace} = MillerIndices{T}(mb[1], mb[2], mb[4])
-Base.convert(::Type{MillerBravaisIndices{T}}, m::MillerIndices{T}) where {T<:RealSpace} =
-    MillerBravaisIndices{T}(2 * m[1] - m[2], 2 * m[2] - m[1], -(m[1] + m[2]), 3 * m[3])
+    ::Type{Miller{T}},
+    mb::MillerBravais{T},
+) where {T<:ReciprocalSpace} = Miller{T}(mb[1], mb[2], mb[4])
+Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:RealSpace} =
+    MillerBravais{T}(2 * m[1] - m[2], 2 * m[2] - m[1], -(m[1] + m[2]), 3 * m[3])
 Base.convert(
-    ::Type{MillerBravaisIndices{T}},
-    m::MillerIndices{T},
-) where {T<:ReciprocalSpace} = MillerBravaisIndices{T}(m[1], m[2], -(m[1] + m[2]), m[3])
+    ::Type{MillerBravais{T}},
+    m::Miller{T},
+) where {T<:ReciprocalSpace} = MillerBravais{T}(m[1], m[2], -(m[1] + m[2]), m[3])
 
 Base.:*(a::CrystalSystem, b::Centering) =
     error("combination $a & $b is not a Bravais lattice!")
 Base.:*(
-    a::Union{Triclinic,Monoclinic,Orthorhombic,Tetragonal,Cubic,Hexagonal{3}},
+    a::Union{Triclinic,Monoclinic,Orthorhombic,Tetragonal,Cubic,Hexagonal},
     b::Primitive,
 ) = (a, b)
 Base.:*(a::Union{Monoclinic,Orthorhombic}, b::BaseCentering) = (a, b)
 Base.:*(a::Tetragonal, b::BodyCentering) = (a, b)
 Base.:*(a::Union{Cubic,Orthorhombic}, b::Union{BodyCentering,FaceCentering}) = (a, b)
-Base.:*(a::Hexagonal{3}, b::Union{RhombohedralCentering}) = (a, b)
+Base.:*(a::Hexagonal, b::Union{RhombohedralCentering}) = (a, b)
 Base.:*(a::Centering, b::CrystalSystem) = b * a
 
 Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
 
-LinearAlgebra.dot(a::CrystalCoordinates, g::MetricTensor, b::CrystalCoordinates) =
+LinearAlgebra.dot(a::Crystal, g::MetricTensor, b::Crystal) =
     a' * g.data * b
-LinearAlgebra.norm(a::CrystalCoordinates, g::MetricTensor) = sqrt(dot(a, g, a))
+LinearAlgebra.norm(a::Crystal, g::MetricTensor) = sqrt(dot(a, g, a))
 
 StaticArrays.similar_type(
-    ::Type{<:CrystalCoordinates},  # Do not delete the `<:`!
+    ::Type{<:Crystal},  # Do not delete the `<:`!
     ::Type{T},
     size::Size{(3,)},
-) where {T} = CrystalCoordinates{T}
-StaticArrays.similar_type(
-    ::Type{<:CartesianCoordinates},  # Do not delete the `<:`!
-    ::Type{T},
-    size::Size{(3,)},
-) where {T} = CartesianCoordinates{T}
+) where {T} = Crystal{T}
 
 end # module Crystals
