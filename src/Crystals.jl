@@ -30,7 +30,7 @@ export RealSpace,
     CartesianFromCrystal,
     CrystalFromCrystal
 export directioncosine,
-    directionangle, distance, interplanar_spacing, cellvolume, reciprocalof, @m_str, @mb_str
+    directionangle, distance, interplanar_spacing, cellvolume, reciprocal, @m_str, @mb_str
 
 const TETRAGONAL = Union{PrimitiveTetragonal,BodyCenteredTetragonal}
 const CUBIC = Union{PrimitiveCubic,BodyCenteredCubic,FaceCenteredCubic}
@@ -247,12 +247,12 @@ Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
 
-function reciprocalof(lattice::Lattice, twopi::Bool = false)
+function reciprocal(lattice::Lattice, twopi::Bool = false)
     volume = cellvolume(lattice)
     a1, a2, a3 = lattice.data
     factor = twopi ? 2 * SymPy.PI : 1
     return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
-end # function reciprocalof
+end # function reciprocal
 
 directioncosine(a::Crystal, g::MetricTensor, b::Crystal) =
     dot(a, g, b) / (norm(a, g) * norm(b, g))
