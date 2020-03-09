@@ -13,8 +13,7 @@ import StaticArrays
 import CoordinateTransformations
 import Crystallography
 
-export AbstractSpace,
-    RealSpace,
+export RealSpace,
     ReciprocalSpace,
     CrystalCoordinates,
     MetricTensor,
