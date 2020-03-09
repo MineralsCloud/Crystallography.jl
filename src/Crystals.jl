@@ -17,7 +17,7 @@ export RealSpace,
     ReciprocalSpace,
     CrystalCoordinates,
     MetricTensor,
-    MillerIndices,
+    Miller,
     MillerBravaisIndices,
     Cell,
     LatticeConstants,
@@ -152,11 +152,11 @@ function MetricTensor(a, b, c, α, β, γ)
 end
 MetricTensor(p::CellParameters) = MetricTensor(p...)
 
-struct MillerIndices{S<:AbstractSpace} <: AbstractVector{Int}
+struct Miller{S<:AbstractSpace} <: AbstractVector{Int}
     data::SVector{3,Int}
-    MillerIndices{S}(v) where {S} = new(iszero(v) ? v : v .÷ gcd(v))
+    Miller{S}(v) where {S} = new(iszero(v) ? v : v .÷ gcd(v))
 end
-MillerIndices{S}(i, j, k) where {S} = MillerIndices{S}([i, j, k])
+Miller{S}(i, j, k) where {S} = Miller{S}([i, j, k])
 
 struct MillerBravaisIndices{S<:AbstractSpace} <: AbstractVector{Int}
     data::SVector{4,Int}
@@ -171,7 +171,7 @@ end
 MillerBravaisIndices{S}(i, j, k, l) where {S} = MillerBravaisIndices{S}([i, j, k, l])
 
 # This is a helper type and should not be exported!
-const INDICES = Union{MillerIndices,MillerBravaisIndices}
+const INDICES = Union{Miller,MillerBravaisIndices}
 
 # This is a helper function and should not be exported!
 function _indices_str(r::Regex, s::AbstractString, ::Type{T}) where {T<:INDICES}
@@ -190,7 +190,7 @@ end # function _indices_str
 
 macro m_str(s)
     r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
-    _indices_str(r, s, MillerIndices)
+    _indices_str(r, s, Miller)
 end
 
 macro mb_str(s)
@@ -281,12 +281,12 @@ function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
 end # function supercell
 
 Base.size(::Union{MetricTensor,Lattice}) = (3, 3)
-Base.size(::MillerIndices) = (3,)
+Base.size(::Miller) = (3,)
 Base.size(::MillerBravaisIndices) = (4,)
 Base.size(::CellParameters) = (6,)
 
 Base.getindex(A::Union{MetricTensor,Lattice}, I::Vararg{Int}) = getindex(A.data, I...)
-Base.getindex(A::Union{MillerIndices,MillerBravaisIndices,CellParameters}, i::Int) = getindex(A.data, i)
+Base.getindex(A::Union{Miller,MillerBravaisIndices,CellParameters}, i::Int) = getindex(A.data, i)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
 Base.inv(::RealFromReciprocal) = ReciprocalFromReal()
@@ -308,17 +308,17 @@ Base.convert(::Type{CrystalCoordinates}, v::AbstractVector) = CrystalFromCartesi
 Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
 
 Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
-Base.convert(::Type{MillerIndices{T}}, mb::MillerBravaisIndices{T}) where {T<:RealSpace} =
-    MillerIndices{T}(2 * mb[1] + mb[2], 2 * mb[2] + mb[1], mb[4])
+Base.convert(::Type{Miller{T}}, mb::MillerBravaisIndices{T}) where {T<:RealSpace} =
+    Miller{T}(2 * mb[1] + mb[2], 2 * mb[2] + mb[1], mb[4])
 Base.convert(
-    ::Type{MillerIndices{T}},
+    ::Type{Miller{T}},
     mb::MillerBravaisIndices{T},
-) where {T<:ReciprocalSpace} = MillerIndices{T}(mb[1], mb[2], mb[4])
-Base.convert(::Type{MillerBravaisIndices{T}}, m::MillerIndices{T}) where {T<:RealSpace} =
+) where {T<:ReciprocalSpace} = Miller{T}(mb[1], mb[2], mb[4])
+Base.convert(::Type{MillerBravaisIndices{T}}, m::Miller{T}) where {T<:RealSpace} =
     MillerBravaisIndices{T}(2 * m[1] - m[2], 2 * m[2] - m[1], -(m[1] + m[2]), 3 * m[3])
 Base.convert(
     ::Type{MillerBravaisIndices{T}},
-    m::MillerIndices{T},
+    m::Miller{T},
 ) where {T<:ReciprocalSpace} = MillerBravaisIndices{T}(m[1], m[2], -(m[1] + m[2]), m[3])
 
 Base.:*(a::CrystalSystem, b::Centering) =
