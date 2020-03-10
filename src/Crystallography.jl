@@ -179,8 +179,9 @@ struct LatticeConstants{T} <: FieldVector{3,T}
     b::T
     c::T
     function LatticeConstants{T}(a, b, c) where {T}
-        @assert all((a, b, c) .> 0)
-        return new(a, b, c)
+        x = (a, b, c)
+        z = zero(eltype(x))
+        all(x .> z) ? new(a, b, c) : error("lattice constants must all be positive!")
     end
 end
 LatticeConstants(a::T, b::T, c::T) where {T} = LatticeConstants{T}(a, b, c)
