@@ -158,12 +158,6 @@ const ORTHORHOMBIC = Union{
 }
 const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
 
-struct RealFromReciprocal <: Transformation end
-struct ReciprocalFromReal <: Transformation end
-struct CartesianFromCrystal <: Transformation end
-struct CrystalFromCartesian <: Transformation end
-struct CrystalFromCrystal <: Transformation end
-
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
 struct ReciprocalSpace <: AbstractSpace end
@@ -257,6 +251,23 @@ end
 Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
 Cell(lattice::Lattice, positions, numbers, args...) =
     Cell(lattice.data, positions, numbers, args...)
+
+struct RealFromReciprocal
+    basis::Lattice
+end
+struct ReciprocalFromReal
+    basis::Lattice
+end
+struct CartesianFromCrystal
+    basis::Lattice
+end
+struct CrystalFromCartesian
+    basis::Lattice
+end
+struct CrystalFromCrystal
+    from::Lattice
+    to::Lattice
+end
 
 struct MetricTensor{T} <: AbstractMatrix{T}
     data::SHermitianCompact{3,T}
@@ -431,17 +442,10 @@ CoordinateTransformations.compose(::CrystalFromCartesian, ::CartesianFromCrystal
 CoordinateTransformations.compose(::CartesianFromCrystal, ::CrystalFromCartesian) =
     IdentityTransformation()
 
-(::CrystalFromCartesian)(to::Lattice) = convert(Matrix{eltype(to)}, to)
-(::CartesianFromCrystal)(from::Lattice) = convert(Matrix{eltype(from)}, from)'
-(::CrystalFromCrystal)(to::Lattice, from::Lattice) =
-    convert(Matrix{eltype(to)}, to) * convert(Matrix{eltype(from)}, from)
+(t::CrystalFromCartesian)(v::AbstractVector) = Crystal(convert(Matrix{eltype(t.basis)}, t) * v)
+(t::CartesianFromCrystal)(v::Crystal) = SVector(convert(Matrix{eltype(t.basis)}, t)' * v)
+(t::CrystalFromCrystal)(v::Crystal) = CrystalFromCartesian(t.to)(CartesianFromCrystal(t.from)(v))
 
-Base.convert(::Type{Crystal}, lattice::Lattice, v::AbstractVector) =
-    Crystal(CrystalFromCartesian()(lattice) * v)
-Base.convert(::Type{T}, lattice::Lattice, v::Crystal) where {T<:AbstractVector} =
-    T(CartesianFromCrystal()(lattice) * collect(v))
-Base.convert(::Type{Crystal}, from::Lattice, to::Lattice, v::Crystal) =
-    CrystalFromCrystal()(to, from) * v
 Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
 Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
 Base.convert(::Type{Miller{T}}, mb::MillerBravais{T}) where {T<:RealSpace} =
