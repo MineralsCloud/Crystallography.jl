@@ -429,8 +429,8 @@ Base.getindex(A::Lattice, i::Int, j::Int) = getindex(getindex(A.data, i), j)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
 
-(t::CrystalFromCartesian)(v::AbstractVector) = Crystal(convert(Matrix{eltype(t.basis)}, t) * v)
-(t::CartesianFromCrystal)(v::Crystal) = SVector(convert(Matrix{eltype(t.basis)}, t)' * v)
+(t::CrystalFromCartesian)(v::AbstractVector) = Crystal(convert(Matrix{eltype(t.basis)}, t.basis) * v)
+(t::CartesianFromCrystal)(v::Crystal) = SVector(convert(Matrix{eltype(t.basis)}, t.basis)' * v)
 (t::CrystalFromCrystal)(v::Crystal) = CrystalFromCartesian(t.to)(CartesianFromCrystal(t.from)(v))
 
 Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
