@@ -428,19 +428,6 @@ Base.getindex(
 Base.getindex(A::Lattice, i::Int, j::Int) = getindex(getindex(A.data, i), j)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
-Base.inv(::RealFromReciprocal) = ReciprocalFromReal()
-Base.inv(::ReciprocalFromReal) = RealFromReciprocal()
-Base.inv(::CartesianFromCrystal) = CrystalFromCartesian()
-Base.inv(::CrystalFromCartesian) = CartesianFromCrystal()
-
-CoordinateTransformations.compose(::RealFromReciprocal, ::ReciprocalFromReal) =
-    IdentityTransformation()
-CoordinateTransformations.compose(::ReciprocalFromReal, ::RealFromReciprocal) =
-    IdentityTransformation()
-CoordinateTransformations.compose(::CrystalFromCartesian, ::CartesianFromCrystal) =
-    IdentityTransformation()
-CoordinateTransformations.compose(::CartesianFromCrystal, ::CrystalFromCartesian) =
-    IdentityTransformation()
 
 (t::CrystalFromCartesian)(v::AbstractVector) = Crystal(convert(Matrix{eltype(t.basis)}, t) * v)
 (t::CartesianFromCrystal)(v::Crystal) = SVector(convert(Matrix{eltype(t.basis)}, t)' * v)
@@ -458,7 +445,8 @@ Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:ReciprocalSpace} 
     MillerBravais{T}(m[1], m[2], -(m[1] + m[2]), m[3])
 function Base.convert(::Type{CellParameters}, g::MetricTensor)
     data = g.data
-    a2, b2, c2, ab, ac, bc = data[1, 1], data[2, 2], data[3, 3], data[1, 2], data[1, 3], data[2, 3]
+    a2, b2, c2, ab, ac, bc =
+        data[1, 1], data[2, 2], data[3, 3], data[1, 2], data[1, 3], data[2, 3]
     a, b, c = map(sqrt, (a2, b2, c2))
     γ, β, α = acos(ab / (a * b)), acos(ac / (a * c)), acos(bc / (b * c))
     return CellParameters(a, b, c, α, β, γ)
