@@ -253,20 +253,26 @@ Cell(lattice::Lattice, positions, numbers, args...) =
     Cell(lattice.data, positions, numbers, args...)
 
 struct RealFromReciprocal
-    basis::Lattice
+    basis::SMatrix{3,3}
 end
 struct ReciprocalFromReal
-    basis::Lattice
+    basis::SMatrix{3,3}
 end
 struct CartesianFromCrystal
-    basis::Lattice
+    basis::SMatrix{3,3}
 end
 struct CrystalFromCartesian
-    basis::Lattice
+    basis::SMatrix{3,3}
 end
 struct CrystalFromCrystal
-    from::Lattice
-    to::Lattice
+    from::SMatrix{3,3}
+    to::SMatrix{3,3}
+end
+for T in (:RealFromReciprocal, :ReciprocalFromReal, :CartesianFromCrystal, :CrystalFromCartesian)
+    eval(quote
+        $T(m::AbstractMatrix) = $T(SMatrix{3,3}(m))
+        $T(lattice::Lattice) = $T(convert(Matrix{eltype(lattice)}, lattice))
+    end)
 end
 
 struct MetricTensor{T} <: AbstractMatrix{T}
@@ -428,6 +434,7 @@ Base.getindex(
 Base.getindex(A::Lattice, i::Int, j::Int) = getindex(getindex(A.data, i), j)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
+Base.inv(x::Union{CrystalFromCartesian,CartesianFromCrystal}) = typeof(x)(inv(x.basis))
 
 (t::CrystalFromCartesian)(v::AbstractVector) = Crystal(convert(Matrix{eltype(t.basis)}, t.basis) * v)
 (t::CartesianFromCrystal)(v::Crystal) = SVector(convert(Matrix{eltype(t.basis)}, t.basis)' * v)
