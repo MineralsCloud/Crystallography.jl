@@ -97,3 +97,12 @@ end
     @test MetricTensor(CellParameters(Hexagonal() * Primitive(), a, b, c, 0, 0, 0)) ==
           MetricTensor([a^2 -a^2 / 2 0; -a^2 / 2 a^2 0; 0 0 c^2])
 end # testset
+
+@testset "Crystal coordinates to Cartesian coordinates" begin
+    lattice = Lattice([
+        1/2 0 0
+        0 1/2 0
+        0   0 1
+    ])
+    @test CartesianFromCrystal(lattice)(Crystal(2, 3, 1)) == [1, 3 / 2, 1]
+end # testset

@@ -158,12 +158,6 @@ const ORTHORHOMBIC = Union{
 }
 const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
 
-struct RealFromReciprocal <: Transformation end
-struct ReciprocalFromReal <: Transformation end
-struct CartesianFromCrystal <: Transformation end
-struct CrystalFromCartesian <: Transformation end
-struct CrystalFromCrystal <: Transformation end
-
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
 struct ReciprocalSpace <: AbstractSpace end
@@ -257,6 +251,29 @@ end
 Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
 Cell(lattice::Lattice, positions, numbers, args...) =
     Cell(lattice.data, positions, numbers, args...)
+
+struct RealFromReciprocal
+    basis::SMatrix{3,3}
+end
+struct ReciprocalFromReal
+    basis::SMatrix{3,3}
+end
+struct CartesianFromCrystal
+    basis::SMatrix{3,3}
+end
+struct CrystalFromCartesian
+    basis::SMatrix{3,3}
+end
+struct CrystalFromCrystal
+    from::SMatrix{3,3}
+    to::SMatrix{3,3}
+end
+for T in (:RealFromReciprocal, :ReciprocalFromReal, :CartesianFromCrystal, :CrystalFromCartesian)
+    eval(quote
+        $T(m::AbstractMatrix) = $T(SMatrix{3,3}(m))
+        $T(lattice::Lattice) = $T(convert(Matrix{eltype(lattice)}, lattice))
+    end)
+end
 
 struct MetricTensor{T} <: AbstractMatrix{T}
     data::SHermitianCompact{3,T}
@@ -417,31 +434,12 @@ Base.getindex(
 Base.getindex(A::Lattice, i::Int, j::Int) = getindex(getindex(A.data, i), j)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
-Base.inv(::RealFromReciprocal) = ReciprocalFromReal()
-Base.inv(::ReciprocalFromReal) = RealFromReciprocal()
-Base.inv(::CartesianFromCrystal) = CrystalFromCartesian()
-Base.inv(::CrystalFromCartesian) = CartesianFromCrystal()
+Base.inv(x::Union{CrystalFromCartesian,CartesianFromCrystal}) = typeof(x)(inv(x.basis))
 
-CoordinateTransformations.compose(::RealFromReciprocal, ::ReciprocalFromReal) =
-    IdentityTransformation()
-CoordinateTransformations.compose(::ReciprocalFromReal, ::RealFromReciprocal) =
-    IdentityTransformation()
-CoordinateTransformations.compose(::CrystalFromCartesian, ::CartesianFromCrystal) =
-    IdentityTransformation()
-CoordinateTransformations.compose(::CartesianFromCrystal, ::CrystalFromCartesian) =
-    IdentityTransformation()
+(t::CrystalFromCartesian)(v::AbstractVector) = Crystal(convert(Matrix{eltype(t.basis)}, t.basis) * v)
+(t::CartesianFromCrystal)(v::Crystal) = SVector(convert(Matrix{eltype(t.basis)}, t.basis)' * v)
+(t::CrystalFromCrystal)(v::Crystal) = CrystalFromCartesian(t.to)(CartesianFromCrystal(t.from)(v))
 
-(::CrystalFromCartesian)(to::Lattice) = convert(Matrix{eltype(to)}, to)
-(::CartesianFromCrystal)(from::Lattice) = convert(Matrix{eltype(from)}, from)'
-(::CrystalFromCrystal)(to::Lattice, from::Lattice) =
-    convert(Matrix{eltype(to)}, to) * convert(Matrix{eltype(from)}, from)
-
-Base.convert(::Type{Crystal}, lattice::Lattice, v::AbstractVector) =
-    Crystal(CrystalFromCartesian()(lattice) * v)
-Base.convert(::Type{T}, lattice::Lattice, v::Crystal) where {T<:AbstractVector} =
-    T(CartesianFromCrystal()(lattice) * collect(v))
-Base.convert(::Type{Crystal}, from::Lattice, to::Lattice, v::Crystal) =
-    CrystalFromCrystal()(to, from) * v
 Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
 Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
 Base.convert(::Type{Miller{T}}, mb::MillerBravais{T}) where {T<:RealSpace} =
@@ -454,7 +452,8 @@ Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:ReciprocalSpace} 
     MillerBravais{T}(m[1], m[2], -(m[1] + m[2]), m[3])
 function Base.convert(::Type{CellParameters}, g::MetricTensor)
     data = g.data
-    a2, b2, c2, ab, ac, bc = data[1, 1], data[2, 2], data[3, 3], data[1, 2], data[1, 3], data[2, 3]
+    a2, b2, c2, ab, ac, bc =
+        data[1, 1], data[2, 2], data[3, 3], data[1, 2], data[1, 3], data[2, 3]
     a, b, c = map(sqrt, (a2, b2, c2))
     γ, β, α = acos(ab / (a * b)), acos(ac / (a * c)), acos(bc / (b * c))
     return CellParameters(a, b, c, α, β, γ)
