@@ -245,12 +245,12 @@ struct Cell{
 }
     lattice::L
     positions::P
-    numbers::N
+    atoms::N
     magmoms::M
 end
-Cell(lattice, positions, numbers) = Cell(lattice, positions, numbers, nothing)
-Cell(lattice::Lattice, positions, numbers, args...) =
-    Cell(lattice.data, positions, numbers, args...)
+Cell(lattice, positions, atoms) = Cell(lattice, positions, atoms, nothing)
+Cell(lattice::Lattice, positions, atoms, args...) =
+    Cell(lattice.data, positions, atoms, args...)
 
 struct RealFromReciprocal
     basis::SMatrix{3,3}
