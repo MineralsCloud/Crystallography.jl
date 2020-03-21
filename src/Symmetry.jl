@@ -12,12 +12,19 @@ export SeitzOperator
 export getsymmetry,
     getspacegroup, irreciprocalmesh, isidentity, istranslation, ispointsymmetry
 
+# These are helper methods and should not be exported!
+_numbers(a::AbstractVector{<:Integer}) = a
+function _numbers(a::AbstractVector{T}) where {T}
+    d = Dict(value => key for (key, value) in pairs(unique(a)))
+    return [d[v] for v in a]
+end
+
 function getsymmetry(cell::Cell, symprec::AbstractFloat = 1e-5; seitz::Bool = false)
     maps, translations = get_symmetry(
         cell.lattice,
         cell.positions,
-        cell.numbers,
-        length(cell.numbers),
+        _numbers(cell.atoms),
+        length(cell.atoms),
         symprec,
     )
     return if seitz
@@ -31,8 +38,8 @@ function getspacegroup(cell::Cell, symprec::AbstractFloat = 1e-5)
     return get_spacegroup(
         cell.lattice,
         cell.positions,
-        cell.numbers,
-        length(cell.numbers),
+        _numbers(cell.atoms),
+        length(cell.atoms),
         symprec,
     )
 end # function getspacegroup
@@ -50,8 +57,8 @@ function irreciprocalmesh(
         is_time_reversal,
         cell.lattice,
         cell.positions,
-        cell.numbers,
-        length(cell.numbers),
+        _numbers(cell.atoms),
+        length(cell.atoms),
         symprec,
     )
 end # function irreciprocalmesh
