@@ -17,7 +17,7 @@ export SeitzOperator,
     isidentity,
     istranslation,
     ispointsymmetry,
-    generate_path
+    genpath
 
 # These are helper methods and should not be exported!
 _numbers(a::AbstractVector{<:Integer}) = a
@@ -163,7 +163,7 @@ struct NoncircularPath <: PathStyle end
 euclidean(x, y) = sqrt(sum((x - y) .^ 2))
 
 """
-    generate_path(nodes, densities = 100 * ones(Int, length(nodes)))
+    genpath(nodes, densities = 100 * ones(Int, length(nodes)))
 
 Generate a reciprocal space path from each node.
 
@@ -183,28 +183,28 @@ julia> nodes = [
     [0.5, 0.0, 0.0]
 ];
 
-julia> generate_path(nodes)  # Generate a circular path
+julia> genpath(nodes)  # Generate a circular path
 693-element Array{Any,1}:
 ...
 
-julia> generate_path(nodes, 100 * ones(Int, length(nodes) - 1))  # Generate a noncircular path
+julia> genpath(nodes, 100 * ones(Int, length(nodes) - 1))  # Generate a noncircular path
 594-element Array{Any,1}:
 ...
 ```
 """
-function generate_path(
+function genpath(
     nodes::AbstractVector{<:AbstractVector},
     densities::AbstractVector{<:Integer} = 100 * ones(Int, length(nodes)),
 )
     if length(densities) == length(nodes)
-        _generate_path(nodes, densities, CircularPath())
+        _genpath(nodes, densities, CircularPath())
     elseif length(densities) == length(nodes) - 1
-        _generate_path(nodes, densities, NoncircularPath())
+        _genpath(nodes, densities, NoncircularPath())
     else
         error("The length of `densities` should be either length of `length(nodes)` or `length(nodes) - 1`!")
     end
-end # function generate_path
-function _generate_path(nodes, densities, ::CircularPath)
+end # function genpath
+function _genpath(nodes, densities, ::CircularPath)
     path = []
     for (thisnode, nextnode, density) in zip(nodes, circshift(nodes, -1), densities)
         distance = euclidean(thisnode, nextnode)  # Compute Euclidean distance between two vectors
@@ -214,8 +214,8 @@ function _generate_path(nodes, densities, ::CircularPath)
         end
     end
     return path
-end # function _generate_path
-function _generate_path(nodes, densities, ::NoncircularPath)
+end # function _genpath
+function _genpath(nodes, densities, ::NoncircularPath)
     path = []
     for (thisnode, nextnode, density) in zip(nodes, lead(nodes), densities)
         ismissing(nextnode) && break
@@ -226,7 +226,7 @@ function _generate_path(nodes, densities, ::NoncircularPath)
         end
     end
     return path
-end # function _generate_path
+end # function _genpath
 
 Base.getindex(A::SeitzOperator, I::Vararg{Int}) = getindex(A.data, I...)
 
