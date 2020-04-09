@@ -237,20 +237,12 @@ function Lattice(a, b, c, α, β, γ)
 end # function Lattice
 Lattice(p::CellParameters) = Lattice(p...)
 
-struct Cell{
-    L<:AbstractVecOrMat,
-    P<:AbstractVecOrMat,
-    N<:AbstractVector,
-    M<:Union{AbstractVector,Nothing},
-}
-    lattice::L
-    positions::P
-    atoms::N
-    magmoms::M
+struct Cell{N,L,P,A}
+    lattice::SVector{3,SVector{3,L}}
+    positions::SVector{N,P}
+    atoms::SVector{N,A}
 end
-Cell(lattice, positions, atoms) = Cell(lattice, positions, atoms, nothing)
-Cell(lattice::Lattice, positions, atoms, args...) =
-    Cell(lattice.data, positions, atoms, args...)
+Cell(lattice::Lattice, positions, atoms) = Cell(lattice.data, positions, atoms)
 
 struct RealFromReciprocal
     basis::SMatrix{3,3}
