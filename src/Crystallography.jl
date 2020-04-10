@@ -243,6 +243,12 @@ struct Cell{N,L,P,A}
     atoms::SVector{N,A}
 end
 Cell(lattice::Lattice, positions, atoms) = Cell(lattice.data, positions, atoms)
+# This is an internal type and should not be exported!
+struct AtomicIterator{T}
+    data::T
+end
+
+eachatom(cell::Cell) = AtomicIterator(cell)
 
 struct RealFromReciprocal
     basis::SMatrix{3,3}
@@ -414,10 +420,13 @@ function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
     return supercell(cell, Diagonal(expansion))
 end # function supercell
 
+Base.length(iter::AtomicIterator) = length(iter.data)
+
 Base.size(::Union{MetricTensor,Lattice}) = (3, 3)
 Base.size(::Miller) = (3,)
 Base.size(::MillerBravais) = (4,)
 Base.size(::CellParameters) = (6,)
+Base.size(iter::AtomicIterator) = (length(iter.data),)
 
 Base.getindex(A::MetricTensor, I::Vararg{Int}) = getindex(A.data, I...)
 Base.getindex(
@@ -457,6 +466,7 @@ end # function Base.convert
 Base.convert(::Type{Lattice}, g::MetricTensor) = Lattice(convert(CellParameters, g))
 
 Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
+Base.iterate(iter::AtomicIterator{<:Cell{N}}, i) where {N} = i > N ? nothing : iter.data.atoms[i], i + 1
 
 Base.eltype(::Lattice{T}) where {T} = T
 
