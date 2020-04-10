@@ -72,6 +72,7 @@ export pearsonsymbol,
     interplanar_spacing,
     cellvolume,
     reciprocal,
+    eachatom,
     @m_str,
     @mb_str
 
@@ -262,7 +263,8 @@ struct AtomicIterator{T}
     data::T
 end
 
-eachatom(cell::Cell) = AtomicIterator(cell)
+eachatom(atompos::AbstractVector{<:AtomicPosition}) = AtomicIterator(atompos)
+eachatom(cell::Cell) = AtomicIterator(cell.atompos)
 
 struct RealFromReciprocal
     basis::SMatrix{3,3}
@@ -480,9 +482,10 @@ end # function Base.convert
 Base.convert(::Type{Lattice}, g::MetricTensor) = Lattice(convert(CellParameters, g))
 
 Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
-Base.iterate(iter::AtomicIterator{<:Cell{N}}, i) where {N} = i > N ? nothing : iter.data.atoms[i], i + 1
+Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) = i > length(iter) ? nothing : (iter.data[i], i + 1)
 
 Base.eltype(::Lattice{T}) where {T} = T
+Base.eltype(::AtomicIterator{<:AbstractVector{T}}) where {T<:AtomicPosition} = T
 
 Base.firstindex(::CellParameters) = 1
 
