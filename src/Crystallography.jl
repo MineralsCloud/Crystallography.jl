@@ -53,8 +53,8 @@ export CrystalSystem,
     MillerBravais,
     AtomicPosition,
     Cell,
-    LatticeConstants,
-    AxisAngles,
+    latticeconstants,
+    axisangles,
     CellParameters,
     Lattice,
     RealFromReciprocal,
@@ -170,38 +170,26 @@ struct Crystal{T} <: FieldVector{3,T}
     z::T
 end
 
-struct LatticeConstants{T} <: FieldVector{3,T}
-    a::T
-    b::T
-    c::T
-    function LatticeConstants{T}(a, b, c) where {T}
-        x = (a, b, c)
-        z = zero(eltype(x))
-        all(x .> z) ? new(a, b, c) : error("lattice constants must all be positive!")
-    end
-end
-LatticeConstants(a::T, b::T, c::T) where {T} = LatticeConstants{T}(a, b, c)
-LatticeConstants(::Union{PrimitiveTriclinic,MONOCLINIC,ORTHORHOMBIC}, a, b, c) =
-    LatticeConstants(a, b, c)
-LatticeConstants(::TETRAGONAL, a, b, c) = LatticeConstants(a, a, c)
-LatticeConstants(::CUBIC, a, b, c) = LatticeConstants(a, a, a)
-LatticeConstants(::PrimitiveHexagonal, a, b, c) = LatticeConstants(a, a, c)
-LatticeConstants(::RCenteredHexagonal, a, b, c) = LatticeConstants(a, a, a)
+function latticeconstants(a, b, c)
+    x = (a, b, c)
+    z = zero(eltype(x))
+    all(x .> z) ? (a, b, c) : error("lattice constants must all be positive!")
+end # function latticeconstants
+latticeconstants(::Union{PrimitiveTriclinic,MONOCLINIC,ORTHORHOMBIC}, a, b, c) =
+    latticeconstants(a, b, c)
+latticeconstants(::TETRAGONAL, a, b, c) = latticeconstants(a, a, c)
+latticeconstants(::CUBIC, a, b, c) = latticeconstants(a, a, a)
+latticeconstants(::PrimitiveHexagonal, a, b, c) = latticeconstants(a, a, c)
+latticeconstants(::RCenteredHexagonal, a, b, c) = latticeconstants(a, a, a)
 
-struct AxisAngles{T} <: FieldVector{3,T}
-    α::T
-    β::T
-    γ::T
-end
-AxisAngles(::PrimitiveTriclinic, α, β, γ) = AxisAngles(α, β, γ)
-AxisAngles(::PrimitiveMonoclinic, α, β, γ, view::Int = 1) =
-    view == 1 ? AxisAngles(90, 90, γ) : AxisAngles(90, β, 90)
-AxisAngles(::CCenteredMonoclinic, α, β, γ) = AxisAngles(90, 90, γ)
-AxisAngles(::BCenteredMonoclinic, α, β, γ) = AxisAngles(90, β, 90)
-AxisAngles(::T, α, β, γ) where {T<:Union{ORTHORHOMBIC,TETRAGONAL,CUBIC}} =
-    AxisAngles(90, 90, 90)
-AxisAngles(::PrimitiveHexagonal, α, β, γ) = AxisAngles(90, 90, 120)
-AxisAngles(::RCenteredHexagonal, α, β, γ) = AxisAngles(α, α, α)
+axisangles(::PrimitiveTriclinic, α, β, γ) = axisangles(α, β, γ)
+axisangles(::PrimitiveMonoclinic, α, β, γ, view::Int = 1) =
+    view == 1 ? axisangles(90, 90, γ) : axisangles(90, β, 90)
+axisangles(::CCenteredMonoclinic, α, β, γ) = axisangles(90, 90, γ)
+axisangles(::BCenteredMonoclinic, α, β, γ) = axisangles(90, β, 90)
+axisangles(::Union{ORTHORHOMBIC,TETRAGONAL,CUBIC}, α, β, γ) = axisangles(90, 90, 90)
+axisangles(::PrimitiveHexagonal, α, β, γ) = axisangles(90, 90, 120)
+axisangles(::RCenteredHexagonal, α, β, γ) = axisangles(α, α, α)
 
 struct CellParameters{S,T}
     data::NamedTuple{(:a, :b, :c, :α, :β, :γ),Tuple{S,S,S,T,T,T}}
@@ -211,10 +199,9 @@ function CellParameters(a, b, c, α, β, γ)
     α, β, γ = promote(α, β, γ)
     return CellParameters((a = a, b = b, c = c, α = α, β = β, γ = γ))
 end
-CellParameters(a::LatticeConstants, b::AxisAngles) = CellParameters(a..., b...)
 CellParameters(x::BravaisLattice) = args -> CellParameters(x, args...)
 CellParameters(x::BravaisLattice, a, b, c, α, β, γ) =
-    CellParameters(LatticeConstants(x, a, b, c), AxisAngles(x, α, β, γ))
+    CellParameters(latticeconstants(x, a, b, c), axisangles(x, α, β, γ))
 
 struct Lattice{T}
     data::SVector{3,SVector{3,T}}
