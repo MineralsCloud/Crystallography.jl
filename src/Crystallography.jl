@@ -51,9 +51,10 @@ export CrystalSystem,
     MetricTensor,
     Miller,
     MillerBravais,
+    AtomicPosition,
     Cell,
-    LatticeConstants,
-    AxisAngles,
+    latticeconstants,
+    axisangles,
     CellParameters,
     Lattice,
     RealFromReciprocal,
@@ -71,6 +72,7 @@ export pearsonsymbol,
     interplanar_spacing,
     cellvolume,
     reciprocal,
+    eachatom,
     @m_str,
     @mb_str
 
@@ -168,38 +170,26 @@ struct Crystal{T} <: FieldVector{3,T}
     z::T
 end
 
-struct LatticeConstants{T} <: FieldVector{3,T}
-    a::T
-    b::T
-    c::T
-    function LatticeConstants{T}(a, b, c) where {T}
-        x = (a, b, c)
-        z = zero(eltype(x))
-        all(x .> z) ? new(a, b, c) : error("lattice constants must all be positive!")
-    end
-end
-LatticeConstants(a::T, b::T, c::T) where {T} = LatticeConstants{T}(a, b, c)
-LatticeConstants(::Union{PrimitiveTriclinic,MONOCLINIC,ORTHORHOMBIC}, a, b, c) =
-    LatticeConstants(a, b, c)
-LatticeConstants(::TETRAGONAL, a, b, c) = LatticeConstants(a, a, c)
-LatticeConstants(::CUBIC, a, b, c) = LatticeConstants(a, a, a)
-LatticeConstants(::PrimitiveHexagonal, a, b, c) = LatticeConstants(a, a, c)
-LatticeConstants(::RCenteredHexagonal, a, b, c) = LatticeConstants(a, a, a)
+function latticeconstants(a, b, c)
+    x = (a, b, c)
+    z = zero(eltype(x))
+    all(x .> z) ? (a, b, c) : error("lattice constants must all be positive!")
+end # function latticeconstants
+latticeconstants(::Union{PrimitiveTriclinic,MONOCLINIC,ORTHORHOMBIC}, a, b, c) =
+    latticeconstants(a, b, c)
+latticeconstants(::TETRAGONAL, a, b, c) = latticeconstants(a, a, c)
+latticeconstants(::CUBIC, a, b, c) = latticeconstants(a, a, a)
+latticeconstants(::PrimitiveHexagonal, a, b, c) = latticeconstants(a, a, c)
+latticeconstants(::RCenteredHexagonal, a, b, c) = latticeconstants(a, a, a)
 
-struct AxisAngles{T} <: FieldVector{3,T}
-    α::T
-    β::T
-    γ::T
-end
-AxisAngles(::PrimitiveTriclinic, α, β, γ) = AxisAngles(α, β, γ)
-AxisAngles(::PrimitiveMonoclinic, α, β, γ, view::Int = 1) =
-    view == 1 ? AxisAngles(90, 90, γ) : AxisAngles(90, β, 90)
-AxisAngles(::CCenteredMonoclinic, α, β, γ) = AxisAngles(90, 90, γ)
-AxisAngles(::BCenteredMonoclinic, α, β, γ) = AxisAngles(90, β, 90)
-AxisAngles(::T, α, β, γ) where {T<:Union{ORTHORHOMBIC,TETRAGONAL,CUBIC}} =
-    AxisAngles(90, 90, 90)
-AxisAngles(::PrimitiveHexagonal, α, β, γ) = AxisAngles(90, 90, 120)
-AxisAngles(::RCenteredHexagonal, α, β, γ) = AxisAngles(α, α, α)
+axisangles(::PrimitiveTriclinic, α, β, γ) = axisangles(α, β, γ)
+axisangles(::PrimitiveMonoclinic, α, β, γ, view::Int = 1) =
+    view == 1 ? axisangles(90, 90, γ) : axisangles(90, β, 90)
+axisangles(::CCenteredMonoclinic, α, β, γ) = axisangles(90, 90, γ)
+axisangles(::BCenteredMonoclinic, α, β, γ) = axisangles(90, β, 90)
+axisangles(::Union{ORTHORHOMBIC,TETRAGONAL,CUBIC}, α, β, γ) = axisangles(90, 90, 90)
+axisangles(::PrimitiveHexagonal, α, β, γ) = axisangles(90, 90, 120)
+axisangles(::RCenteredHexagonal, α, β, γ) = axisangles(α, α, α)
 
 struct CellParameters{S,T}
     data::NamedTuple{(:a, :b, :c, :α, :β, :γ),Tuple{S,S,S,T,T,T}}
@@ -209,19 +199,18 @@ function CellParameters(a, b, c, α, β, γ)
     α, β, γ = promote(α, β, γ)
     return CellParameters((a = a, b = b, c = c, α = α, β = β, γ = γ))
 end
-CellParameters(a::LatticeConstants, b::AxisAngles) = CellParameters(a..., b...)
 CellParameters(x::BravaisLattice) = args -> CellParameters(x, args...)
 CellParameters(x::BravaisLattice, a, b, c, α, β, γ) =
-    CellParameters(LatticeConstants(x, a, b, c), AxisAngles(x, α, β, γ))
+    CellParameters(latticeconstants(x, a, b, c), axisangles(x, α, β, γ))
 
 struct Lattice{T}
     data::SVector{3,SVector{3,T}}
 end
-Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) =
-    Lattice(SVector(map(SVector{3}, (v1, v2, v3))))
-function Lattice(m::AbstractMatrix, rowmajor::Bool = false)
-    f = rowmajor ? transpose : identity
-    return Lattice(Iterators.partition(f(m), 3)...)
+Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) = Lattice(SVector(map(SVector{3}, (v1, v2, v3))))
+Lattice(v::AbstractVector{<:AbstractVector}) = Lattice(v...)
+function Lattice(m::AbstractMatrix)
+    @assert size(m) = (3, 3)
+    return Lattice(Iterators.partition(m, 3)...)
 end # function Lattice
 function Lattice(a, b, c, α, β, γ)
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
@@ -237,20 +226,32 @@ function Lattice(a, b, c, α, β, γ)
 end # function Lattice
 Lattice(p::CellParameters) = Lattice(p...)
 
-struct Cell{
-    L<:AbstractVecOrMat,
-    P<:AbstractVecOrMat,
-    N<:AbstractVector,
-    M<:Union{AbstractVector,Nothing},
-}
-    lattice::L
-    positions::P
-    atoms::N
-    magmoms::M
+struct AtomicPosition{S,T}
+    atom::S
+    pos::SVector{3,T}
 end
-Cell(lattice, positions, atoms) = Cell(lattice, positions, atoms, nothing)
-Cell(lattice::Lattice, positions, atoms, args...) =
-    Cell(lattice.data, positions, atoms, args...)
+AtomicPosition(atom, pos::AbstractVector) = AtomicPosition(atom, SVector{3}(pos))
+
+struct Cell{N,L,S,T}
+    atompos::SVector{N,AtomicPosition{S,T}}
+    lattice::Lattice{L}
+end
+function Cell(atoms::AbstractVector, positions::AbstractVector{<:AbstractVector}, lattice::AbstractVecOrMat)
+    if length(positions) == length(atoms)
+        N = length(positions)
+        return Cell(SVector{N}([AtomicPosition(atom, position) for (atom, position) in zip(atoms, positions)]), Lattice(lattice))
+    else
+        throw(DimensionMismatch("the number of positions should equal the number of atoms!"))
+    end
+end # function Cell
+
+# This is an internal type and should not be exported!
+struct AtomicIterator{T}
+    data::T
+end
+
+eachatom(atompos::AbstractVector{<:AtomicPosition}) = AtomicIterator(atompos)
+eachatom(cell::Cell) = AtomicIterator(cell.atompos)
 
 struct RealFromReciprocal
     basis::SMatrix{3,3}
@@ -268,7 +269,8 @@ struct CrystalFromCrystal
     from::SMatrix{3,3}
     to::SMatrix{3,3}
 end
-for T in (:RealFromReciprocal, :ReciprocalFromReal, :CartesianFromCrystal, :CrystalFromCartesian)
+for T in
+    (:RealFromReciprocal, :ReciprocalFromReal, :CartesianFromCrystal, :CrystalFromCartesian)
     eval(quote
         $T(m::AbstractMatrix) = $T(SMatrix{3,3}(m))
         $T(lattice::Lattice) = $T(convert(Matrix{eltype(lattice)}, lattice))
@@ -421,10 +423,13 @@ function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
     return supercell(cell, Diagonal(expansion))
 end # function supercell
 
+Base.length(iter::AtomicIterator) = length(iter.data)
+
 Base.size(::Union{MetricTensor,Lattice}) = (3, 3)
 Base.size(::Miller) = (3,)
 Base.size(::MillerBravais) = (4,)
 Base.size(::CellParameters) = (6,)
+Base.size(iter::AtomicIterator) = (length(iter.data),)
 
 Base.getindex(A::MetricTensor, I::Vararg{Int}) = getindex(A.data, I...)
 Base.getindex(
@@ -436,9 +441,12 @@ Base.getindex(A::Lattice, i::Int, j::Int) = getindex(getindex(A.data, i), j)
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
 Base.inv(x::Union{CrystalFromCartesian,CartesianFromCrystal}) = typeof(x)(inv(x.basis))
 
-(t::CrystalFromCartesian)(v::AbstractVector) = Crystal(convert(Matrix{eltype(t.basis)}, t.basis) * v)
-(t::CartesianFromCrystal)(v::Crystal) = SVector(convert(Matrix{eltype(t.basis)}, t.basis)' * v)
-(t::CrystalFromCrystal)(v::Crystal) = CrystalFromCartesian(t.to)(CartesianFromCrystal(t.from)(v))
+(t::CrystalFromCartesian)(v::AbstractVector) =
+    Crystal(convert(Matrix{eltype(t.basis)}, t.basis) * v)
+(t::CartesianFromCrystal)(v::Crystal) =
+    SVector(convert(Matrix{eltype(t.basis)}, t.basis)' * v)
+(t::CrystalFromCrystal)(v::Crystal) =
+    CrystalFromCartesian(t.to)(CartesianFromCrystal(t.from)(v))
 
 Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
 Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
@@ -461,8 +469,10 @@ end # function Base.convert
 Base.convert(::Type{Lattice}, g::MetricTensor) = Lattice(convert(CellParameters, g))
 
 Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
+Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) = i > length(iter) ? nothing : (iter.data[i], i + 1)
 
 Base.eltype(::Lattice{T}) where {T} = T
+Base.eltype(::AtomicIterator{<:AbstractVector{T}}) where {T<:AtomicPosition} = T
 
 Base.firstindex(::CellParameters) = 1
 
