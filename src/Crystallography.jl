@@ -51,6 +51,7 @@ export CrystalSystem,
     MetricTensor,
     Miller,
     MillerBravais,
+    AtomicPosition,
     Cell,
     LatticeConstants,
     AxisAngles,
@@ -217,11 +218,11 @@ CellParameters(x::BravaisLattice, a, b, c, α, β, γ) =
 struct Lattice{T}
     data::SVector{3,SVector{3,T}}
 end
-Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) =
-    Lattice(SVector(map(SVector{3}, (v1, v2, v3))))
-function Lattice(m::AbstractMatrix, rowmajor::Bool = false)
-    f = rowmajor ? transpose : identity
-    return Lattice(Iterators.partition(f(m), 3)...)
+Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) = Lattice(SVector(map(SVector{3}, (v1, v2, v3))))
+Lattice(v::AbstractVector{<:AbstractVector}) = Lattice(v...)
+function Lattice(m::AbstractMatrix)
+    @assert size(m) = (3, 3)
+    return Lattice(Iterators.partition(m, 3)...)
 end # function Lattice
 function Lattice(a, b, c, α, β, γ)
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
@@ -237,12 +238,25 @@ function Lattice(a, b, c, α, β, γ)
 end # function Lattice
 Lattice(p::CellParameters) = Lattice(p...)
 
-struct Cell{N,L,P,A}
-    lattice::SVector{3,SVector{3,L}}
-    positions::SVector{N,P}
-    atoms::SVector{N,A}
+struct AtomicPosition{S,T}
+    atom::S
+    pos::SVector{3,T}
 end
-Cell(lattice::Lattice, positions, atoms) = Cell(lattice.data, positions, atoms)
+AtomicPosition(atom, pos::AbstractVector) = AtomicPosition(atom, SVector{3}(pos))
+
+struct Cell{N,L,S,T}
+    atompos::SVector{N,AtomicPosition{S,T}}
+    lattice::Lattice{L}
+end
+function Cell(atoms::AbstractVector, positions::AbstractVector{<:AbstractVector}, lattice::AbstractVecOrMat)
+    if length(positions) == length(atoms)
+        N = length(positions)
+        return Cell(SVector{N}([AtomicPosition(atom, position) for (atom, position) in zip(atoms, positions)]), Lattice(lattice))
+    else
+        throw(DimensionMismatch("the number of positions should equal the number of atoms!"))
+    end
+end # function Cell
+
 # This is an internal type and should not be exported!
 struct AtomicIterator{T}
     data::T
