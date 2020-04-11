@@ -253,27 +253,6 @@ end
 eachatom(atompos::AbstractVector{<:AtomicPosition}) = AtomicIterator(atompos)
 eachatom(cell::Cell) = AtomicIterator(cell.atompos)
 
-struct RealFromReciprocal
-    basis::SMatrix{3,3}
-end
-struct ReciprocalFromReal
-    basis::SMatrix{3,3}
-end
-struct CartesianFromCrystal
-    basis::SMatrix{3,3}
-end
-struct CrystalFromCartesian
-    basis::SMatrix{3,3}
-end
-struct CrystalFromCrystal end
-for T in
-    (:RealFromReciprocal, :ReciprocalFromReal, :CartesianFromCrystal, :CrystalFromCartesian)
-    eval(quote
-        $T(m::AbstractMatrix) = $T(SMatrix{3,3}(m))
-        $T(lattice::Lattice) = $T(convert(Matrix{eltype(lattice)}, lattice))
-    end)
-end
-
 function crystalsystem(p::CellParameters)
     a, b, c, α, β, γ = p
     if a == b == c
@@ -350,15 +329,6 @@ Base.size(iter::AtomicIterator) = (length(iter.data),)
 
 Base.getindex(A::Lattice, i::Int, j::Int) = getindex(getindex(A.data, i), j)
 
-Base.inv(x::Union{CrystalFromCartesian,CartesianFromCrystal}) = typeof(x)(inv(x.basis))
-
-(t::CrystalFromCartesian)(v::AbstractVector) =
-    CrystalCoord(convert(Matrix{eltype(t.basis)}, t.basis) * v)
-(t::CartesianFromCrystal)(v::CrystalCoord) =
-    SVector(convert(Matrix{eltype(t.basis)}, t.basis)' * v)
-(t::CrystalFromCrystal)(v::CrystalCoord) =
-    CrystalFromCartesian(t.to)(CartesianFromCrystal(t.from)(v))
-
 Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
 
 Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
@@ -381,6 +351,7 @@ StaticArrays.similar_type(
 ) where {T} = CrystalCoord{T}
 
 include("geometry.jl")
+include("transform.jl")
 include("Symmetry.jl")
 
 end # module
