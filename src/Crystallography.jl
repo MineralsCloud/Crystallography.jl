@@ -47,7 +47,7 @@ export CrystalSystem,
     RCenteredHexagonal,
     RealSpace,
     ReciprocalSpace,
-    Crystal,
+    CrystalCoord,
     MetricTensor,
     Miller,
     MillerBravais,
@@ -164,7 +164,7 @@ abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
 struct ReciprocalSpace <: AbstractSpace end
 
-struct Crystal{T} <: FieldVector{3,T}
+struct CrystalCoord{T} <: FieldVector{3,T}
     x::T
     y::T
     z::T
@@ -265,10 +265,7 @@ end
 struct CrystalFromCartesian
     basis::SMatrix{3,3}
 end
-struct CrystalFromCrystal
-    from::SMatrix{3,3}
-    to::SMatrix{3,3}
-end
+struct CrystalFromCrystal end
 for T in
     (:RealFromReciprocal, :ReciprocalFromReal, :CartesianFromCrystal, :CrystalFromCartesian)
     eval(quote
@@ -377,12 +374,11 @@ Base.lastindex(::CellParameters) = 6
 Base.getproperty(p::CellParameters, name::Symbol) =
     name ∈ (:a, :b, :c, :α, :β, :γ) ? getfield(p.data, name) : getfield(p, name)
 
-
 StaticArrays.similar_type(
-    ::Type{<:Crystal},  # Do not delete the `<:`!
+    ::Type{<:CrystalCoord},  # Do not delete the `<:`!
     ::Type{T},
     size::Size{(3,)},
-) where {T} = Crystal{T}
+) where {T} = CrystalCoord{T}
 
 include("geometry.jl")
 include("Symmetry.jl")

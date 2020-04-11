@@ -6,7 +6,7 @@ using LinearAlgebra: I, diagm, det
 using StaticArrays: SVector, SMatrix, SDiagonal
 using ShiftedArrays: circshift, lead
 
-using Crystallography: Crystal, Cell
+using Crystallography: CrystalCoord, Cell
 
 export SeitzOperator,
     CircularPath,
@@ -236,7 +236,7 @@ Base.one(A::SeitzOperator) = one(typeof(A))
 
 Base.inv(op::SeitzOperator) = SeitzOperator(Base.inv(op.data))
 
-Base.:*(m::SeitzOperator, c::Crystal) = Crystal((m.data*[c; 1])[1:3])
+Base.:*(m::SeitzOperator, c::CrystalCoord) = CrystalCoord((m.data*[c; 1])[1:3])
 Base.:*(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.data * b.data)
 
 function Base.convert(::Type{Translation}, op::SeitzOperator)
