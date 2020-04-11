@@ -138,18 +138,16 @@ latticeconst(::Union{TETRAGONAL,PrimitiveHexagonal}, a, c) = latticeconst(a, a, 
 latticeconst(::Union{CUBIC,RCenteredHexagonal}, a) = latticeconst(a, a, a)
 
 axisangles(::PrimitiveTriclinic, α, β, γ) = axisangles(α, β, γ)
-axisangles(::PrimitiveMonoclinic, α, β, γ, view::Int = 1) =
-    view == 1 ? axisangles(90, 90, γ) : axisangles(90, β, 90)
-axisangles(::CCenteredMonoclinic, α, β, γ) = axisangles(90, 90, γ)
-axisangles(::BCenteredMonoclinic, α, β, γ) = axisangles(90, β, 90)
-axisangles(::Union{ORTHORHOMBIC,TETRAGONAL,CUBIC}, α, β, γ) = axisangles(90, 90, 90)
-axisangles(::PrimitiveHexagonal, α, β, γ) = axisangles(90, 90, 120)
-axisangles(::RCenteredHexagonal, α, β, γ) = axisangles(α, α, α)
+axisangles(::PrimitiveMonoclinic, α, θ, view::Int = 1) =
+    view == 1 ? axisangles(90, 90, θ) : axisangles(90, θ, 90)
+axisangles(::CCenteredMonoclinic, γ) = axisangles(90, 90, γ)
+axisangles(::BCenteredMonoclinic, β) = axisangles(90, β, 90)
+axisangles(::Union{ORTHORHOMBIC,TETRAGONAL,CUBIC}) = axisangles(90, 90, 90)
+axisangles(::PrimitiveHexagonal) = axisangles(90, 90, 120)
+axisangles(::RCenteredHexagonal, α) = axisangles(α, α, α)
 
 const CellParameters = NamedTuple{(:a, :b, :c, :α, :β, :γ)}  # Use as type
 CellParameters(a, b, c, α, β, γ) = CellParameters((a, b, c, α, β, γ))  # Use as constructor
-CellParameters(x::BravaisLattice, a, b, c, α, β, γ) =
-    CellParameters([latticeconst(x, a, b, c); axisangles(x, α, β, γ)])
 
 struct Lattice{T}
     data::SVector{3,SVector{3,T}}
