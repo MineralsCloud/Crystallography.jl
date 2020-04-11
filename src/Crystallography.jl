@@ -53,7 +53,7 @@ export CrystalSystem,
     MillerBravais,
     AtomicPosition,
     Cell,
-    latticeconstants,
+    latticeconst,
     axisangles,
     CellParameters,
     Lattice,
@@ -134,17 +134,17 @@ struct CrystalCoord{T} <: FieldVector{3,T}
     z::T
 end
 
-function latticeconstants(a, b, c)
+function latticeconst(a, b, c)
     x = (a, b, c)
     z = zero(eltype(x))
-    all(x .> z) ? (a, b, c) : error("lattice constants must all be positive!")
-end # function latticeconstants
-latticeconstants(::Union{PrimitiveTriclinic,MONOCLINIC,ORTHORHOMBIC}, a, b, c) =
-    latticeconstants(a, b, c)
-latticeconstants(::TETRAGONAL, a, b, c) = latticeconstants(a, a, c)
-latticeconstants(::CUBIC, a, b, c) = latticeconstants(a, a, a)
-latticeconstants(::PrimitiveHexagonal, a, b, c) = latticeconstants(a, a, c)
-latticeconstants(::RCenteredHexagonal, a, b, c) = latticeconstants(a, a, a)
+    all(x .> z) ? x : error("lattice constants must all be positive!")
+end # function latticeconst
+latticeconst(::Union{PrimitiveTriclinic,MONOCLINIC,ORTHORHOMBIC}, a, b, c) =
+    latticeconst(a, b, c)
+latticeconst(::TETRAGONAL, a, b, c) = latticeconst(a, a, c)
+latticeconst(::CUBIC, a, b, c) = latticeconst(a, a, a)
+latticeconst(::PrimitiveHexagonal, a, b, c) = latticeconst(a, a, c)
+latticeconst(::RCenteredHexagonal, a, b, c) = latticeconst(a, a, a)
 
 axisangles(::PrimitiveTriclinic, α, β, γ) = axisangles(α, β, γ)
 axisangles(::PrimitiveMonoclinic, α, β, γ, view::Int = 1) =
