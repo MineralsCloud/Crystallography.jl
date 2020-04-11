@@ -2,7 +2,7 @@ module Symmetry
 
 using CoordinateTransformations: AffineMap, Translation, LinearMap
 using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
-using LinearAlgebra: I, diagm, det
+using LinearAlgebra: I, diagm, det, tr
 using StaticArrays: SVector, SMatrix, SDiagonal
 using ShiftedArrays: circshift, lead
 
@@ -11,6 +11,7 @@ using Crystallography
 export SeitzOperator,
     CircularPath,
     NoncircularPath,
+    symmetrytype,
     getsymmetry,
     getspacegroup,
     irreciprocalmesh,
@@ -50,6 +51,45 @@ arithmeticclass(::RhombohedralCentering) = "R"
 arithmeticclass(b::BravaisLattice) =
     arithmeticclass(crystalsystem(b)) * arithmeticclass(centering(b))
 arithmeticclass(::RCenteredHexagonal) = "-3mR"
+
+abstract type PointSymmetry end
+struct Identity <: PointSymmetry end
+struct RotationAxis{N} <: PointSymmetry end
+struct Inversion <: PointSymmetry end
+RotationAxis(N::Int) = N ∈ (2, 3, 4, 6) ? RotationAxis{N}() : throw(ArgumentError("rotation axis must be either 2, 3, 4 or 6!"))
+
+struct PointSymmetryPower{T<:PointSymmetry,N} end
+PointSymmetryPower(X::PointSymmetry, N::Int) = PointSymmetryPower{typeof(X),N}()
+function PointSymmetryPower(::RotationAxis{N}, M::Int) where {N}
+    if M >= N
+        if M == N
+            Identity()
+        else
+            PointSymmetryPower(RotationAxis(N), M - N)  # Recursive call
+        end
+    else  # Until M < N
+        PointSymmetryPower{RotationAxis{N},M}()
+    end
+end # function PointSymmetryPower
+RotoInversion(N::Int) = Inversion() * RotationAxis{N}()
+Mirror() = RotoInversion(2)
+
+function symmetrytype(l::LinearMap)
+    m = l.linear
+    @assert size(m) == (3, 3)
+    return Dict(
+        (3, 1) => Identity(),
+        (-1, 1) => RotationAxis(2),
+        (0, 1) => RotationAxis(3),
+        (1, 1) => RotationAxis(4),
+        (2, 1) => RotationAxis(6),
+        (-3, -1) => Inversion(),
+        (1, -1) => Mirror(),
+        (0, -1) => RotoInversion(3),
+        (-1, -1) => RotoInversion(4),
+        (-2, -1) => RotoInversion(6)
+    )[(tr(m), det(m))]
+end # function symmetrytype
 
 # These are helper methods and should not be exported!
 _numbers(a::AbstractVector{<:Integer}) = a
@@ -268,6 +308,15 @@ Base.one(A::SeitzOperator) = one(typeof(A))
 
 Base.inv(op::SeitzOperator) = SeitzOperator(Base.inv(op.data))
 
+Base.:*(::Identity, ::Identity) = Identity()
+Base.:*(::Identity, x::Union{PointSymmetryPower,PointSymmetry}) = x
+Base.:*(x::Union{PointSymmetryPower,PointSymmetry}, ::Identity) = x
+Base.:*(::Inversion, ::Inversion) = Identity()
+Base.:*(::RotationAxis{N}, ::Inversion) where {N} = RotoInversion(N)
+Base.:*(i::Inversion, r::RotationAxis) = r * i
+Base.:*(::RotationAxis{N}, ::RotationAxis{N}) where {N} = PointSymmetryPower(RotationAxis(N), 2)
+Base.:*(::RotationAxis{2}, ::RotationAxis{2}) = Identity()
+Base.:*(::PointSymmetryPower{RotationAxis{N},M}, ::RotationAxis{N}) where {N,M} = PointSymmetryPower(RotationAxis(N), M + 1)
 Base.:*(m::SeitzOperator, c::CrystalCoord) = CrystalCoord((m.data*[c; 1])[1:3])
 Base.:*(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.data * b.data)
 
