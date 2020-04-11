@@ -133,12 +133,9 @@ function latticeconst(a, b, c)
     z = zero(eltype(x))
     all(x .> z) ? x : error("lattice constants must all be positive!")
 end # function latticeconst
-latticeconst(::Union{PrimitiveTriclinic,MONOCLINIC,ORTHORHOMBIC}, a, b, c) =
-    latticeconst(a, b, c)
-latticeconst(::TETRAGONAL, a, b, c) = latticeconst(a, a, c)
-latticeconst(::CUBIC, a, b, c) = latticeconst(a, a, a)
-latticeconst(::PrimitiveHexagonal, a, b, c) = latticeconst(a, a, c)
-latticeconst(::RCenteredHexagonal, a, b, c) = latticeconst(a, a, a)
+latticeconst(::Union{PrimitiveTriclinic,MONOCLINIC,ORTHORHOMBIC}, a, b, c) = latticeconst(a, b, c)
+latticeconst(::Union{TETRAGONAL,PrimitiveHexagonal}, a, c) = latticeconst(a, a, c)
+latticeconst(::Union{CUBIC,RCenteredHexagonal}, a) = latticeconst(a, a, a)
 
 axisangles(::PrimitiveTriclinic, α, β, γ) = axisangles(α, β, γ)
 axisangles(::PrimitiveMonoclinic, α, β, γ, view::Int = 1) =
