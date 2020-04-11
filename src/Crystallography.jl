@@ -150,11 +150,7 @@ axisangles(::PrimitiveHexagonal, α, β, γ) = axisangles(90, 90, 120)
 axisangles(::RCenteredHexagonal, α, β, γ) = axisangles(α, α, α)
 
 const CellParameters = NamedTuple{(:a, :b, :c, :α, :β, :γ)}  # Use as type
-function CellParameters(a, b, c, α, β, γ)  # Use as constructor
-    a, b, c = promote(a, b, c)
-    α, β, γ = promote(α, β, γ)
-    return CellParameters((a, b, c, α, β, γ))
-end
+CellParameters(a, b, c, α, β, γ) = CellParameters((a, b, c, α, β, γ))  # Use as constructor
 CellParameters(x::BravaisLattice, a, b, c, α, β, γ) =
     CellParameters([latticeconst(x, a, b, c); axisangles(x, α, β, γ)])
 
