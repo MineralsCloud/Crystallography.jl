@@ -89,8 +89,7 @@ struct BodyCentering <: Centering end
 struct FaceCentering <: Centering end
 struct RhombohedralCentering <: Centering end
 struct BaseCentering{T} <: Centering end
-BaseCentering(T::Symbol) = T ∈ (:A, :B, :C) ? BaseCentering{T}() :
-    throw(ArgumentError("centering must be either :A, :B, or :C!"))
+BaseCentering(T::Symbol) = T ∈ (:A, :B, :C) ? BaseCentering{T}() : throw(ArgumentError("centering must be either :A, :B, or :C!"))
 
 const BravaisLattice = Tuple{CrystalSystem,Centering}
 const PrimitiveTriclinic = Tuple{Triclinic,Primitive}
@@ -112,10 +111,6 @@ const FaceCenteredCubic = Tuple{Cubic,FaceCentering}
 const PrimitiveHexagonal = Tuple{Hexagonal,Primitive}
 const RCenteredHexagonal = Tuple{Hexagonal,RhombohedralCentering}
 (::Type{Tuple{A,B}})() where {A<:CrystalSystem,B<:Centering} = (A(), B())
-
-centering(b::BravaisLattice) = last(b)
-
-crystalsystem(b::BravaisLattice) = first(b)
 
 const TETRAGONAL = Union{PrimitiveTetragonal,BodyCenteredTetragonal}
 const CUBIC = Union{PrimitiveCubic,BodyCenteredCubic,FaceCenteredCubic}
@@ -199,6 +194,9 @@ end
 eachatom(atompos::AbstractVector{<:AtomicPosition}) = AtomicIterator(atompos)
 eachatom(cell::Cell) = AtomicIterator(cell.atompos)
 
+centering(b::BravaisLattice) = last(b)
+
+crystalsystem(b::BravaisLattice) = first(b)
 function crystalsystem(p::CellParameters)
     a, b, c, α, β, γ = p
     if a == b == c

@@ -74,7 +74,8 @@ cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
 directioncosine(a::CrystalCoord, g::MetricTensor, b::CrystalCoord) =
     dot(a, g, b) / (norm(a, g) * norm(b, g))
 
-directionangle(a::CrystalCoord, g::MetricTensor, b::CrystalCoord) = acos(directioncosine(a, g, b))
+directionangle(a::CrystalCoord, g::MetricTensor, b::CrystalCoord) =
+    acos(directioncosine(a, g, b))
 
 distance(a::CrystalCoord, g::MetricTensor, b::CrystalCoord) = norm(b - a, g)
 
@@ -85,10 +86,7 @@ Base.size(::Miller) = (3,)
 Base.size(::MillerBravais) = (4,)
 
 Base.getindex(A::MetricTensor, I::Vararg{Int}) = getindex(A.data, I...)
-Base.getindex(
-    A::Union{Miller,MillerBravais,CellParameters,Lattice,CellParameters},
-    i::Int,
-) = getindex(A.data, i)
+Base.getindex(A::Union{Miller,MillerBravais,Lattice}, i::Int) = getindex(A.data, i)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
 
