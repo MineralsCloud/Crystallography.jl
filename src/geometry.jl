@@ -81,12 +81,12 @@ distance(a::CrystalCoord, g::MetricTensor, b::CrystalCoord) = norm(b - a, g)
 
 interplanar_spacing(a::CrystalCoord, g::MetricTensor) = 1 / norm(a, g)
 
-Base.size(::Union{MetricTensor,Lattice}) = (3, 3)
+Base.size(::MetricTensor) = (3, 3)
 Base.size(::Miller) = (3,)
 Base.size(::MillerBravais) = (4,)
 
 Base.getindex(A::MetricTensor, I::Vararg{Int}) = getindex(A.data, I...)
-Base.getindex(A::Union{Miller,MillerBravais,Lattice}, i::Int) = getindex(A.data, i)
+Base.getindex(A::Union{Miller,MillerBravais}, i::Int) = getindex(A.data, i)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
 

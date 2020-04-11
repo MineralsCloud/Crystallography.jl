@@ -268,9 +268,10 @@ end # function supercell
 
 Base.length(iter::AtomicIterator) = length(iter.data)
 
-Base.size(::CellParameters) = (6,)
 Base.size(iter::AtomicIterator) = (length(iter.data),)
+Base.size(::Lattice) = (3, 3)
 
+Base.getindex(A::Lattice, i::Int) = getindex(A.data, i)
 Base.getindex(A::Lattice, i::Int, j::Int) = getindex(getindex(A.data, i), j)
 
 Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
