@@ -62,9 +62,7 @@ export CrystalSystem,
     CrystalFromCartesian,
     CartesianFromCrystal,
     CrystalFromCrystal
-export pearsonsymbol,
-    arithmeticclass,
-    centering,
+export centering,
     crystalsystem,
     directioncosine,
     directionangle,
@@ -114,36 +112,6 @@ const FaceCenteredCubic = Tuple{Cubic,FaceCentering}
 const PrimitiveHexagonal = Tuple{Hexagonal,Primitive}
 const RCenteredHexagonal = Tuple{Hexagonal,RhombohedralCentering}
 (::Type{Tuple{A,B}})() where {A<:CrystalSystem,B<:Centering} = (A(), B())
-
-pearsonsymbol(::Triclinic) = "a"
-pearsonsymbol(::Monoclinic) = "m"
-pearsonsymbol(::Orthorhombic) = "o"
-pearsonsymbol(::Tetragonal) = "t"
-pearsonsymbol(::Cubic) = "c"
-pearsonsymbol(::Hexagonal) = "h"
-pearsonsymbol(::Trigonal) = "h"
-pearsonsymbol(::Primitive) = "P"
-pearsonsymbol(::BaseCentering{T}) where {T} = string(T)
-pearsonsymbol(::BodyCentering) = "I"
-pearsonsymbol(::FaceCentering) = "F"
-pearsonsymbol(::RhombohedralCentering) = "R"
-pearsonsymbol(b::BravaisLattice) =
-    pearsonsymbol(crystalsystem(b)) * pearsonsymbol(centering(b))
-
-arithmeticclass(::Triclinic) = "-1"
-arithmeticclass(::Monoclinic) = "2/m"
-arithmeticclass(::Orthorhombic) = "mmm"
-arithmeticclass(::Tetragonal) = "4/mmm"
-arithmeticclass(::Hexagonal) = "6/mmm"
-arithmeticclass(::Cubic) = "m-3m"
-arithmeticclass(::Primitive) = "P"
-arithmeticclass(::BaseCentering) = "S"
-arithmeticclass(::BodyCentering) = "I"
-arithmeticclass(::FaceCentering) = "F"
-arithmeticclass(::RhombohedralCentering) = "R"
-arithmeticclass(b::BravaisLattice) =
-    arithmeticclass(crystalsystem(b)) * arithmeticclass(centering(b))
-arithmeticclass(::RCenteredHexagonal) = "-3mR"
 
 centering(b::BravaisLattice) = last(b)
 
