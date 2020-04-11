@@ -47,13 +47,13 @@ export CrystalSystem,
     RCenteredHexagonal,
     RealSpace,
     ReciprocalSpace,
-    Crystal,
+    CrystalCoord,
     MetricTensor,
     Miller,
     MillerBravais,
     AtomicPosition,
     Cell,
-    latticeconstants,
+    latticeconst,
     axisangles,
     CellParameters,
     Lattice,
@@ -62,9 +62,7 @@ export CrystalSystem,
     CrystalFromCartesian,
     CartesianFromCrystal,
     CrystalFromCrystal
-export pearsonsymbol,
-    arithmeticclass,
-    centering,
+export centering,
     crystalsystem,
     directioncosine,
     directionangle,
@@ -91,8 +89,7 @@ struct BodyCentering <: Centering end
 struct FaceCentering <: Centering end
 struct RhombohedralCentering <: Centering end
 struct BaseCentering{T} <: Centering end
-BaseCentering(T::Symbol) = T ∈ (:A, :B, :C) ? BaseCentering{T}() :
-    throw(ArgumentError("centering must be either :A, :B, or :C!"))
+BaseCentering(T::Symbol) = T ∈ (:A, :B, :C) ? BaseCentering{T}() : throw(ArgumentError("centering must be either :A, :B, or :C!"))
 
 const BravaisLattice = Tuple{CrystalSystem,Centering}
 const PrimitiveTriclinic = Tuple{Triclinic,Primitive}
@@ -115,40 +112,6 @@ const PrimitiveHexagonal = Tuple{Hexagonal,Primitive}
 const RCenteredHexagonal = Tuple{Hexagonal,RhombohedralCentering}
 (::Type{Tuple{A,B}})() where {A<:CrystalSystem,B<:Centering} = (A(), B())
 
-pearsonsymbol(::Triclinic) = "a"
-pearsonsymbol(::Monoclinic) = "m"
-pearsonsymbol(::Orthorhombic) = "o"
-pearsonsymbol(::Tetragonal) = "t"
-pearsonsymbol(::Cubic) = "c"
-pearsonsymbol(::Hexagonal) = "h"
-pearsonsymbol(::Trigonal) = "h"
-pearsonsymbol(::Primitive) = "P"
-pearsonsymbol(::BaseCentering{T}) where {T} = string(T)
-pearsonsymbol(::BodyCentering) = "I"
-pearsonsymbol(::FaceCentering) = "F"
-pearsonsymbol(::RhombohedralCentering) = "R"
-pearsonsymbol(b::BravaisLattice) =
-    pearsonsymbol(crystalsystem(b)) * pearsonsymbol(centering(b))
-
-arithmeticclass(::Triclinic) = "-1"
-arithmeticclass(::Monoclinic) = "2/m"
-arithmeticclass(::Orthorhombic) = "mmm"
-arithmeticclass(::Tetragonal) = "4/mmm"
-arithmeticclass(::Hexagonal) = "6/mmm"
-arithmeticclass(::Cubic) = "m-3m"
-arithmeticclass(::Primitive) = "P"
-arithmeticclass(::BaseCentering) = "S"
-arithmeticclass(::BodyCentering) = "I"
-arithmeticclass(::FaceCentering) = "F"
-arithmeticclass(::RhombohedralCentering) = "R"
-arithmeticclass(b::BravaisLattice) =
-    arithmeticclass(crystalsystem(b)) * arithmeticclass(centering(b))
-arithmeticclass(::RCenteredHexagonal) = "-3mR"
-
-centering(b::BravaisLattice) = last(b)
-
-crystalsystem(b::BravaisLattice) = first(b)
-
 const TETRAGONAL = Union{PrimitiveTetragonal,BodyCenteredTetragonal}
 const CUBIC = Union{PrimitiveCubic,BodyCenteredCubic,FaceCenteredCubic}
 const ORTHORHOMBIC = Union{
@@ -160,48 +123,26 @@ const ORTHORHOMBIC = Union{
 }
 const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
 
-abstract type AbstractSpace end
-struct RealSpace <: AbstractSpace end
-struct ReciprocalSpace <: AbstractSpace end
-
-struct Crystal{T} <: FieldVector{3,T}
-    x::T
-    y::T
-    z::T
-end
-
-function latticeconstants(a, b, c)
+function latticeconst(a, b, c)
     x = (a, b, c)
     z = zero(eltype(x))
-    all(x .> z) ? (a, b, c) : error("lattice constants must all be positive!")
-end # function latticeconstants
-latticeconstants(::Union{PrimitiveTriclinic,MONOCLINIC,ORTHORHOMBIC}, a, b, c) =
-    latticeconstants(a, b, c)
-latticeconstants(::TETRAGONAL, a, b, c) = latticeconstants(a, a, c)
-latticeconstants(::CUBIC, a, b, c) = latticeconstants(a, a, a)
-latticeconstants(::PrimitiveHexagonal, a, b, c) = latticeconstants(a, a, c)
-latticeconstants(::RCenteredHexagonal, a, b, c) = latticeconstants(a, a, a)
+    all(x .> z) ? x : error("lattice constants must all be positive!")
+end # function latticeconst
+latticeconst(::Union{PrimitiveTriclinic,MONOCLINIC,ORTHORHOMBIC}, a, b, c) = latticeconst(a, b, c)
+latticeconst(::Union{TETRAGONAL,PrimitiveHexagonal}, a, c) = latticeconst(a, a, c)
+latticeconst(::Union{CUBIC,RCenteredHexagonal}, a) = latticeconst(a, a, a)
 
 axisangles(::PrimitiveTriclinic, α, β, γ) = axisangles(α, β, γ)
-axisangles(::PrimitiveMonoclinic, α, β, γ, view::Int = 1) =
-    view == 1 ? axisangles(90, 90, γ) : axisangles(90, β, 90)
-axisangles(::CCenteredMonoclinic, α, β, γ) = axisangles(90, 90, γ)
-axisangles(::BCenteredMonoclinic, α, β, γ) = axisangles(90, β, 90)
-axisangles(::Union{ORTHORHOMBIC,TETRAGONAL,CUBIC}, α, β, γ) = axisangles(90, 90, 90)
-axisangles(::PrimitiveHexagonal, α, β, γ) = axisangles(90, 90, 120)
-axisangles(::RCenteredHexagonal, α, β, γ) = axisangles(α, α, α)
+axisangles(::PrimitiveMonoclinic, α, θ, view::Int = 1) =
+    view == 1 ? axisangles(90, 90, θ) : axisangles(90, θ, 90)
+axisangles(::CCenteredMonoclinic, γ) = axisangles(90, 90, γ)
+axisangles(::BCenteredMonoclinic, β) = axisangles(90, β, 90)
+axisangles(::Union{ORTHORHOMBIC,TETRAGONAL,CUBIC}) = axisangles(90, 90, 90)
+axisangles(::PrimitiveHexagonal) = axisangles(90, 90, 120)
+axisangles(::RCenteredHexagonal, α) = axisangles(α, α, α)
 
-struct CellParameters{S,T}
-    data::NamedTuple{(:a, :b, :c, :α, :β, :γ),Tuple{S,S,S,T,T,T}}
-end
-function CellParameters(a, b, c, α, β, γ)
-    a, b, c = promote(a, b, c)
-    α, β, γ = promote(α, β, γ)
-    return CellParameters((a = a, b = b, c = c, α = α, β = β, γ = γ))
-end
-CellParameters(x::BravaisLattice) = args -> CellParameters(x, args...)
-CellParameters(x::BravaisLattice, a, b, c, α, β, γ) =
-    CellParameters(latticeconstants(x, a, b, c), axisangles(x, α, β, γ))
+const CellParameters = NamedTuple{(:a, :b, :c, :α, :β, :γ)}  # Use as type
+CellParameters(a, b, c, α, β, γ) = CellParameters((a, b, c, α, β, γ))  # Use as constructor
 
 struct Lattice{T}
     data::SVector{3,SVector{3,T}}
@@ -253,92 +194,9 @@ end
 eachatom(atompos::AbstractVector{<:AtomicPosition}) = AtomicIterator(atompos)
 eachatom(cell::Cell) = AtomicIterator(cell.atompos)
 
-struct RealFromReciprocal
-    basis::SMatrix{3,3}
-end
-struct ReciprocalFromReal
-    basis::SMatrix{3,3}
-end
-struct CartesianFromCrystal
-    basis::SMatrix{3,3}
-end
-struct CrystalFromCartesian
-    basis::SMatrix{3,3}
-end
-struct CrystalFromCrystal
-    from::SMatrix{3,3}
-    to::SMatrix{3,3}
-end
-for T in
-    (:RealFromReciprocal, :ReciprocalFromReal, :CartesianFromCrystal, :CrystalFromCartesian)
-    eval(quote
-        $T(m::AbstractMatrix) = $T(SMatrix{3,3}(m))
-        $T(lattice::Lattice) = $T(convert(Matrix{eltype(lattice)}, lattice))
-    end)
-end
+centering(b::BravaisLattice) = last(b)
 
-struct MetricTensor{T} <: AbstractMatrix{T}
-    data::SHermitianCompact{3,T}
-end
-MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
-function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
-    vecs = (v1, v2, v3)
-    return MetricTensor([dot(vecs[i], vecs[j]) for i in 1:3, j in 1:3])
-end
-function MetricTensor(a, b, c, α, β, γ)
-    g12 = a * b * cos(γ)
-    g13 = a * c * cos(β)
-    g23 = b * c * cos(α)
-    return MetricTensor(SHermitianCompact(SVector(a^2, g12, g13, b^2, g23, c^2)))
-end
-MetricTensor(p::CellParameters) = MetricTensor(p...)
-
-struct Miller{S<:AbstractSpace} <: AbstractVector{Int}
-    data::SVector{3,Int}
-    Miller{S}(v) where {S} = new(iszero(v) ? v : v .÷ gcd(v))
-end
-Miller{S}(i, j, k) where {S} = Miller{S}([i, j, k])
-
-struct MillerBravais{S<:AbstractSpace} <: AbstractVector{Int}
-    data::SVector{4,Int}
-    function MillerBravais{S}(v) where {S}
-        @assert(
-            v[3] == -v[1] - v[2],
-            "the 3rd index of `MillerBravais` should equal to the negation of the first two!"
-        )
-        return new(iszero(v) ? v : v .÷ gcd(v))
-    end
-end
-MillerBravais{S}(i, j, k, l) where {S} = MillerBravais{S}([i, j, k, l])
-
-# This is a helper type and should not be exported!
-const INDICES = Union{Miller,MillerBravais}
-
-# This is a helper function and should not be exported!
-function _indices_str(r::Regex, s::AbstractString, ::Type{T}) where {T<:INDICES}
-    m = match(r, strip(s))
-    isnothing(m) && error("not a valid expression!")
-    brackets = first(m.captures) * last(m.captures)
-    x = (parse(Int, x) for x in m.captures[2:(end-1)])
-    if brackets ∈ ("()", "{}")
-        return T{ReciprocalSpace}(x...)
-    elseif brackets ∈ ("[]", "<>")
-        return T{RealSpace}(x...)
-    else
-        error("not a valid expression!")
-    end
-end # function _indices_str
-
-macro m_str(s)
-    r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
-    _indices_str(r, s, Miller)
-end
-
-macro mb_str(s)
-    r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
-    _indices_str(r, s, MillerBravais)
-end
-
+crystalsystem(b::BravaisLattice) = first(b)
 function crystalsystem(p::CellParameters)
     a, b, c, α, β, γ = p
     if a == b == c
@@ -381,12 +239,6 @@ Calculates the cell volume from a `Lattice` or a `Cell`.
 """
 cellvolume(l::Lattice) = abs(det(convert(Matrix{eltype(l)}, l)))
 cellvolume(c::Cell) = cellvolume(c.lattice)
-"""
-    cellvolume(g::MetricTensor)
-
-Calculates the cell volume from a `MetricTensor`.
-"""
-cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
 
 function reciprocal(lattice::Lattice, twopi::Bool = false)
     volume = cellvolume(lattice)
@@ -394,15 +246,6 @@ function reciprocal(lattice::Lattice, twopi::Bool = false)
     factor = twopi ? 2 * SymPy.PI : 1
     return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocal
-
-directioncosine(a::Crystal, g::MetricTensor, b::Crystal) =
-    dot(a, g, b) / (norm(a, g) * norm(b, g))
-
-directionangle(a::Crystal, g::MetricTensor, b::Crystal) = acos(directioncosine(a, g, b))
-
-distance(a::Crystal, g::MetricTensor, b::Crystal) = norm(b - a, g)
-
-interplanar_spacing(a::Crystal, g::MetricTensor) = 1 / norm(a, g)
 
 """
     supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
@@ -425,71 +268,21 @@ end # function supercell
 
 Base.length(iter::AtomicIterator) = length(iter.data)
 
-Base.size(::Union{MetricTensor,Lattice}) = (3, 3)
-Base.size(::Miller) = (3,)
-Base.size(::MillerBravais) = (4,)
-Base.size(::CellParameters) = (6,)
 Base.size(iter::AtomicIterator) = (length(iter.data),)
+Base.size(::Lattice) = (3, 3)
 
-Base.getindex(A::MetricTensor, I::Vararg{Int}) = getindex(A.data, I...)
-Base.getindex(
-    A::Union{Miller,MillerBravais,CellParameters,Lattice,CellParameters},
-    i::Int,
-) = getindex(A.data, i)
+Base.getindex(A::Lattice, i::Int) = getindex(A.data, i)
 Base.getindex(A::Lattice, i::Int, j::Int) = getindex(getindex(A.data, i), j)
 
-Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
-Base.inv(x::Union{CrystalFromCartesian,CartesianFromCrystal}) = typeof(x)(inv(x.basis))
-
-(t::CrystalFromCartesian)(v::AbstractVector) =
-    Crystal(convert(Matrix{eltype(t.basis)}, t.basis) * v)
-(t::CartesianFromCrystal)(v::Crystal) =
-    SVector(convert(Matrix{eltype(t.basis)}, t.basis)' * v)
-(t::CrystalFromCrystal)(v::Crystal) =
-    CrystalFromCartesian(t.to)(CartesianFromCrystal(t.from)(v))
-
 Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
-Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
-Base.convert(::Type{Miller{T}}, mb::MillerBravais{T}) where {T<:RealSpace} =
-    Miller{T}(2 * mb[1] + mb[2], 2 * mb[2] + mb[1], mb[4])
-Base.convert(::Type{Miller{T}}, mb::MillerBravais{T}) where {T<:ReciprocalSpace} =
-    Miller{T}(mb[1], mb[2], mb[4])
-Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:RealSpace} =
-    MillerBravais{T}(2 * m[1] - m[2], 2 * m[2] - m[1], -(m[1] + m[2]), 3 * m[3])
-Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:ReciprocalSpace} =
-    MillerBravais{T}(m[1], m[2], -(m[1] + m[2]), m[3])
-function Base.convert(::Type{CellParameters}, g::MetricTensor)
-    data = g.data
-    a2, b2, c2, ab, ac, bc =
-        data[1, 1], data[2, 2], data[3, 3], data[1, 2], data[1, 3], data[2, 3]
-    a, b, c = map(sqrt, (a2, b2, c2))
-    γ, β, α = acos(ab / (a * b)), acos(ac / (a * c)), acos(bc / (b * c))
-    return CellParameters(a, b, c, α, β, γ)
-end # function Base.convert
-Base.convert(::Type{Lattice}, g::MetricTensor) = Lattice(convert(CellParameters, g))
 
-Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
 Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) = i > length(iter) ? nothing : (iter.data[i], i + 1)
 
 Base.eltype(::Lattice{T}) where {T} = T
 Base.eltype(::AtomicIterator{<:AbstractVector{T}}) where {T<:AtomicPosition} = T
 
-Base.firstindex(::CellParameters) = 1
-
-Base.lastindex(::CellParameters) = 6
-
-Base.getproperty(p::CellParameters, name::Symbol) =
-    name ∈ (:a, :b, :c, :α, :β, :γ) ? getfield(p.data, name) : getfield(p, name)
-
-LinearAlgebra.dot(a::Crystal, g::MetricTensor, b::Crystal) = a' * g.data * b
-LinearAlgebra.norm(a::Crystal, g::MetricTensor) = sqrt(dot(a, g, a))
-
-StaticArrays.similar_type(
-    ::Type{<:Crystal},  # Do not delete the `<:`!
-    ::Type{T},
-    size::Size{(3,)},
-) where {T} = Crystal{T}
-
+include("transform.jl")
+include("geometry.jl")
 include("Symmetry.jl")
 
 end # module

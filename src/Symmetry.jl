@@ -6,7 +6,7 @@ using LinearAlgebra: I, diagm, det
 using StaticArrays: SVector, SMatrix, SDiagonal
 using ShiftedArrays: circshift, lead
 
-using Crystallography: Crystal, Cell
+using Crystallography
 
 export SeitzOperator,
     CircularPath,
@@ -17,7 +17,39 @@ export SeitzOperator,
     isidentity,
     istranslation,
     ispointsymmetry,
-    genpath
+    genpath,
+    pearsonsymbol,
+    arithmeticclass
+
+pearsonsymbol(::Triclinic) = "a"
+pearsonsymbol(::Monoclinic) = "m"
+pearsonsymbol(::Orthorhombic) = "o"
+pearsonsymbol(::Tetragonal) = "t"
+pearsonsymbol(::Cubic) = "c"
+pearsonsymbol(::Hexagonal) = "h"
+pearsonsymbol(::Trigonal) = "h"
+pearsonsymbol(::Primitive) = "P"
+pearsonsymbol(::BaseCentering{T}) where {T} = string(T)
+pearsonsymbol(::BodyCentering) = "I"
+pearsonsymbol(::FaceCentering) = "F"
+pearsonsymbol(::RhombohedralCentering) = "R"
+pearsonsymbol(b::BravaisLattice) =
+    pearsonsymbol(crystalsystem(b)) * pearsonsymbol(centering(b))
+
+arithmeticclass(::Triclinic) = "-1"
+arithmeticclass(::Monoclinic) = "2/m"
+arithmeticclass(::Orthorhombic) = "mmm"
+arithmeticclass(::Tetragonal) = "4/mmm"
+arithmeticclass(::Hexagonal) = "6/mmm"
+arithmeticclass(::Cubic) = "m-3m"
+arithmeticclass(::Primitive) = "P"
+arithmeticclass(::BaseCentering) = "S"
+arithmeticclass(::BodyCentering) = "I"
+arithmeticclass(::FaceCentering) = "F"
+arithmeticclass(::RhombohedralCentering) = "R"
+arithmeticclass(b::BravaisLattice) =
+    arithmeticclass(crystalsystem(b)) * arithmeticclass(centering(b))
+arithmeticclass(::RCenteredHexagonal) = "-3mR"
 
 # These are helper methods and should not be exported!
 _numbers(a::AbstractVector{<:Integer}) = a
@@ -236,7 +268,7 @@ Base.one(A::SeitzOperator) = one(typeof(A))
 
 Base.inv(op::SeitzOperator) = SeitzOperator(Base.inv(op.data))
 
-Base.:*(m::SeitzOperator, c::Crystal) = Crystal((m.data*[c; 1])[1:3])
+Base.:*(m::SeitzOperator, c::CrystalCoord) = CrystalCoord((m.data*[c; 1])[1:3])
 Base.:*(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.data * b.data)
 
 function Base.convert(::Type{Translation}, op::SeitzOperator)
