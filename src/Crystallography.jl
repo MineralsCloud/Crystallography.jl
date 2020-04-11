@@ -155,17 +155,14 @@ axisangles(::Union{ORTHORHOMBIC,TETRAGONAL,CUBIC}, α, β, γ) = axisangles(90, 
 axisangles(::PrimitiveHexagonal, α, β, γ) = axisangles(90, 90, 120)
 axisangles(::RCenteredHexagonal, α, β, γ) = axisangles(α, α, α)
 
-struct CellParameters{S,T}
-    data::NamedTuple{(:a, :b, :c, :α, :β, :γ),Tuple{S,S,S,T,T,T}}
-end
-function CellParameters(a, b, c, α, β, γ)
+const CellParameters = NamedTuple{(:a, :b, :c, :α, :β, :γ)}  # Use as type
+function CellParameters(a, b, c, α, β, γ)  # Use as constructor
     a, b, c = promote(a, b, c)
     α, β, γ = promote(α, β, γ)
-    return CellParameters((a = a, b = b, c = c, α = α, β = β, γ = γ))
+    return CellParameters((a, b, c, α, β, γ))
 end
-CellParameters(x::BravaisLattice) = args -> CellParameters(x, args...)
 CellParameters(x::BravaisLattice, a, b, c, α, β, γ) =
-    CellParameters(latticeconstants(x, a, b, c), axisangles(x, α, β, γ))
+    CellParameters([latticeconst(x, a, b, c); axisangles(x, α, β, γ)])
 
 struct Lattice{T}
     data::SVector{3,SVector{3,T}}
@@ -295,18 +292,10 @@ Base.getindex(A::Lattice, i::Int, j::Int) = getindex(getindex(A.data, i), j)
 
 Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
 
-Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
 Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) = i > length(iter) ? nothing : (iter.data[i], i + 1)
 
 Base.eltype(::Lattice{T}) where {T} = T
 Base.eltype(::AtomicIterator{<:AbstractVector{T}}) where {T<:AtomicPosition} = T
-
-Base.firstindex(::CellParameters) = 1
-
-Base.lastindex(::CellParameters) = 6
-
-Base.getproperty(p::CellParameters, name::Symbol) =
-    name ∈ (:a, :b, :c, :α, :β, :γ) ? getfield(p.data, name) : getfield(p, name)
 
 StaticArrays.similar_type(
     ::Type{<:CrystalCoord},  # Do not delete the `<:`!
