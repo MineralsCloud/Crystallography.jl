@@ -277,68 +277,6 @@ for T in
     end)
 end
 
-struct MetricTensor{T} <: AbstractMatrix{T}
-    data::SHermitianCompact{3,T}
-end
-MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
-function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
-    vecs = (v1, v2, v3)
-    return MetricTensor([dot(vecs[i], vecs[j]) for i in 1:3, j in 1:3])
-end
-function MetricTensor(a, b, c, α, β, γ)
-    g12 = a * b * cos(γ)
-    g13 = a * c * cos(β)
-    g23 = b * c * cos(α)
-    return MetricTensor(SHermitianCompact(SVector(a^2, g12, g13, b^2, g23, c^2)))
-end
-MetricTensor(p::CellParameters) = MetricTensor(p...)
-
-struct Miller{S<:AbstractSpace} <: AbstractVector{Int}
-    data::SVector{3,Int}
-    Miller{S}(v) where {S} = new(iszero(v) ? v : v .÷ gcd(v))
-end
-Miller{S}(i, j, k) where {S} = Miller{S}([i, j, k])
-
-struct MillerBravais{S<:AbstractSpace} <: AbstractVector{Int}
-    data::SVector{4,Int}
-    function MillerBravais{S}(v) where {S}
-        @assert(
-            v[3] == -v[1] - v[2],
-            "the 3rd index of `MillerBravais` should equal to the negation of the first two!"
-        )
-        return new(iszero(v) ? v : v .÷ gcd(v))
-    end
-end
-MillerBravais{S}(i, j, k, l) where {S} = MillerBravais{S}([i, j, k, l])
-
-# This is a helper type and should not be exported!
-const INDICES = Union{Miller,MillerBravais}
-
-# This is a helper function and should not be exported!
-function _indices_str(r::Regex, s::AbstractString, ::Type{T}) where {T<:INDICES}
-    m = match(r, strip(s))
-    isnothing(m) && error("not a valid expression!")
-    brackets = first(m.captures) * last(m.captures)
-    x = (parse(Int, x) for x in m.captures[2:(end-1)])
-    if brackets ∈ ("()", "{}")
-        return T{ReciprocalSpace}(x...)
-    elseif brackets ∈ ("[]", "<>")
-        return T{RealSpace}(x...)
-    else
-        error("not a valid expression!")
-    end
-end # function _indices_str
-
-macro m_str(s)
-    r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
-    _indices_str(r, s, Miller)
-end
-
-macro mb_str(s)
-    r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
-    _indices_str(r, s, MillerBravais)
-end
-
 function crystalsystem(p::CellParameters)
     a, b, c, α, β, γ = p
     if a == b == c
@@ -381,12 +319,6 @@ Calculates the cell volume from a `Lattice` or a `Cell`.
 """
 cellvolume(l::Lattice) = abs(det(convert(Matrix{eltype(l)}, l)))
 cellvolume(c::Cell) = cellvolume(c.lattice)
-"""
-    cellvolume(g::MetricTensor)
-
-Calculates the cell volume from a `MetricTensor`.
-"""
-cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
 
 function reciprocal(lattice::Lattice, twopi::Bool = false)
     volume = cellvolume(lattice)
@@ -394,15 +326,6 @@ function reciprocal(lattice::Lattice, twopi::Bool = false)
     factor = twopi ? 2 * SymPy.PI : 1
     return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocal
-
-directioncosine(a::Crystal, g::MetricTensor, b::Crystal) =
-    dot(a, g, b) / (norm(a, g) * norm(b, g))
-
-directionangle(a::Crystal, g::MetricTensor, b::Crystal) = acos(directioncosine(a, g, b))
-
-distance(a::Crystal, g::MetricTensor, b::Crystal) = norm(b - a, g)
-
-interplanar_spacing(a::Crystal, g::MetricTensor) = 1 / norm(a, g)
 
 """
     supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
@@ -425,48 +348,21 @@ end # function supercell
 
 Base.length(iter::AtomicIterator) = length(iter.data)
 
-Base.size(::Union{MetricTensor,Lattice}) = (3, 3)
-Base.size(::Miller) = (3,)
-Base.size(::MillerBravais) = (4,)
 Base.size(::CellParameters) = (6,)
 Base.size(iter::AtomicIterator) = (length(iter.data),)
 
-Base.getindex(A::MetricTensor, I::Vararg{Int}) = getindex(A.data, I...)
-Base.getindex(
-    A::Union{Miller,MillerBravais,CellParameters,Lattice,CellParameters},
-    i::Int,
-) = getindex(A.data, i)
 Base.getindex(A::Lattice, i::Int, j::Int) = getindex(getindex(A.data, i), j)
 
-Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
 Base.inv(x::Union{CrystalFromCartesian,CartesianFromCrystal}) = typeof(x)(inv(x.basis))
 
 (t::CrystalFromCartesian)(v::AbstractVector) =
-    Crystal(convert(Matrix{eltype(t.basis)}, t.basis) * v)
-(t::CartesianFromCrystal)(v::Crystal) =
+    CrystalCoord(convert(Matrix{eltype(t.basis)}, t.basis) * v)
+(t::CartesianFromCrystal)(v::CrystalCoord) =
     SVector(convert(Matrix{eltype(t.basis)}, t.basis)' * v)
-(t::CrystalFromCrystal)(v::Crystal) =
+(t::CrystalFromCrystal)(v::CrystalCoord) =
     CrystalFromCartesian(t.to)(CartesianFromCrystal(t.from)(v))
 
 Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
-Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
-Base.convert(::Type{Miller{T}}, mb::MillerBravais{T}) where {T<:RealSpace} =
-    Miller{T}(2 * mb[1] + mb[2], 2 * mb[2] + mb[1], mb[4])
-Base.convert(::Type{Miller{T}}, mb::MillerBravais{T}) where {T<:ReciprocalSpace} =
-    Miller{T}(mb[1], mb[2], mb[4])
-Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:RealSpace} =
-    MillerBravais{T}(2 * m[1] - m[2], 2 * m[2] - m[1], -(m[1] + m[2]), 3 * m[3])
-Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:ReciprocalSpace} =
-    MillerBravais{T}(m[1], m[2], -(m[1] + m[2]), m[3])
-function Base.convert(::Type{CellParameters}, g::MetricTensor)
-    data = g.data
-    a2, b2, c2, ab, ac, bc =
-        data[1, 1], data[2, 2], data[3, 3], data[1, 2], data[1, 3], data[2, 3]
-    a, b, c = map(sqrt, (a2, b2, c2))
-    γ, β, α = acos(ab / (a * b)), acos(ac / (a * c)), acos(bc / (b * c))
-    return CellParameters(a, b, c, α, β, γ)
-end # function Base.convert
-Base.convert(::Type{Lattice}, g::MetricTensor) = Lattice(convert(CellParameters, g))
 
 Base.iterate(c::CellParameters, args...) = iterate(c.data, args...)
 Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) = i > length(iter) ? nothing : (iter.data[i], i + 1)
@@ -481,8 +377,6 @@ Base.lastindex(::CellParameters) = 6
 Base.getproperty(p::CellParameters, name::Symbol) =
     name ∈ (:a, :b, :c, :α, :β, :γ) ? getfield(p.data, name) : getfield(p, name)
 
-LinearAlgebra.dot(a::Crystal, g::MetricTensor, b::Crystal) = a' * g.data * b
-LinearAlgebra.norm(a::Crystal, g::MetricTensor) = sqrt(dot(a, g, a))
 
 StaticArrays.similar_type(
     ::Type{<:Crystal},  # Do not delete the `<:`!
@@ -490,6 +384,7 @@ StaticArrays.similar_type(
     size::Size{(3,)},
 ) where {T} = Crystal{T}
 
+include("geometry.jl")
 include("Symmetry.jl")
 
 end # module
