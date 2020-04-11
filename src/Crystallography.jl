@@ -128,12 +128,6 @@ const ORTHORHOMBIC = Union{
 }
 const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
 
-struct CrystalCoord{T} <: FieldVector{3,T}
-    x::T
-    y::T
-    z::T
-end
-
 function latticeconst(a, b, c)
     x = (a, b, c)
     z = zero(eltype(x))
@@ -297,14 +291,8 @@ Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) = 
 Base.eltype(::Lattice{T}) where {T} = T
 Base.eltype(::AtomicIterator{<:AbstractVector{T}}) where {T<:AtomicPosition} = T
 
-StaticArrays.similar_type(
-    ::Type{<:CrystalCoord},  # Do not delete the `<:`!
-    ::Type{T},
-    size::Size{(3,)},
-) where {T} = CrystalCoord{T}
-
-include("geometry.jl")
 include("transform.jl")
+include("geometry.jl")
 include("Symmetry.jl")
 
 end # module

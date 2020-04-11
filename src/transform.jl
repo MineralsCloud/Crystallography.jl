@@ -1,3 +1,9 @@
+struct CrystalCoord{T} <: FieldVector{3,T}
+    x::T
+    y::T
+    z::T
+end
+
 struct RealFromReciprocal
     basis::SMatrix{3,3}
 end
@@ -27,3 +33,9 @@ Base.inv(x::Union{CrystalFromCartesian,CartesianFromCrystal}) = typeof(x)(inv(x.
     SVector(convert(Matrix{eltype(t.basis)}, t.basis)' * v)
 (t::CrystalFromCrystal)(v::CrystalCoord) =
     CrystalFromCartesian(t.to)(CartesianFromCrystal(t.from)(v))
+
+StaticArrays.similar_type(
+    ::Type{<:CrystalCoord},  # Do not delete the `<:`!
+    ::Type{T},
+    size::Size{(3,)},
+) where {T} = CrystalCoord{T}
