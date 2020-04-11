@@ -8,6 +8,8 @@ using ShiftedArrays: circshift, lead
 
 using Crystallography
 
+import LinearAlgebra
+
 export SeitzOperator,
     CircularPath,
     NoncircularPath,
@@ -56,7 +58,10 @@ abstract type PointSymmetry end
 struct Identity <: PointSymmetry end
 struct RotationAxis{N} <: PointSymmetry end
 struct Inversion <: PointSymmetry end
+struct RotoInversion{N} <: PointSymmetry end
+const Mirror = RotoInversion{2}
 RotationAxis(N::Int) = N ∈ (2, 3, 4, 6) ? RotationAxis{N}() : throw(ArgumentError("rotation axis must be either 2, 3, 4 or 6!"))
+RotoInversion(N::Int) = N ∈ (2, 3, 4, 6) ? RotoInversion{N}() : throw(ArgumentError("rotoinversion axis must be either 2, 3, 4 or 6!"))
 
 struct PointSymmetryPower{T<:PointSymmetry,N} end
 PointSymmetryPower(X::PointSymmetry, N::Int) = PointSymmetryPower{typeof(X),N}()
@@ -71,12 +76,8 @@ function PointSymmetryPower(::RotationAxis{N}, M::Int) where {N}
         PointSymmetryPower{RotationAxis{N},M}()
     end
 end # function PointSymmetryPower
-RotoInversion(N::Int) = Inversion() * RotationAxis{N}()
-Mirror() = RotoInversion(2)
 
-function symmetrytype(l::LinearMap)
-    m = l.linear
-    @assert size(m) == (3, 3)
+function symmetrytype(trace, determinant)
     return Dict(
         (3, 1) => Identity(),
         (-1, 1) => RotationAxis(2),
@@ -88,8 +89,9 @@ function symmetrytype(l::LinearMap)
         (0, -1) => RotoInversion(3),
         (-1, -1) => RotoInversion(4),
         (-2, -1) => RotoInversion(6)
-    )[(tr(m), det(m))]
+    )[(trace, determinant)]
 end # function symmetrytype
+symmetrytype(op::PointSymmetry) = symmetrytype(tr(op), det(op))
 
 # These are helper methods and should not be exported!
 _numbers(a::AbstractVector{<:Integer}) = a
@@ -328,5 +330,14 @@ function Base.convert(::Type{LinearMap}, op::SeitzOperator)
     @assert(ispointsymmetry(op), "operator is not a point symmetry!")
     return LinearMap(collect(op.data[1:3, 1:3]))
 end # function Base.convert
+
+LinearAlgebra.tr(::Identity) = 3
+LinearAlgebra.tr(::RotationAxis{N}) where {N<:Union{2,3,4}} = N - 3
+LinearAlgebra.tr(::RotationAxis{6}) = 2
+LinearAlgebra.tr(::Inversion) = -3
+LinearAlgebra.tr(::RotoInversion{N}) where {N} = -tr(RotationAxis(N))
+LinearAlgebra.det(::Union{Identity,RotationAxis}) = 1
+LinearAlgebra.det(::Inversion) = -1
+LinearAlgebra.det(::RotoInversion) = -1
 
 end # module Symmetry
