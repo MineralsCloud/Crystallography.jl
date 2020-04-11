@@ -1,3 +1,7 @@
+abstract type AbstractSpace end
+struct RealSpace <: AbstractSpace end
+struct ReciprocalSpace <: AbstractSpace end
+
 struct MetricTensor{T} <: AbstractMatrix{T}
     data::SHermitianCompact{3,T}
 end

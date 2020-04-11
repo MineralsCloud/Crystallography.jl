@@ -160,10 +160,6 @@ const ORTHORHOMBIC = Union{
 }
 const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
 
-abstract type AbstractSpace end
-struct RealSpace <: AbstractSpace end
-struct ReciprocalSpace <: AbstractSpace end
-
 struct CrystalCoord{T} <: FieldVector{3,T}
     x::T
     y::T
