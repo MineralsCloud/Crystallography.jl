@@ -5,6 +5,7 @@ version = "0.1.0"
 
 [deps]
 CoordinateTransformations = "150eb455-5306-5404-9cee-2592286d6298"
+EponymTuples = "97e2ac4a-e175-5f49-beb1-4d6866a6cdc3"
 LibSymspg = "2098c8a6-82c4-11e9-1f54-e72760d085ce"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 ShiftedArrays = "1277b4bf-5013-50f5-be3d-901d8477a67a"
