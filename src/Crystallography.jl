@@ -1,8 +1,8 @@
 module Crystallography
 
-using LinearAlgebra: Diagonal, cross, det, dot, norm
-
 using CoordinateTransformations: Transformation, IdentityTransformation
+using EponymTuples: @eponymargs
+using LinearAlgebra: Diagonal, cross, det, dot, norm
 using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
 using SymPy
 
@@ -130,8 +130,7 @@ end
 Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
 Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) = Lattice(transpose(hcat(a, b, c)))
 Lattice(v::AbstractVector{<:AbstractVector}) = Lattice(v...)
-function Lattice(p::CellParameters)
-    a, b, c, α, β, γ = p
+function Lattice(@eponymargs(a, b, c, α, β, γ))
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
     v = cellvolume(CellParameters(1, 1, 1, α, β, γ))
     # reciprocal lattice
@@ -174,8 +173,7 @@ eachatom(cell::Cell) = AtomicIterator(cell.atompos)
 centering(b::BravaisLattice) = last(b)
 
 crystalsystem(b::BravaisLattice) = first(b)
-function crystalsystem(p::CellParameters)
-    a, b, c, α, β, γ = p
+function crystalsystem(@eponymargs(a, b, c, α, β, γ))
     if a == b == c
         if α == β == γ
             α == 90 ? Cubic() : Trigonal()
@@ -189,7 +187,7 @@ function crystalsystem(p::CellParameters)
             α == β == 90 || β == γ == 90 || α == γ == 90 ? Monoclinic() : Triclinic()
         end
     end
-end # function whatsystem
+end # function crystalsystem
 function crystalsystem(lattice::Lattice)
     v1, v2, v3 = lattice.data
     a, b, c = norm(v1), norm(v2), norm(v3)
@@ -200,14 +198,12 @@ function crystalsystem(lattice::Lattice)
 end # function crystalsystem
 
 """
-    cellvolume(a, b, c, α, β, γ)
     cellvolume(p::CellParameters)
 
 Calculates the cell volume from 6 cell parameters.
 """
-cellvolume(a, b, c, α, β, γ) =
+cellvolume(@eponymargs(a, b, c, α, β, γ)) =
     a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
-cellvolume(p::CellParameters) = cellvolume(p...)
 """
     cellvolume(l::Lattice)
     cellvolume(c::Cell)
