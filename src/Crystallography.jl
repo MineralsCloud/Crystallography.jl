@@ -150,7 +150,7 @@ end
 Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) = Lattice(SVector(map(SVector{3}, (v1, v2, v3))))
 Lattice(v::AbstractVector{<:AbstractVector}) = Lattice(v...)
 function Lattice(m::AbstractMatrix)
-    @assert size(m) = (3, 3)
+    @assert size(m) == (3, 3)
     return Lattice(Iterators.partition(m, 3)...)
 end # function Lattice
 function Lattice(a, b, c, α, β, γ)
