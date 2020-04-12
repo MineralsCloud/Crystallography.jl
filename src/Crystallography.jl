@@ -124,7 +124,8 @@ const ORTHORHOMBIC = Union{
 const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
 
 function latticeconst(a, b, c)
-    x = (a, b, c)
+    x = Base.vect(a, b, c)  # Do a `promote_typeof`, better than just a `Tuple`
+    # See the difference between `eltype(1u"m", 2.0u"m", 3.0, 4)` & `eltype(Base.vect(1u"m", 2.0u"m", 3.0, 4))`.
     z = zero(eltype(x))
     all(x .> z) ? x : error("lattice constants must all be positive!")
 end # function latticeconst
