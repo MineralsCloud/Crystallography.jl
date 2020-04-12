@@ -332,7 +332,7 @@ function Base.convert(::Type{LinearMap}, op::SeitzOperator)
 end # function Base.convert
 
 LinearAlgebra.tr(::Identity) = 3
-LinearAlgebra.tr(::RotationAxis{N}) where {N<:Union{2,3,4}} = N - 3
+LinearAlgebra.tr(::RotationAxis) where {N} = N - 3  # 2, 3, 4
 LinearAlgebra.tr(::RotationAxis{6}) = 2
 LinearAlgebra.tr(::Inversion) = -3
 LinearAlgebra.tr(::RotoInversion{N}) where {N} = -tr(RotationAxis(N))
