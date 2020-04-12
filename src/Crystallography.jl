@@ -145,14 +145,11 @@ const CellParameters = NamedTuple{(:a, :b, :c, :α, :β, :γ)}  # Use as type
 CellParameters(a, b, c, α, β, γ) = CellParameters((a, b, c, α, β, γ))  # Use as constructor
 
 struct Lattice{T}
-    data::SVector{3,SVector{3,T}}
+    data::SMatrix{3,3,T}
 end
-Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) = Lattice(SVector(map(SVector{3}, (v1, v2, v3))))
+Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
+Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) = Lattice(transpose(hcat(a, b, c)))
 Lattice(v::AbstractVector{<:AbstractVector}) = Lattice(v...)
-function Lattice(m::AbstractMatrix)
-    @assert size(m) == (3, 3)
-    return Lattice(Iterators.partition(m, 3)...)
-end # function Lattice
 function Lattice(a, b, c, α, β, γ)
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
     v = cellvolume(CellParameters(1, 1, 1, α, β, γ))
@@ -266,19 +263,15 @@ function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
     return supercell(cell, Diagonal(expansion))
 end # function supercell
 
-Base.length(iter::AtomicIterator) = length(iter.data)
-
-Base.size(iter::AtomicIterator) = (length(iter.data),)
 Base.size(::Lattice) = (3, 3)
-
-Base.getindex(A::Lattice, i::Int) = getindex(A.data, i)
-Base.getindex(A::Lattice, i::Int, j::Int) = getindex(getindex(A.data, i), j)
-
-Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
-
-Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) = i > length(iter) ? nothing : (iter.data[i], i + 1)
-
+Base.length(::Lattice) = 9  # Number of elements
+Base.getindex(A::Lattice, i::Integer, j::Integer) = getindex(A.data, i, j)
 Base.eltype(::Lattice{T}) where {T} = T
+Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = Matrix{T}(transpose(lattice.data))  # Use with care!
+
+Base.length(iter::AtomicIterator) = length(iter.data)
+Base.size(iter::AtomicIterator) = (length(iter.data),)
+Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) = i > length(iter) ? nothing : (iter.data[i], i + 1)
 Base.eltype(::AtomicIterator{<:AbstractVector{T}}) where {T<:AtomicPosition} = T
 
 include("transform.jl")
