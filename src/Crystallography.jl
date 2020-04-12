@@ -53,8 +53,6 @@ export CrystalSystem,
     MillerBravais,
     AtomicPosition,
     Cell,
-    latticeconst,
-    axisangles,
     CellParameters,
     Lattice,
     RealFromReciprocal,
@@ -122,25 +120,6 @@ const ORTHORHOMBIC = Union{
     FaceCenteredCubic,
 }
 const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
-
-function latticeconst(a, b, c)
-    x = Base.vect(a, b, c)  # Do a `promote_typeof`, better than just a `Tuple`
-    # See the difference between `eltype(1u"m", 2.0u"m", 3.0, 4)` & `eltype(Base.vect(1u"m", 2.0u"m", 3.0, 4))`.
-    z = zero(eltype(x))
-    all(x .> z) ? x : error("lattice constants must all be positive!")
-end # function latticeconst
-latticeconst(::Union{PrimitiveTriclinic,MONOCLINIC,ORTHORHOMBIC}, a, b, c) = latticeconst(a, b, c)
-latticeconst(::Union{TETRAGONAL,PrimitiveHexagonal}, a, c) = latticeconst(a, a, c)
-latticeconst(::Union{CUBIC,RCenteredHexagonal}, a) = latticeconst(a, a, a)
-
-axisangles(::PrimitiveTriclinic, α, β, γ) = axisangles(α, β, γ)
-axisangles(::PrimitiveMonoclinic, α, θ, view::Int = 1) =
-    view == 1 ? axisangles(90, 90, θ) : axisangles(90, θ, 90)
-axisangles(::CCenteredMonoclinic, γ) = axisangles(90, 90, γ)
-axisangles(::BCenteredMonoclinic, β) = axisangles(90, β, 90)
-axisangles(::Union{ORTHORHOMBIC,TETRAGONAL,CUBIC}) = axisangles(90, 90, 90)
-axisangles(::PrimitiveHexagonal) = axisangles(90, 90, 120)
-axisangles(::RCenteredHexagonal, α) = axisangles(α, α, α)
 
 const CellParameters = NamedTuple{(:a, :b, :c, :α, :β, :γ)}  # Use as type
 CellParameters(a, b, c, α, β, γ) = (a = a, b = b, c = c, α = α, β = β, γ = γ)  # Use as constructor
