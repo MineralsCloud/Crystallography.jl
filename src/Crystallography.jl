@@ -1,8 +1,8 @@
 module Crystallography
 
-using LinearAlgebra: Diagonal, cross, det, dot, norm
-
 using CoordinateTransformations: Transformation, IdentityTransformation
+using EponymTuples: @eponymargs
+using LinearAlgebra: Diagonal, cross, det, dot, norm
 using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
 using SymPy
 
@@ -53,8 +53,6 @@ export CrystalSystem,
     MillerBravais,
     AtomicPosition,
     Cell,
-    latticeconst,
-    axisangles,
     CellParameters,
     Lattice,
     RealFromReciprocal,
@@ -123,37 +121,16 @@ const ORTHORHOMBIC = Union{
 }
 const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
 
-function latticeconst(a, b, c)
-    x = (a, b, c)
-    z = zero(eltype(x))
-    all(x .> z) ? x : error("lattice constants must all be positive!")
-end # function latticeconst
-latticeconst(::Union{PrimitiveTriclinic,MONOCLINIC,ORTHORHOMBIC}, a, b, c) = latticeconst(a, b, c)
-latticeconst(::Union{TETRAGONAL,PrimitiveHexagonal}, a, c) = latticeconst(a, a, c)
-latticeconst(::Union{CUBIC,RCenteredHexagonal}, a) = latticeconst(a, a, a)
-
-axisangles(::PrimitiveTriclinic, α, β, γ) = axisangles(α, β, γ)
-axisangles(::PrimitiveMonoclinic, α, θ, view::Int = 1) =
-    view == 1 ? axisangles(90, 90, θ) : axisangles(90, θ, 90)
-axisangles(::CCenteredMonoclinic, γ) = axisangles(90, 90, γ)
-axisangles(::BCenteredMonoclinic, β) = axisangles(90, β, 90)
-axisangles(::Union{ORTHORHOMBIC,TETRAGONAL,CUBIC}) = axisangles(90, 90, 90)
-axisangles(::PrimitiveHexagonal) = axisangles(90, 90, 120)
-axisangles(::RCenteredHexagonal, α) = axisangles(α, α, α)
-
 const CellParameters = NamedTuple{(:a, :b, :c, :α, :β, :γ)}  # Use as type
-CellParameters(a, b, c, α, β, γ) = CellParameters((a, b, c, α, β, γ))  # Use as constructor
+CellParameters(a, b, c, α, β, γ) = (a = a, b = b, c = c, α = α, β = β, γ = γ)  # Use as constructor
 
 struct Lattice{T}
-    data::SVector{3,SVector{3,T}}
+    data::SMatrix{3,3,T}
 end
-Lattice(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector) = Lattice(SVector(map(SVector{3}, (v1, v2, v3))))
+Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
+Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) = Lattice(transpose(hcat(a, b, c)))
 Lattice(v::AbstractVector{<:AbstractVector}) = Lattice(v...)
-function Lattice(m::AbstractMatrix)
-    @assert size(m) == (3, 3)
-    return Lattice(Iterators.partition(m, 3)...)
-end # function Lattice
-function Lattice(a, b, c, α, β, γ)
+function Lattice(@eponymargs(a, b, c, α, β, γ))
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
     v = cellvolume(CellParameters(1, 1, 1, α, β, γ))
     # reciprocal lattice
@@ -165,7 +142,6 @@ function Lattice(a, b, c, α, β, γ)
     a3 = [0, 0, c]
     return Lattice(a1, a2, a3)
 end # function Lattice
-Lattice(p::CellParameters) = Lattice(p...)
 
 struct AtomicPosition{S,T}
     atom::S
@@ -197,8 +173,7 @@ eachatom(cell::Cell) = AtomicIterator(cell.atompos)
 centering(b::BravaisLattice) = last(b)
 
 crystalsystem(b::BravaisLattice) = first(b)
-function crystalsystem(p::CellParameters)
-    a, b, c, α, β, γ = p
+function crystalsystem(@eponymargs(a, b, c, α, β, γ))
     if a == b == c
         if α == β == γ
             α == 90 ? Cubic() : Trigonal()
@@ -212,7 +187,13 @@ function crystalsystem(p::CellParameters)
             α == β == 90 || β == γ == 90 || α == γ == 90 ? Monoclinic() : Triclinic()
         end
     end
-end # function whatsystem
+end # function crystalsystem
+crystalsystem(@eponymargs(a, b, c, β)) = Monoclinic()
+crystalsystem(@eponymargs(a, b, c, γ)) = Monoclinic()
+crystalsystem(@eponymargs(a, b, c)) = Orthorhombic()
+crystalsystem(@eponymargs(a, c, γ)) = γ == 90 ? Tetragonal() : Hexagonal()
+crystalsystem(@eponymargs(a, α)) = Trigonal()
+crystalsystem(@eponymargs(a)) = Cubic()
 function crystalsystem(lattice::Lattice)
     v1, v2, v3 = lattice.data
     a, b, c = norm(v1), norm(v2), norm(v3)
@@ -223,14 +204,18 @@ function crystalsystem(lattice::Lattice)
 end # function crystalsystem
 
 """
-    cellvolume(a, b, c, α, β, γ)
     cellvolume(p::CellParameters)
 
 Calculates the cell volume from 6 cell parameters.
 """
-cellvolume(a, b, c, α, β, γ) =
+cellvolume(@eponymargs(a, b, c, α, β, γ)) =
     a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
-cellvolume(p::CellParameters) = cellvolume(p...)
+cellvolume(@eponymargs(a, b, c, β)) = a * b * c * sin(β)  # Monoclinic
+cellvolume(@eponymargs(a, b, c, γ)) = a * b * c * sin(γ)  # Monoclinic
+cellvolume(@eponymargs(a, b, c)) = a * b * c  # Orthorhombic
+cellvolume(@eponymargs(a, c, γ)) = γ == 90 ? a^2 * c : √3 * a^2 * c / 2  # Tetragonal & Hexagonal
+cellvolume(@eponymargs(a, α)) = a^3 * sqrt(1 - 3 * cos(α)^2 + 2 * cos(α)^3)  # Trigonal
+cellvolume(@eponymargs(a)) = a^3  # Cubic
 """
     cellvolume(l::Lattice)
     cellvolume(c::Cell)
@@ -266,19 +251,15 @@ function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
     return supercell(cell, Diagonal(expansion))
 end # function supercell
 
-Base.length(iter::AtomicIterator) = length(iter.data)
-
-Base.size(iter::AtomicIterator) = (length(iter.data),)
 Base.size(::Lattice) = (3, 3)
-
-Base.getindex(A::Lattice, i::Int) = getindex(A.data, i)
-Base.getindex(A::Lattice, i::Int, j::Int) = getindex(getindex(A.data, i), j)
-
-Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = hcat(lattice.data...)
-
-Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) = i > length(iter) ? nothing : (iter.data[i], i + 1)
-
+Base.length(::Lattice) = 9  # Number of elements
+Base.getindex(A::Lattice, i::Integer, j::Integer) = getindex(A.data, i, j)
 Base.eltype(::Lattice{T}) where {T} = T
+Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = Matrix{T}(transpose(lattice.data))  # Use with care!
+
+Base.length(iter::AtomicIterator) = length(iter.data)
+Base.size(iter::AtomicIterator) = (length(iter.data),)
+Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) = i > length(iter) ? nothing : (iter.data[i], i + 1)
 Base.eltype(::AtomicIterator{<:AbstractVector{T}}) where {T<:AtomicPosition} = T
 
 include("transform.jl")

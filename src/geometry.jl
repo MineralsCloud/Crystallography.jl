@@ -10,13 +10,12 @@ function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector
     vecs = (v1, v2, v3)
     return MetricTensor([dot(vecs[i], vecs[j]) for i in 1:3, j in 1:3])
 end
-function MetricTensor(a, b, c, α, β, γ)
+function MetricTensor(@eponymargs(a, b, c, α, β, γ))
     g12 = a * b * cos(γ)
     g13 = a * c * cos(β)
     g23 = b * c * cos(α)
     return MetricTensor(SHermitianCompact(SVector(a^2, g12, g13, b^2, g23, c^2)))
 end
-MetricTensor(p::CellParameters) = MetricTensor(p...)
 
 struct Miller{S<:AbstractSpace} <: AbstractVector{Int}
     data::SVector{3,Int}
