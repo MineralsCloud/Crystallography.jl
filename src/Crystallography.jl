@@ -151,7 +151,8 @@ end
 Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
 Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) = Lattice(transpose(hcat(a, b, c)))
 Lattice(v::AbstractVector{<:AbstractVector}) = Lattice(v...)
-function Lattice(a, b, c, α, β, γ)
+function Lattice(p::CellParameters)
+    a, b, c, α, β, γ = p
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
     v = cellvolume(CellParameters(1, 1, 1, α, β, γ))
     # reciprocal lattice
@@ -163,7 +164,6 @@ function Lattice(a, b, c, α, β, γ)
     a3 = [0, 0, c]
     return Lattice(a1, a2, a3)
 end # function Lattice
-Lattice(p::CellParameters) = Lattice(p...)
 
 struct AtomicPosition{S,T}
     atom::S
