@@ -87,7 +87,9 @@ struct BodyCentering <: Centering end
 struct FaceCentering <: Centering end
 struct RhombohedralCentering <: Centering end
 struct BaseCentering{T} <: Centering end
-BaseCentering(T::Symbol) = T ∈ (:A, :B, :C) ? BaseCentering{T}() : throw(ArgumentError("centering must be either :A, :B, or :C!"))
+const ACentering = BaseCentering{:A}
+const BCentering = BaseCentering{:B}
+const CCentering = BaseCentering{:C}
 
 const BravaisLattice = Tuple{CrystalSystem,Centering}
 const PrimitiveTriclinic = Tuple{Triclinic,Primitive}
