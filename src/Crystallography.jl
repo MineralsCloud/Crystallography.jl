@@ -25,8 +25,7 @@ export CrystalSystem,
     FaceCentering,
     RhombohedralCentering,
     BaseCentering,
-    BravaisLattice,
-    BravaisLattice,
+    Bravais,
     PrimitiveTriclinic,
     PrimitiveMonoclinic,
     ACenteredMonoclinic,
@@ -91,26 +90,28 @@ const ACentering = BaseCentering{:A}
 const BCentering = BaseCentering{:B}
 const CCentering = BaseCentering{:C}
 
-const BravaisLattice = Tuple{CrystalSystem,Centering}
-const PrimitiveTriclinic = Tuple{Triclinic,Primitive}
-const PrimitiveMonoclinic = Tuple{Monoclinic,Primitive}
-const ACenteredMonoclinic = Tuple{Monoclinic,BaseCentering{:A}}
-const BCenteredMonoclinic = Tuple{Monoclinic,BaseCentering{:B}}
-const CCenteredMonoclinic = Tuple{Monoclinic,BaseCentering{:C}}
-const PrimitiveOrthorhombic = Tuple{Orthorhombic,Primitive}
-const ACenteredOrthorhombic = Tuple{Orthorhombic,BaseCentering{:A}}
-const BCenteredOrthorhombic = Tuple{Orthorhombic,BaseCentering{:B}}
-const CCenteredOrthorhombic = Tuple{Orthorhombic,BaseCentering{:C}}
-const BodyCenteredOrthorhombic = Tuple{Orthorhombic,BodyCentering}
-const FaceCenteredOrthorhombic = Tuple{Orthorhombic,FaceCentering}
-const PrimitiveTetragonal = Tuple{Tetragonal,Primitive}
-const BodyCenteredTetragonal = Tuple{Tetragonal,BodyCentering}
-const PrimitiveCubic = Tuple{Cubic,Primitive}
-const BodyCenteredCubic = Tuple{Cubic,BodyCentering}
-const FaceCenteredCubic = Tuple{Cubic,FaceCentering}
-const PrimitiveHexagonal = Tuple{Hexagonal,Primitive}
-const RCenteredHexagonal = Tuple{Hexagonal,RhombohedralCentering}
-(::Type{Tuple{A,B}})() where {A<:CrystalSystem,B<:Centering} = (A(), B())
+struct Bravais{A<:CrystalSystem,B<:Centering} end
+Bravais(A::CrystalSystem, B::Centering) = Bravais{A,B}()
+(::Type{Bravais{A,B}})() where {A<:CrystalSystem,B<:Centering} = Bravais(A(), B())
+
+const PrimitiveTriclinic = Bravais{Triclinic,Primitive}
+const PrimitiveMonoclinic = Bravais{Monoclinic,Primitive}
+const ACenteredMonoclinic = Bravais{Monoclinic,BaseCentering{:A}}
+const BCenteredMonoclinic = Bravais{Monoclinic,BaseCentering{:B}}
+const CCenteredMonoclinic = Bravais{Monoclinic,BaseCentering{:C}}
+const PrimitiveOrthorhombic = Bravais{Orthorhombic,Primitive}
+const ACenteredOrthorhombic = Bravais{Orthorhombic,BaseCentering{:A}}
+const BCenteredOrthorhombic = Bravais{Orthorhombic,BaseCentering{:B}}
+const CCenteredOrthorhombic = Bravais{Orthorhombic,BaseCentering{:C}}
+const BodyCenteredOrthorhombic = Bravais{Orthorhombic,BodyCentering}
+const FaceCenteredOrthorhombic = Bravais{Orthorhombic,FaceCentering}
+const PrimitiveTetragonal = Bravais{Tetragonal,Primitive}
+const BodyCenteredTetragonal = Bravais{Tetragonal,BodyCentering}
+const PrimitiveCubic = Bravais{Cubic,Primitive}
+const BodyCenteredCubic = Bravais{Cubic,BodyCentering}
+const FaceCenteredCubic = Bravais{Cubic,FaceCentering}
+const PrimitiveHexagonal = Bravais{Hexagonal,Primitive}
+const RCenteredHexagonal = Bravais{Hexagonal,RhombohedralCentering}
 
 const TETRAGONAL = Union{PrimitiveTetragonal,BodyCenteredTetragonal}
 const CUBIC = Union{PrimitiveCubic,BodyCenteredCubic,FaceCenteredCubic}
@@ -130,7 +131,8 @@ struct Lattice{T}
     data::SMatrix{3,3,T}
 end
 Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
-Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) = Lattice(transpose(hcat(a, b, c)))
+Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) =
+    Lattice(transpose(hcat(a, b, c)))
 Lattice(v::AbstractVector{<:AbstractVector}) = Lattice(v...)
 function Lattice(@eponymargs(a, b, c, α, β, γ))
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
@@ -155,10 +157,20 @@ struct Cell{N,L,S,T}
     atompos::SVector{N,AtomicPosition{S,T}}
     lattice::Lattice{L}
 end
-function Cell(atoms::AbstractVector, positions::AbstractVector{<:AbstractVector}, lattice::AbstractVecOrMat)
+function Cell(
+    atoms::AbstractVector,
+    positions::AbstractVector{<:AbstractVector},
+    lattice::AbstractVecOrMat,
+)
     if length(positions) == length(atoms)
         N = length(positions)
-        return Cell(SVector{N}([AtomicPosition(atom, position) for (atom, position) in zip(atoms, positions)]), Lattice(lattice))
+        return Cell(
+            SVector{N}([
+                AtomicPosition(atom, position)
+                for (atom, position) in zip(atoms, positions)
+            ]),
+            Lattice(lattice),
+        )
     else
         throw(DimensionMismatch("the number of positions should equal the number of atoms!"))
     end
@@ -172,9 +184,9 @@ end
 eachatom(atompos::AbstractVector{<:AtomicPosition}) = AtomicIterator(atompos)
 eachatom(cell::Cell) = AtomicIterator(cell.atompos)
 
-centering(b::BravaisLattice) = last(b)
+centering(b::Bravais) = last(b)
 
-crystalsystem(b::BravaisLattice) = first(b)
+crystalsystem(b::Bravais) = first(b)
 function crystalsystem(@eponymargs(a, b, c, α, β, γ))
     if a == b == c
         if α == β == γ
@@ -257,11 +269,13 @@ Base.size(::Lattice) = (3, 3)
 Base.length(::Lattice) = 9  # Number of elements
 Base.getindex(A::Lattice, i::Integer, j::Integer) = getindex(A.data, i, j)
 Base.eltype(::Lattice{T}) where {T} = T
-Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = Matrix{T}(transpose(lattice.data))  # Use with care!
+Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} =
+    Matrix{T}(transpose(lattice.data))  # Use with care!
 
 Base.length(iter::AtomicIterator) = length(iter.data)
 Base.size(iter::AtomicIterator) = (length(iter.data),)
-Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) = i > length(iter) ? nothing : (iter.data[i], i + 1)
+Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) =
+    i > length(iter) ? nothing : (iter.data[i], i + 1)
 Base.eltype(::AtomicIterator{<:AbstractVector{T}}) where {T<:AtomicPosition} = T
 
 include("transform.jl")
