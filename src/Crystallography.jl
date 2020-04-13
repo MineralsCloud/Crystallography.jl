@@ -119,7 +119,7 @@ const ORTHORHOMBIC = Union{
     BCenteredOrthorhombic,
     CCenteredOrthorhombic,
     BodyCenteredOrthorhombic,
-    FaceCenteredCubic,
+    FaceCenteredOrthorhombic,
 }
 const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
 
