@@ -2,7 +2,7 @@ module Crystallography
 
 using CoordinateTransformations: Transformation, IdentityTransformation
 using EponymTuples: @eponymargs
-using LinearAlgebra: Diagonal, cross, det, dot, norm
+using LinearAlgebra: Diagonal, I, cross, det, dot, norm
 using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
 using SymPy
 
@@ -278,7 +278,7 @@ Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) =
 Base.eltype(::AtomicIterator{<:AbstractVector{T}}) where {T<:AtomicPosition} = T
 
 include("transform.jl")
-include("geometry.jl")
-include("Symmetry.jl")
+# include("geometry.jl")
+# include("Symmetry.jl")
 
 end # module
