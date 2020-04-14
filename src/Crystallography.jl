@@ -238,7 +238,7 @@ cellvolume(c::Cell) = cellvolume(c.lattice)
 
 function reciprocal(lattice::Lattice, twopi::Bool = false)
     volume = cellvolume(lattice)
-    a1, a2, a3 = lattice.data
+    a1, a2, a3 = lattice.data[1, :], lattice.data[2, :], lattice.data[3, :]
     factor = twopi ? 2 * SymPy.PI : 1
     return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocal
