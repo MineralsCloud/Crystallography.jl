@@ -70,15 +70,15 @@ Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
 
-directioncosine(a::CrystalCoord, g::MetricTensor, b::CrystalCoord) =
+directioncosine(a::AbstractVector, g::MetricTensor, b::AbstractVector) =
     dot(a, g, b) / (norm(a, g) * norm(b, g))
 
-directionangle(a::CrystalCoord, g::MetricTensor, b::CrystalCoord) =
+directionangle(a::AbstractVector, g::MetricTensor, b::AbstractVector) =
     acos(directioncosine(a, g, b))
 
-distance(a::CrystalCoord, g::MetricTensor, b::CrystalCoord) = norm(b - a, g)
+distance(a::AbstractVector, g::MetricTensor, b::AbstractVector) = norm(b - a, g)
 
-interplanar_spacing(a::CrystalCoord, g::MetricTensor) = 1 / norm(a, g)
+interplanar_spacing(a::AbstractVector, g::MetricTensor) = 1 / norm(a, g)
 
 Base.size(::MetricTensor) = (3, 3)
 Base.size(::Miller) = (3,)
@@ -108,5 +108,5 @@ function Base.convert(::Type{CellParameters}, g::MetricTensor)
 end # function Base.convert
 Base.convert(::Type{Lattice}, g::MetricTensor) = Lattice(convert(CellParameters, g))
 
-LinearAlgebra.dot(a::CrystalCoord, g::MetricTensor, b::CrystalCoord) = a' * g.data * b
-LinearAlgebra.norm(a::CrystalCoord, g::MetricTensor) = sqrt(dot(a, g, a))
+LinearAlgebra.dot(a::AbstractVector, g::MetricTensor, b::AbstractVector) = a' * g.data * b
+LinearAlgebra.norm(a::AbstractVector, g::MetricTensor) = sqrt(dot(a, g, a))
