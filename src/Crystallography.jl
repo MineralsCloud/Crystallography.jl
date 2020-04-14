@@ -54,8 +54,6 @@ export CrystalSystem,
     Cell,
     CellParameters,
     Lattice,
-    RealFromReciprocal,
-    ReciprocalFromReal,
     CrystalFromCartesian,
     CartesianFromCrystal,
     CrystalFromCrystal

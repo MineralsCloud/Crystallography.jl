@@ -1,9 +1,3 @@
-struct RealFromReciprocal
-    m::SMatrix{3,3}
-end
-struct ReciprocalFromReal
-    m::SMatrix{3,3}
-end
 struct CartesianFromCrystal
     m::SMatrix{3,3}
 end
