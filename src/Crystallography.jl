@@ -109,18 +109,6 @@ Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
 Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) =
     Lattice(transpose(hcat(a, b, c)))
 Lattice(v::AbstractVector{<:AbstractVector}) = Lattice(v...)
-function Lattice(@eponymargs(a, b, c, α, β, γ))
-    # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
-    v = cellvolume(CellParameters(1, 1, 1, α, β, γ))
-    # reciprocal lattice
-    a_recip = sin(α) / (a * v)
-    csg = (cos(α) * cos(β) - cos(γ)) / (sin(α) * sin(β))
-    sg = sqrt(1 - csg^2)
-    a1 = [1 / a_recip, -csg / sg / a_recip, cos(β) * a]
-    a2 = [0, b * sin(α), b * cos(α)]
-    a3 = [0, 0, c]
-    return Lattice(a1, a2, a3)
-end # function Lattice
 
 destruct(lattice::Lattice) = (lattice.data[1, :], lattice.data[2, :], lattice.data[3, :])
 
