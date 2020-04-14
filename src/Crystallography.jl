@@ -54,8 +54,7 @@ export CrystalSystem,
     CellParameters,
     Lattice,
     CrystalFromCartesian,
-    CartesianFromCrystal,
-    CrystalFromCrystal
+    CartesianFromCrystal
 export centering,
     crystalsystem,
     directioncosine,
