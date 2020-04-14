@@ -206,6 +206,7 @@ function SeitzOperator(s::SeitzOperator, pos::AbstractVector)
     t = SeitzOperator(Translation(pos))
     return t * s * inv(t)
 end # function SeitzOperator
+(::SeitzOperator)(v::AbstractVector) = (m.data * [v; 1])[1:3]
 
 isidentity(op::SeitzOperator) = op.data == I
 
@@ -322,8 +323,7 @@ Base.:*(::RotationAxis{N}, ::RotationAxis{N}) where {N} =
 Base.:*(::RotationAxis{2}, ::RotationAxis{2}) = Identity()
 Base.:*(::PointSymmetryPower{RotationAxis{N},M}, ::RotationAxis{N}) where {N,M} =
     PointSymmetryPower(RotationAxis(N), M + 1)
-Base.:*(m::SeitzOperator, c::CrystalCoord) = CrystalCoord((m.data*[c; 1])[1:3])
-Base.:*(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.data * b.data)
+Base.:∘(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.data * b.data)
 
 function Base.convert(::Type{Translation}, op::SeitzOperator)
     @assert(istranslation(op), "operator is not a translation!")
