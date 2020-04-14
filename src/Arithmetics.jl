@@ -4,7 +4,6 @@ using CoordinateTransformations: IdentityTransformation
 using EponymTuples: @eponymargs
 using LinearAlgebra: I, cross, det, dot, norm
 using StaticArrays: SVector, SMatrix, SHermitianCompact
-using SymPy
 
 using Crystallography: CellParameters, Lattice, Cell, destruct
 
@@ -192,7 +191,7 @@ Base.size(::MillerBravais) = (4,)
 Base.getindex(A::MetricTensor, I::Vararg{Int}) = getindex(A.data, I...)
 Base.getindex(A::Union{Miller,MillerBravais}, i::Int) = getindex(A.data, i)
 
-Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
+Base.inv(g::MetricTensor) = MetricTensor(inv(g.data))
 Base.inv(x::CrystalFromCartesian) = CartesianFromCrystal(inv(x.m))
 Base.inv(x::CartesianFromCrystal) = CrystalFromCartesian(inv(x.m))
 Base.:∘(x::CrystalFromCartesian, y::CartesianFromCrystal) =
