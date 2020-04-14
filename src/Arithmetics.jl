@@ -169,11 +169,10 @@ function Crystallography.Lattice(@eponymargs(a, b, c, α, β, γ))
     return Lattice(a1, a2, a3)
 end # function Lattice
 
-function reciprocal(lattice::Lattice, twopi::Bool = false)
+function reciprocal(lattice::Lattice)
     volume = cellvolume(lattice)
     a1, a2, a3 = destruct(lattice)
-    factor = twopi ? 2 * SymPy.PI : 1
-    return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
+    return 1 / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocal
 
 directioncosine(a::AbstractVector, g::MetricTensor, b::AbstractVector) =
