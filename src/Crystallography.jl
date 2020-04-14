@@ -46,7 +46,6 @@ export CrystalSystem,
     RCenteredHexagonal,
     RealSpace,
     ReciprocalSpace,
-    CrystalCoord,
     MetricTensor,
     Miller,
     MillerBravais,
@@ -274,8 +273,8 @@ Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) =
     i > length(iter) ? nothing : (iter.data[i], i + 1)
 Base.eltype(::AtomicIterator{<:AbstractVector{T}}) where {T<:AtomicPosition} = T
 
+include("geometry.jl")
 include("transform.jl")
-# include("geometry.jl")
-# include("Symmetry.jl")
+include("Symmetry.jl")
 
 end # module
