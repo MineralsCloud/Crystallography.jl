@@ -4,7 +4,6 @@ using CoordinateTransformations: IdentityTransformation
 using EponymTuples: @eponymargs
 using LinearAlgebra: I, cross, det, dot, norm
 using StaticArrays: SVector, SMatrix, SHermitianCompact
-using SymPy
 
 using Crystallography: CellParameters, Lattice, Cell, destruct
 
@@ -169,11 +168,10 @@ function Crystallography.Lattice(@eponymargs(a, b, c, α, β, γ))
     return Lattice(a1, a2, a3)
 end # function Lattice
 
-function reciprocal(lattice::Lattice, twopi::Bool = false)
+function reciprocal(lattice::Lattice)
     volume = cellvolume(lattice)
     a1, a2, a3 = destruct(lattice)
-    factor = twopi ? 2 * SymPy.PI : 1
-    return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
+    return 1 / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocal
 
 directioncosine(a::AbstractVector, g::MetricTensor, b::AbstractVector) =
@@ -193,7 +191,7 @@ Base.size(::MillerBravais) = (4,)
 Base.getindex(A::MetricTensor, I::Vararg{Int}) = getindex(A.data, I...)
 Base.getindex(A::Union{Miller,MillerBravais}, i::Int) = getindex(A.data, i)
 
-Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
+Base.inv(g::MetricTensor) = MetricTensor(inv(g.data))
 Base.inv(x::CrystalFromCartesian) = CartesianFromCrystal(inv(x.m))
 Base.inv(x::CartesianFromCrystal) = CrystalFromCartesian(inv(x.m))
 Base.:∘(x::CrystalFromCartesian, y::CartesianFromCrystal) =
