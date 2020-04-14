@@ -206,7 +206,7 @@ function SeitzOperator(s::SeitzOperator, pos::AbstractVector)
     t = SeitzOperator(Translation(pos))
     return t * s * inv(t)
 end # function SeitzOperator
-(::SeitzOperator)(v::AbstractVector) = (m.data * [v; 1])[1:3]
+(op::SeitzOperator)(v::AbstractVector) = (op.data * [v; 1])[1:3]
 
 isidentity(op::SeitzOperator) = op.data == I
 
