@@ -2,7 +2,7 @@ module Crystallography
 
 using CoordinateTransformations: Transformation, IdentityTransformation
 using EponymTuples: @eponymargs
-using LinearAlgebra: Diagonal, cross, det, dot, norm
+using LinearAlgebra: Diagonal, I, cross, det, dot, norm
 using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
 using SymPy
 
@@ -54,8 +54,6 @@ export CrystalSystem,
     Cell,
     CellParameters,
     Lattice,
-    RealFromReciprocal,
-    ReciprocalFromReal,
     CrystalFromCartesian,
     CartesianFromCrystal,
     CrystalFromCrystal
@@ -95,13 +93,13 @@ Bravais(A::CrystalSystem, B::Centering) = Bravais{A,B}()
 
 const PrimitiveTriclinic = Bravais{Triclinic,Primitive}
 const PrimitiveMonoclinic = Bravais{Monoclinic,Primitive}
-const ACenteredMonoclinic = Bravais{Monoclinic,BaseCentering{:A}}
-const BCenteredMonoclinic = Bravais{Monoclinic,BaseCentering{:B}}
-const CCenteredMonoclinic = Bravais{Monoclinic,BaseCentering{:C}}
+const ACenteredMonoclinic = Bravais{Monoclinic,ACentering}
+const BCenteredMonoclinic = Bravais{Monoclinic,BCentering}
+const CCenteredMonoclinic = Bravais{Monoclinic,CCentering}
 const PrimitiveOrthorhombic = Bravais{Orthorhombic,Primitive}
-const ACenteredOrthorhombic = Bravais{Orthorhombic,BaseCentering{:A}}
-const BCenteredOrthorhombic = Bravais{Orthorhombic,BaseCentering{:B}}
-const CCenteredOrthorhombic = Bravais{Orthorhombic,BaseCentering{:C}}
+const ACenteredOrthorhombic = Bravais{Orthorhombic,ACentering}
+const BCenteredOrthorhombic = Bravais{Orthorhombic,BCentering}
+const CCenteredOrthorhombic = Bravais{Orthorhombic,CCentering}
 const BodyCenteredOrthorhombic = Bravais{Orthorhombic,BodyCentering}
 const FaceCenteredOrthorhombic = Bravais{Orthorhombic,FaceCentering}
 const PrimitiveTetragonal = Bravais{Tetragonal,Primitive}
@@ -240,7 +238,7 @@ cellvolume(c::Cell) = cellvolume(c.lattice)
 
 function reciprocal(lattice::Lattice, twopi::Bool = false)
     volume = cellvolume(lattice)
-    a1, a2, a3 = lattice.data
+    a1, a2, a3 = lattice.data[1, :], lattice.data[2, :], lattice.data[3, :]
     factor = twopi ? 2 * SymPy.PI : 1
     return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end # function reciprocal
@@ -268,8 +266,7 @@ Base.size(::Lattice) = (3, 3)
 Base.length(::Lattice) = 9  # Number of elements
 Base.getindex(A::Lattice, i::Integer, j::Integer) = getindex(A.data, i, j)
 Base.eltype(::Lattice{T}) where {T} = T
-Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} =
-    Matrix{T}(transpose(lattice.data))  # Use with care!
+Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = Matrix{T}(lattice.data)
 
 Base.length(iter::AtomicIterator) = length(iter.data)
 Base.size(iter::AtomicIterator) = (length(iter.data),)
@@ -278,7 +275,7 @@ Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) =
 Base.eltype(::AtomicIterator{<:AbstractVector{T}}) where {T<:AtomicPosition} = T
 
 include("transform.jl")
-include("geometry.jl")
-include("Symmetry.jl")
+# include("geometry.jl")
+# include("Symmetry.jl")
 
 end # module
