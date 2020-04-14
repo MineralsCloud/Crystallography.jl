@@ -1,3 +1,31 @@
+module Arithmetics
+
+using CoordinateTransformations: IdentityTransformation
+using EponymTuples: @eponymargs
+using LinearAlgebra: I, cross, det, dot, norm
+using StaticArrays: SVector, SMatrix, SHermitianCompact
+using SymPy
+
+using Crystallography: CellParameters, Lattice, Cell, destruct
+
+import LinearAlgebra
+
+export RealSpace,
+    ReciprocalSpace,
+    MetricTensor,
+    Miller,
+    MillerBravais,
+    CrystalFromCartesian,
+    CartesianFromCrystal
+export directioncosine,
+    directionangle,
+    distance,
+    interplanar_spacing,
+    cellvolume,
+    reciprocal,
+    @m_str,
+    @mb_str
+
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
 struct ReciprocalSpace <: AbstractSpace end
@@ -63,12 +91,76 @@ macro mb_str(s)
     _indices_str(r, s, MillerBravais)
 end
 
+struct CartesianFromCrystal
+    m::SMatrix{3,3}
+end
+struct CrystalFromCartesian
+    m::SMatrix{3,3}
+end
+for T in (:CartesianFromCrystal, :CrystalFromCartesian)
+    eval(quote
+        $T(lattice::Lattice) = $T(convert(Matrix{eltype(lattice)}, lattice))
+    end)
+end
+function CartesianFromCrystal(@eponymargs(a, b, c, α, β, γ))
+    v = cellvolume(CellParameters(a, b, c, α, β, γ))
+    x, y = sin(γ), cos(γ)
+    return CartesianFromCrystal([
+        a b * y -c / x^2 * (_F(γ, α, β) + _F(β, α, γ) * y)
+        0 b * x -c * _F(β, α, γ) / x
+        0 0 v / (a * b * x)
+    ])
+end # function CartesianFromCrystal
+function CrystalFromCartesian(@eponymargs(a, b, c, α, β, γ))  # This is wrong
+    v = cellvolume(CellParameters(a, b, c, α, β, γ))
+    x = sin(γ)
+    return CrystalFromCartesian([
+        1 / a -1 / (a * tan(γ)) b * c * _F(γ, α, β) / (v * x)
+        0 1 / (b * x) a * c * _F(β, γ, α) / (v * x)
+        0 0 a * b * x / v
+    ])
+end # function CrystalFromCartesian
+
+# This is a helper function and should not be exported!
+_F(α, β, γ) = cos(α) * cos(β) - cos(γ)
+
+(x::CartesianFromCrystal)(v::AbstractVector) = x.m * v
+(x::CrystalFromCartesian)(v::AbstractVector) = inv(x.m) * v
+
+"""
+    cellvolume(p::CellParameters)
+
+Calculates the cell volume from 6 cell parameters.
+"""
+cellvolume(@eponymargs(a, b, c, α, β, γ)) =
+    a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
+cellvolume(@eponymargs(a, b, c, β)) = a * b * c * sin(β)  # Monoclinic
+cellvolume(@eponymargs(a, b, c, γ)) = a * b * c * sin(γ)  # Monoclinic
+cellvolume(@eponymargs(a, b, c)) = a * b * c  # Orthorhombic
+cellvolume(@eponymargs(a, c, γ)) = γ == 90 ? a^2 * c : √3 * a^2 * c / 2  # Tetragonal & Hexagonal
+cellvolume(@eponymargs(a, α)) = a^3 * sqrt(1 - 3 * cos(α)^2 + 2 * cos(α)^3)  # Trigonal
+cellvolume(@eponymargs(a)) = a^3  # Cubic
+"""
+    cellvolume(l::Lattice)
+    cellvolume(c::Cell)
+
+Calculates the cell volume from a `Lattice` or a `Cell`.
+"""
+cellvolume(l::Lattice) = abs(det(convert(Matrix{eltype(l)}, l)))
+cellvolume(c::Cell) = cellvolume(c.lattice)
 """
     cellvolume(g::MetricTensor)
 
 Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
+
+function reciprocal(lattice::Lattice, twopi::Bool = false)
+    volume = cellvolume(lattice)
+    a1, a2, a3 = destruct(lattice)
+    factor = twopi ? 2 * SymPy.PI : 1
+    return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
+end # function reciprocal
 
 directioncosine(a::AbstractVector, g::MetricTensor, b::AbstractVector) =
     dot(a, g, b) / (norm(a, g) * norm(b, g))
@@ -88,6 +180,10 @@ Base.getindex(A::MetricTensor, I::Vararg{Int}) = getindex(A.data, I...)
 Base.getindex(A::Union{Miller,MillerBravais}, i::Int) = getindex(A.data, i)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(SymPy.N(g.data)))
+Base.inv(x::CrystalFromCartesian) = CartesianFromCrystal(inv(x.m))
+Base.inv(x::CartesianFromCrystal) = CrystalFromCartesian(inv(x.m))
+Base.:∘(x::CrystalFromCartesian, y::CartesianFromCrystal) =
+    x.m * y.m ≈ I ? IdentityTransformation() : error("undefined!")
 
 Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
 Base.convert(::Type{Miller{T}}, mb::MillerBravais{T}) where {T<:RealSpace} =
@@ -110,3 +206,5 @@ Base.convert(::Type{Lattice}, g::MetricTensor) = Lattice(convert(CellParameters,
 
 LinearAlgebra.dot(a::AbstractVector, g::MetricTensor, b::AbstractVector) = a' * g.data * b
 LinearAlgebra.norm(a::AbstractVector, g::MetricTensor) = sqrt(dot(a, g, a))
+
+end # module Arithmetics

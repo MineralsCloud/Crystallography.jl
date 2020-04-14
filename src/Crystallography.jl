@@ -1,14 +1,8 @@
 module Crystallography
 
-using CoordinateTransformations: Transformation, IdentityTransformation
 using EponymTuples: @eponymargs
-using LinearAlgebra: Diagonal, I, cross, det, dot, norm
-using StaticArrays: FieldVector, SVector, SMatrix, SHermitianCompact, Size
-using SymPy
-
-import LinearAlgebra
-import StaticArrays
-import CoordinateTransformations
+using LinearAlgebra: Diagonal, det, dot, norm
+using StaticArrays: SVector, SMatrix
 
 export CrystalSystem,
     Triclinic,
@@ -44,28 +38,14 @@ export CrystalSystem,
     FaceCenteredCubic,
     PrimitiveHexagonal,
     RCenteredHexagonal,
-    RealSpace,
-    ReciprocalSpace,
-    MetricTensor,
-    Miller,
-    MillerBravais,
     AtomicPosition,
     Cell,
     CellParameters,
-    Lattice,
-    CrystalFromCartesian,
-    CartesianFromCrystal
+    Lattice
 export centering,
     crystalsystem,
-    directioncosine,
-    directionangle,
-    distance,
-    interplanar_spacing,
-    cellvolume,
-    reciprocal,
     eachatom,
-    @m_str,
-    @mb_str
+    destruct
 
 abstract type CrystalSystem end
 struct Triclinic <: CrystalSystem end
@@ -142,6 +122,8 @@ function Lattice(@eponymargs(a, b, c, α, β, γ))
     return Lattice(a1, a2, a3)
 end # function Lattice
 
+destruct(lattice::Lattice) = (lattice.data[1, :], lattice.data[2, :], lattice.data[3, :])
+
 struct AtomicPosition{S,T}
     atom::S
     pos::SVector{3,T}
@@ -204,42 +186,13 @@ crystalsystem(@eponymargs(a, c, γ)) = γ == 90 ? Tetragonal() : Hexagonal()
 crystalsystem(@eponymargs(a, α)) = Trigonal()
 crystalsystem(@eponymargs(a)) = Cubic()
 function crystalsystem(lattice::Lattice)
-    v1, v2, v3 = lattice.data
+    v1, v2, v3 = destruct(lattice)
     a, b, c = norm(v1), norm(v2), norm(v3)
     γ = acos(dot(v1, v2) / a / b)
     β = acos(dot(v2, v3) / b / c)
     α = acos(dot(v1, v3) / a / c)
     return crystalsystem(CellParameters(a, b, c, α, β, γ))
 end # function crystalsystem
-
-"""
-    cellvolume(p::CellParameters)
-
-Calculates the cell volume from 6 cell parameters.
-"""
-cellvolume(@eponymargs(a, b, c, α, β, γ)) =
-    a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
-cellvolume(@eponymargs(a, b, c, β)) = a * b * c * sin(β)  # Monoclinic
-cellvolume(@eponymargs(a, b, c, γ)) = a * b * c * sin(γ)  # Monoclinic
-cellvolume(@eponymargs(a, b, c)) = a * b * c  # Orthorhombic
-cellvolume(@eponymargs(a, c, γ)) = γ == 90 ? a^2 * c : √3 * a^2 * c / 2  # Tetragonal & Hexagonal
-cellvolume(@eponymargs(a, α)) = a^3 * sqrt(1 - 3 * cos(α)^2 + 2 * cos(α)^3)  # Trigonal
-cellvolume(@eponymargs(a)) = a^3  # Cubic
-"""
-    cellvolume(l::Lattice)
-    cellvolume(c::Cell)
-
-Calculates the cell volume from a `Lattice` or a `Cell`.
-"""
-cellvolume(l::Lattice) = abs(det(convert(Matrix{eltype(l)}, l)))
-cellvolume(c::Cell) = cellvolume(c.lattice)
-
-function reciprocal(lattice::Lattice, twopi::Bool = false)
-    volume = cellvolume(lattice)
-    a1, a2, a3 = lattice.data[1, :], lattice.data[2, :], lattice.data[3, :]
-    factor = twopi ? 2 * SymPy.PI : 1
-    return factor / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
-end # function reciprocal
 
 """
     supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
@@ -272,8 +225,7 @@ Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) =
     i > length(iter) ? nothing : (iter.data[i], i + 1)
 Base.eltype(::AtomicIterator{<:AbstractVector{T}}) where {T<:AtomicPosition} = T
 
-include("geometry.jl")
-include("transform.jl")
+include("Arithmetics.jl")
 include("Symmetry.jl")
 
 end # module
