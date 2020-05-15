@@ -42,10 +42,7 @@ export CrystalSystem,
     Cell,
     CellParameters,
     Lattice
-export centering,
-    crystalsystem,
-    eachatom,
-    destruct
+export centering, crystalsystem, eachatom, destruct
 
 abstract type CrystalSystem end
 struct Triclinic <: CrystalSystem end
@@ -108,7 +105,6 @@ end
 Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
 Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) =
     Lattice(transpose(hcat(a, b, c)))
-Lattice(v::AbstractVector{<:AbstractVector}) = Lattice(v...)
 
 destruct(lattice::Lattice) = (lattice.data[1, :], lattice.data[2, :], lattice.data[3, :])
 
