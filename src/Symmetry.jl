@@ -268,40 +268,39 @@ julia> genpath(nodes, 100 * ones(Int, length(nodes) - 1))  # Generate a noncircu
 ...
 ```
 """
-function genpath(
-    nodes::AbstractVector{<:AbstractVector},
-    densities::AbstractVector{<:Integer} = 100 * ones(Int, length(nodes)),
-)
+genpath(nodes, densities, iscircular::Bool = false) =
+    _genpath(nodes, densities, Val(iscircular))
+genpath(nodes, density::Integer, iscircular::Bool = false) =
+    genpath(nodes, density * ones(Int, length(nodes) - (iscircular ? 0 : 1)), iscircular)
+function _genpath(nodes, densities, ::Val{true})
     if length(densities) == length(nodes)
-        _genpath(nodes, densities, CircularPath())
-    elseif length(densities) == length(nodes) - 1
-        _genpath(nodes, densities, NoncircularPath())
+        path = similar(nodes, sum(densities .- 1) + length(nodes))
+        for (i, (thisnode, nextnode, density)) in
+            enumerate(zip(nodes, circshift(nodes, -1), densities))
+            step = (nextnode - thisnode) / density
+            for j in 1:density
+                path[sum(densities[1:(i-1)])+j] = thisnode + j * step
+            end
+        end
+        return path
     else
-        error("The length of `densities` should be either length of `length(nodes)` or `length(nodes) - 1`!")
+        throw(DimensionMismatch("the length of `densities` should equal that of `nodes`!"))
     end
-end # function genpath
-function _genpath(nodes, densities, ::CircularPath)
-    path = []
-    for (thisnode, nextnode, density) in zip(nodes, circshift(nodes, -1), densities)
-        distance = euclidean(thisnode, nextnode)  # Compute Euclidean distance between two vectors
-        step = (nextnode - thisnode) / distance
-        for x in range(0, stop = distance * (1 - 1 / density), length = density)
-            push!(path, thisnode + x * step)
-        end
-    end
-    return path
 end # function _genpath
-function _genpath(nodes, densities, ::NoncircularPath)
-    path = []
-    for (thisnode, nextnode, density) in zip(nodes, lead(nodes), densities)
-        ismissing(nextnode) && break
-        distance = euclidean(thisnode, nextnode)  # Compute Euclidean distance between two vectors
-        step = (nextnode - thisnode) / distance
-        for x in range(0, stop = distance, length = density - 1)
-            push!(path, thisnode + x * step)
+function _genpath(nodes, densities, ::Val{false})
+    if length(densities) == length(nodes) - 1
+        path = similar(nodes, sum(densities .- 1) + length(nodes) - 1)
+        for (i, (thisnode, nextnode, density)) in
+            enumerate(zip(nodes, nodes[2:end], densities))  # Only `n - 1` iterations will be done since `zip` exits when `densities` exhausts.
+            step = (nextnode - thisnode) / density
+            for j in 1:density
+                path[sum(densities[1:(i-1)])+j] = thisnode + j * step
+            end
         end
+        return path
+    else
+        throw(DimensionMismatch("the length of `densities` should be one less than that of `nodes`!"))
     end
-    return path
 end # function _genpath
 
 Base.getindex(A::SeitzOperator, I::Vararg{Int}) = getindex(A.data, I...)
