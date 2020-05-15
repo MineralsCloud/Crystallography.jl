@@ -4,15 +4,12 @@ using CoordinateTransformations: AffineMap, Translation, LinearMap
 using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
 using LinearAlgebra: I, diagm, det, tr
 using StaticArrays: SVector, SMatrix, SDiagonal
-using ShiftedArrays: circshift, lead
 
 using Crystallography
 
 import LinearAlgebra
 
 export SeitzOperator,
-    CircularPath,
-    NoncircularPath,
     symmetrytype,
     getsymmetry,
     getspacegroup,
@@ -206,7 +203,7 @@ function SeitzOperator(s::SeitzOperator, pos::AbstractVector)
     t = SeitzOperator(Translation(pos))
     return t * s * inv(t)
 end # function SeitzOperator
-(op::SeitzOperator)(v::AbstractVector) = (op.data * [v; 1])[1:3]
+(op::SeitzOperator)(v::AbstractVector) = (op.data*[v; 1])[1:3]
 
 isidentity(op::SeitzOperator) = op.data == I
 
@@ -231,21 +228,19 @@ function ispointsymmetry(op::SeitzOperator)
     return true
 end # function ispointsymmetry
 
-abstract type PathStyle end
-struct CircularPath <: PathStyle end
-struct NoncircularPath <: PathStyle end
-
 # This is a helper function and should not be exported
 euclidean(x, y) = sqrt(sum((x - y) .^ 2))
 
 """
-    genpath(nodes, densities = 100 * ones(Int, length(nodes)))
+    genpath(nodes, densities)
+    genpath(nodes, density::Integer, iscircular = false)
 
 Generate a reciprocal space path from each node.
 
 # Arguments
-- `nodes::AbstractVector{<:AbstractVector}`: a vector of 3-element vectors.
-- `densities::AbstractVector{<:Integer}`: the default value is a circular path.
+- `nodes::AbstractVector`: a vector of 3-element k-points.
+- `densities::AbstractVector{<:Integer}`: number of segments between current node and the next node.
+- `density::Integer`: assuming constant density between nodes.
 
 # Examples
 ```jldoctest
@@ -259,50 +254,38 @@ julia> nodes = [
     [0.5, 0.0, 0.0]
 ];
 
-julia> genpath(nodes)  # Generate a circular path
-693-element Array{Any,1}:
+julia> genpath(nodes, 100, true)  # Generate a circular path
+700-element Array{Array{Float64,1},1}:
 ...
 
-julia> genpath(nodes, 100 * ones(Int, length(nodes) - 1))  # Generate a noncircular path
-594-element Array{Any,1}:
+julia> genpath(nodes, 100, false)  # Generate a noncircular path
+600-element Array{Array{Float64,1},1}:
+...
+
+julia> genpath(nodes, [10 * i for i in 1:6])  # Generate a noncircular path
+210-element Array{Array{Float64,1},1}:
 ...
 ```
 """
-function genpath(
-    nodes::AbstractVector{<:AbstractVector},
-    densities::AbstractVector{<:Integer} = 100 * ones(Int, length(nodes)),
-)
-    if length(densities) == length(nodes)
-        _genpath(nodes, densities, CircularPath())
-    elseif length(densities) == length(nodes) - 1
-        _genpath(nodes, densities, NoncircularPath())
+function genpath(nodes, densities)
+    if length(densities) == length(nodes) || length(densities) == length(nodes) - 1
+        path = similar(nodes, sum(densities .- 1) + length(densities))
+        s = 0
+        for (i, (thisnode, nextnode, density)) in
+            enumerate(zip(nodes, circshift(nodes, -1), densities))
+            step = @. (nextnode - thisnode) / density
+            for j in 1:density
+                path[s+j] = @. thisnode + j * step
+            end
+            s += density
+        end
+        return path
     else
-        error("The length of `densities` should be either length of `length(nodes)` or `length(nodes) - 1`!")
+        throw(DimensionMismatch("the length of `densities` is either `length(nodes)` or `length(nodes) - 1`!"))
     end
 end # function genpath
-function _genpath(nodes, densities, ::CircularPath)
-    path = []
-    for (thisnode, nextnode, density) in zip(nodes, circshift(nodes, -1), densities)
-        distance = euclidean(thisnode, nextnode)  # Compute Euclidean distance between two vectors
-        step = (nextnode - thisnode) / distance
-        for x in range(0, stop = distance * (1 - 1 / density), length = density)
-            push!(path, thisnode + x * step)
-        end
-    end
-    return path
-end # function _genpath
-function _genpath(nodes, densities, ::NoncircularPath)
-    path = []
-    for (thisnode, nextnode, density) in zip(nodes, lead(nodes), densities)
-        ismissing(nextnode) && break
-        distance = euclidean(thisnode, nextnode)  # Compute Euclidean distance between two vectors
-        step = (nextnode - thisnode) / distance
-        for x in range(0, stop = distance, length = density - 1)
-            push!(path, thisnode + x * step)
-        end
-    end
-    return path
-end # function _genpath
+genpath(nodes, density::Integer, iscircular::Bool = false) =
+    genpath(nodes, (density for _ in 1:(length(nodes)-(iscircular ? 0 : 1))))
 
 Base.getindex(A::SeitzOperator, I::Vararg{Int}) = getindex(A.data, I...)
 
