@@ -149,9 +149,9 @@ end
 eachatom(atompos::AbstractVector{<:AtomicPosition}) = AtomicIterator(atompos)
 eachatom(cell::Cell) = AtomicIterator(cell.atompos)
 
-centering(b::Bravais) = last(b)
+centering(::Bravais{A,B}) where {A,B} = B()
 
-crystalsystem(b::Bravais) = first(b)
+crystalsystem(::Bravais{A,B}) where {A,B} = A()
 function crystalsystem(@eponymargs(a, b, c, α, β, γ))
     if a == b == c
         if α == β == γ
