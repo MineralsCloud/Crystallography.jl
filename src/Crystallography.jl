@@ -42,10 +42,7 @@ export CrystalSystem,
     Cell,
     CellParameters,
     Lattice
-export centering,
-    crystalsystem,
-    eachatom,
-    destruct
+export centering, crystalsystem, eachatom, destruct
 
 abstract type CrystalSystem end
 struct Triclinic <: CrystalSystem end
@@ -67,7 +64,7 @@ const BCentering = BaseCentering{:B}
 const CCentering = BaseCentering{:C}
 
 struct Bravais{A<:CrystalSystem,B<:Centering} end
-Bravais(A::CrystalSystem, B::Centering) = Bravais{A,B}()
+Bravais(a::CrystalSystem, b::Centering) = Bravais{typeof(a),typeof(b)}()
 
 const PrimitiveTriclinic = Bravais{Triclinic,Primitive}
 const PrimitiveMonoclinic = Bravais{Monoclinic,Primitive}
@@ -108,7 +105,6 @@ end
 Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
 Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) =
     Lattice(transpose(hcat(a, b, c)))
-Lattice(v::AbstractVector{<:AbstractVector}) = Lattice(v...)
 
 destruct(lattice::Lattice) = (lattice.data[1, :], lattice.data[2, :], lattice.data[3, :])
 
@@ -149,9 +145,9 @@ end
 eachatom(atompos::AbstractVector{<:AtomicPosition}) = AtomicIterator(atompos)
 eachatom(cell::Cell) = AtomicIterator(cell.atompos)
 
-centering(b::Bravais) = last(b)
+centering(::Bravais{A,B}) where {A,B} = B()
 
-crystalsystem(b::Bravais) = first(b)
+crystalsystem(::Bravais{A,B}) where {A,B} = A()
 function crystalsystem(@eponymargs(a, b, c, α, β, γ))
     if a == b == c
         if α == β == γ
