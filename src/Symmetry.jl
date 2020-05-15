@@ -203,7 +203,7 @@ function SeitzOperator(s::SeitzOperator, pos::AbstractVector)
     t = SeitzOperator(Translation(pos))
     return t * s * inv(t)
 end # function SeitzOperator
-(op::SeitzOperator)(v::AbstractVector) = (op.data * [v; 1])[1:3]
+(op::SeitzOperator)(v::AbstractVector) = (op.data*[v; 1])[1:3]
 
 isidentity(op::SeitzOperator) = op.data == I
 
@@ -232,13 +232,15 @@ end # function ispointsymmetry
 euclidean(x, y) = sqrt(sum((x - y) .^ 2))
 
 """
-    genpath(nodes, densities = 100 * ones(Int, length(nodes)))
+    genpath(nodes, densities)
+    genpath(nodes, density::Integer, iscircular = false)
 
 Generate a reciprocal space path from each node.
 
 # Arguments
-- `nodes::AbstractVector{<:AbstractVector}`: a vector of 3-element vectors.
-- `densities::AbstractVector{<:Integer}`: the default value is a circular path.
+- `nodes::AbstractVector`: a vector of 3-element k-points.
+- `densities::AbstractVector{<:Integer}`: number of segments between current node and the next node.
+- `density::Integer`: assuming constant density between nodes.
 
 # Examples
 ```jldoctest
@@ -252,12 +254,16 @@ julia> nodes = [
     [0.5, 0.0, 0.0]
 ];
 
-julia> genpath(nodes)  # Generate a circular path
-693-element Array{Any,1}:
+julia> genpath(nodes, 100, true)  # Generate a circular path
+700-element Array{Array{Float64,1},1}:
 ...
 
-julia> genpath(nodes, 100 * ones(Int, length(nodes) - 1))  # Generate a noncircular path
-594-element Array{Any,1}:
+julia> genpath(nodes, 100, false)  # Generate a noncircular path
+600-element Array{Array{Float64,1},1}:
+...
+
+julia> genpath(nodes, [10 * i for i in 1:6])  # Generate a noncircular path
+210-element Array{Array{Float64,1},1}:
 ...
 ```
 """
