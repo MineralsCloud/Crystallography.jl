@@ -228,9 +228,6 @@ function ispointsymmetry(op::SeitzOperator)
     return true
 end # function ispointsymmetry
 
-# This is a helper function and should not be exported
-euclidean(x, y) = sqrt(sum((x - y) .^ 2))
-
 """
     genpath(nodes, densities)
     genpath(nodes, density::Integer, iscircular = false)
