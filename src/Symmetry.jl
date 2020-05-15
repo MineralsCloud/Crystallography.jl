@@ -261,39 +261,37 @@ julia> genpath(nodes, 100 * ones(Int, length(nodes) - 1))  # Generate a noncircu
 ...
 ```
 """
-genpath(nodes, densities, iscircular::Bool = false) =
-    _genpath(nodes, densities, Val(iscircular))
-genpath(nodes, density::Integer, iscircular::Bool = false) =
-    genpath(nodes, density * ones(Int, length(nodes) - (iscircular ? 0 : 1)), iscircular)
-function _genpath(nodes, densities, ::Val{true})
+function genpath(nodes, densities)
     if length(densities) == length(nodes)
-        path = similar(nodes, sum(densities .- 1) + length(nodes))
-        for (i, (thisnode, nextnode, density)) in
-            enumerate(zip(nodes, circshift(nodes, -1), densities))
-            step = (nextnode - thisnode) / density
-            for j in 1:density
-                path[sum(densities[1:(i-1)])+j] = thisnode + j * step
-            end
-        end
-        return path
+        return _genpath(nodes, densities, Val(true))
+    elseif length(densities) == length(nodes) - 1
+        return _genpath(nodes, densities, Val(false))
     else
-        throw(DimensionMismatch("the length of `densities` should equal that of `nodes`!"))
+        throw(DimensionMismatch("the length of `densities` is either `length(nodes)` or `length(nodes) - 1`!"))
     end
+end # function genpath
+genpath(nodes, density::Integer, iscircular::Bool = false) =
+    genpath(nodes, density * ones(Int, length(nodes) - (iscircular ? 0 : 1)))
+function _genpath(nodes, densities, ::Val{true})
+    path = similar(nodes, sum(densities .- 1) + length(nodes))
+    for (i, (thisnode, nextnode, density)) in
+        enumerate(zip(nodes, circshift(nodes, -1), densities))
+        step = (nextnode - thisnode) / density
+        for j in 1:density
+            path[sum(densities[1:(i-1)])+j] = thisnode + j * step
+        end
+    end
+    return path
 end # function _genpath
 function _genpath(nodes, densities, ::Val{false})
-    if length(densities) == length(nodes) - 1
-        path = similar(nodes, sum(densities .- 1) + length(nodes) - 1)
-        for (i, (thisnode, nextnode, density)) in
-            enumerate(zip(nodes, nodes[2:end], densities))  # Only `n - 1` iterations will be done since `zip` exits when `densities` exhausts.
-            step = (nextnode - thisnode) / density
-            for j in 1:density
-                path[sum(densities[1:(i-1)])+j] = thisnode + j * step
-            end
+    path = similar(nodes, sum(densities .- 1) + length(nodes) - 1)
+    for (i, (thisnode, nextnode, density)) in enumerate(zip(nodes, nodes[2:end], densities))  # Only `n - 1` iterations will be done since `zip` exits when `densities` exhausts.
+        step = (nextnode - thisnode) / density
+        for j in 1:density
+            path[sum(densities[1:(i-1)])+j] = thisnode + j * step
         end
-        return path
-    else
-        throw(DimensionMismatch("the length of `densities` should be one less than that of `nodes`!"))
     end
+    return path
 end # function _genpath
 
 Base.getindex(A::SeitzOperator, I::Vararg{Int}) = getindex(A.data, I...)
