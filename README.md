@@ -10,6 +10,12 @@
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://MineralsCloud.github.io/Crystallography.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://MineralsCloud.github.io/Crystallography.jl/dev)
 
+This package:
+
+- Builds `Bravais` lattices, `Cell`s, etc.
+- Finds crystal symmetries
+- Converts coordinates between crystal and Cartesian frames, real and reciprocal spaces
+
 TODO:
 
 - [ ] Add matrices representation of the rigid motion operators
