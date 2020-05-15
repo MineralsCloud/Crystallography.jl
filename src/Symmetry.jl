@@ -270,23 +270,22 @@ julia> genpath(nodes, [10 * i for i in 1:6])  # Generate a noncircular path
 function genpath(nodes, densities)
     if length(densities) == length(nodes) || length(densities) == length(nodes) - 1
         path = similar(nodes, sum(densities .- 1) + length(densities))
+        s = 0
         for (i, (thisnode, nextnode, density)) in
             enumerate(zip(nodes, circshift(nodes, -1), densities))
             step = @. (nextnode - thisnode) / density
-            s = sum(densities[1:(i-1)])
             for j in 1:density
                 path[s+j] = @. thisnode + j * step
             end
+            s += density
         end
         return path
     else
         throw(DimensionMismatch("the length of `densities` is either `length(nodes)` or `length(nodes) - 1`!"))
     end
 end # function genpath
-genpath(nodes, density::Integer, iscircular::Bool = false) = genpath(
-    nodes,
-    Iterators.repeated(density, length(nodes) - (iscircular ? 0 : 1)) |> collect,
-)
+genpath(nodes, density::Integer, iscircular::Bool = false) =
+    genpath(nodes, (density for _ in 1:(length(nodes)-(iscircular ? 0 : 1))))
 
 Base.getindex(A::SeitzOperator, I::Vararg{Int}) = getindex(A.data, I...)
 
