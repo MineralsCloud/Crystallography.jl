@@ -272,10 +272,10 @@ function genpath(nodes, densities)
         path = similar(nodes, sum(densities .- 1) + length(densities))
         for (i, (thisnode, nextnode, density)) in
             enumerate(zip(nodes, circshift(nodes, -1), densities))
-            step = (nextnode - thisnode) / density
+            step = @. (nextnode - thisnode) / density
             s = sum(densities[1:(i-1)])
             for j in 1:density
-                path[s+j] = thisnode + j * step
+                path[s+j] = @. thisnode + j * step
             end
         end
         return path
