@@ -4,15 +4,12 @@ using CoordinateTransformations: AffineMap, Translation, LinearMap
 using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
 using LinearAlgebra: I, diagm, det, tr
 using StaticArrays: SVector, SMatrix, SDiagonal
-using ShiftedArrays: circshift, lead
 
 using Crystallography
 
 import LinearAlgebra
 
 export SeitzOperator,
-    CircularPath,
-    NoncircularPath,
     symmetrytype,
     getsymmetry,
     getspacegroup,
@@ -230,10 +227,6 @@ function ispointsymmetry(op::SeitzOperator)
     end
     return true
 end # function ispointsymmetry
-
-abstract type PathStyle end
-struct CircularPath <: PathStyle end
-struct NoncircularPath <: PathStyle end
 
 # This is a helper function and should not be exported
 euclidean(x, y) = sqrt(sum((x - y) .^ 2))
