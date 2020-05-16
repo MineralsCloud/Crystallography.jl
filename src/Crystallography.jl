@@ -197,8 +197,6 @@ function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
     return supercell(cell, Diagonal(expansion))
 end # function supercell
 
-Base.getindex(p::CellParameters, I) = (; zip(keys(p)[I], values(p)[I])...)
-
 Base.size(::Lattice) = (3, 3)
 Base.length(::Lattice) = 9  # Number of elements
 Base.getindex(A::Lattice, i::Integer, j::Integer) = getindex(A.data, i, j)
