@@ -42,7 +42,7 @@ export CrystalSystem,
     Cell,
     CellParameters,
     Lattice
-export centering, crystalsystem, eachatom, destruct
+export centering, crystalsystem, eachatom, destruct, cellvolume
 
 abstract type CrystalSystem end
 struct Triclinic <: CrystalSystem end
@@ -196,6 +196,28 @@ function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
     @assert length(expansion) == 3
     return supercell(cell, Diagonal(expansion))
 end # function supercell
+
+"""
+    cellvolume(p::CellParameters)
+
+Calculates the cell volume from 6 cell parameters.
+"""
+cellvolume(@eponymargs(a, b, c, α, β, γ)) =
+    a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
+cellvolume(@eponymargs(a, b, c, β)) = a * b * c * sin(β)  # Monoclinic
+cellvolume(@eponymargs(a, b, c, γ)) = a * b * c * sin(γ)  # Monoclinic
+cellvolume(@eponymargs(a, b, c)) = a * b * c  # Orthorhombic
+cellvolume(@eponymargs(a, c, γ)) = γ == 90 ? a^2 * c : √3 * a^2 * c / 2  # Tetragonal & Hexagonal
+cellvolume(@eponymargs(a, α)) = a^3 * sqrt(1 - 3 * cos(α)^2 + 2 * cos(α)^3)  # Trigonal
+cellvolume(@eponymargs(a)) = a^3  # Cubic
+"""
+    cellvolume(l::Lattice)
+    cellvolume(c::Cell)
+
+Calculates the cell volume from a `Lattice` or a `Cell`.
+"""
+cellvolume(l::Lattice) = abs(det(convert(Matrix{eltype(l)}, l)))
+cellvolume(c::Cell) = cellvolume(c.lattice)
 
 Base.size(::Lattice) = (3, 3)
 Base.length(::Lattice) = 9  # Number of elements
