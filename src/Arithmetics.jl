@@ -5,7 +5,7 @@ using EponymTuples: @eponymargs
 using LinearAlgebra: I, cross, det, dot, norm
 using StaticArrays: SVector, SMatrix, SHermitianCompact
 
-using Crystallography: CellParameters, Lattice, Cell, destruct
+using Crystallography: CellParameters, Lattice, Cell, destruct, cellvolume
 
 import LinearAlgebra
 import Crystallography
@@ -21,7 +21,6 @@ export directioncosine,
     directionangle,
     distance,
     interplanar_spacing,
-    cellvolume,
     reciprocal,
     @m_str,
     @mb_str
@@ -128,32 +127,11 @@ _F(α, β, γ) = cos(α) * cos(β) - cos(γ)
 (x::CrystalFromCartesian)(v::AbstractVector) = inv(x.m) * v
 
 """
-    cellvolume(p::CellParameters)
-
-Calculates the cell volume from 6 cell parameters.
-"""
-cellvolume(@eponymargs(a, b, c, α, β, γ)) =
-    a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
-cellvolume(@eponymargs(a, b, c, β)) = a * b * c * sin(β)  # Monoclinic
-cellvolume(@eponymargs(a, b, c, γ)) = a * b * c * sin(γ)  # Monoclinic
-cellvolume(@eponymargs(a, b, c)) = a * b * c  # Orthorhombic
-cellvolume(@eponymargs(a, c, γ)) = γ == 90 ? a^2 * c : √3 * a^2 * c / 2  # Tetragonal & Hexagonal
-cellvolume(@eponymargs(a, α)) = a^3 * sqrt(1 - 3 * cos(α)^2 + 2 * cos(α)^3)  # Trigonal
-cellvolume(@eponymargs(a)) = a^3  # Cubic
-"""
-    cellvolume(l::Lattice)
-    cellvolume(c::Cell)
-
-Calculates the cell volume from a `Lattice` or a `Cell`.
-"""
-cellvolume(l::Lattice) = abs(det(convert(Matrix{eltype(l)}, l)))
-cellvolume(c::Cell) = cellvolume(c.lattice)
-"""
     cellvolume(g::MetricTensor)
 
 Calculates the cell volume from a `MetricTensor`.
 """
-cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
+Crystallography.cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
 
 function Crystallography.Lattice(@eponymargs(a, b, c, α, β, γ))
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
