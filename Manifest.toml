@@ -95,6 +95,6 @@ uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[Unitful]]
 deps = ["ConstructionBase", "LinearAlgebra", "Random"]
-git-tree-sha1 = "46833bd9378cc57550cf6a4dc6085ce2a49d0db8"
+git-tree-sha1 = "3714b55de06b11b2aa788b8643d6e91f13648be5"
 uuid = "1986cc42-f94f-5a68-af5c-568840ba703d"
-version = "1.2.0"
+version = "1.2.1"
