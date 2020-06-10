@@ -68,15 +68,18 @@ const INDICES = Union{Miller,MillerBravais}
 # This is a helper function and should not be exported!
 function _indices_str(r::Regex, s::AbstractString, ::Type{T}) where {T<:INDICES}
     m = match(r, strip(s))
-    isnothing(m) && error("not a valid expression!")
-    brackets = first(m.captures) * last(m.captures)
-    x = (parse(Int, x) for x in m.captures[2:(end-1)])
-    if brackets ∈ ("()", "{}")
-        return T{ReciprocalSpace}(x...)
-    elseif brackets ∈ ("[]", "<>")
-        return T{RealSpace}(x...)
-    else
+    if m === nothing
         error("not a valid expression!")
+    else
+        brackets = first(m.captures) * last(m.captures)
+        x = (parse(Int, x) for x in m.captures[2:(end-1)])
+        if brackets ∈ ("()", "{}")
+            return T{ReciprocalSpace}(x...)
+        elseif brackets ∈ ("[]", "<>")
+            return T{RealSpace}(x...)
+        else
+            error("not a valid expression!")
+        end
     end
 end # function _indices_str
 
