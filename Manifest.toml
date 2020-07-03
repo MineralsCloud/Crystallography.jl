@@ -4,10 +4,10 @@
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
 [[BinaryProvider]]
-deps = ["Libdl", "SHA"]
-git-tree-sha1 = "5b08ed6036d9d3f0ee6369410b830f8873d4024c"
+deps = ["Libdl", "Logging", "SHA"]
+git-tree-sha1 = "ecdec412a9abc8db54c0efc5548c64dfce072058"
 uuid = "b99e7846-7c00-51b0-8f62-c81ae34c0232"
-version = "0.5.8"
+version = "0.5.10"
 
 [[ConstructionBase]]
 git-tree-sha1 = "a2a6a5fea4d6f730ec4c18a76d27ec10e8ec1c50"
@@ -36,9 +36,7 @@ uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
 [[LibSymspg]]
 deps = ["BinaryProvider", "Libdl", "Test"]
-git-tree-sha1 = "efecb80388f1ea4415f326949ef783f36e61186a"
-repo-rev = "master"
-repo-url = "https://github.com/singularitti/LibSymspg.jl.git"
+git-tree-sha1 = "29f99e23b35b74521cae927d8ab9af5c7ee2dd61"
 uuid = "2098c8a6-82c4-11e9-1f54-e72760d085ce"
 version = "0.4.0"
 
@@ -95,6 +93,6 @@ uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[Unitful]]
 deps = ["ConstructionBase", "LinearAlgebra", "Random"]
-git-tree-sha1 = "3714b55de06b11b2aa788b8643d6e91f13648be5"
+git-tree-sha1 = "a061dada333813818aa7454f93c63a5cab6ea981"
 uuid = "1986cc42-f94f-5a68-af5c-568840ba703d"
-version = "1.2.1"
+version = "1.3.0"
