@@ -13,6 +13,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
 CoordinateTransformations = "0.5"
+EponymTuples = "0.2"
 LibSymspg = "0.2, 0.3, 0.4"
 StaticArrays = "0.8.3, 0.9, 0.10, 0.11, 0.12"
 julia = "1"
