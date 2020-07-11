@@ -18,12 +18,7 @@ export RealSpace,
     CrystalFromCartesian,
     CartesianFromCrystal
 export directioncosine,
-    directionangle,
-    distance,
-    interplanar_spacing,
-    reciprocal,
-    @m_str,
-    @mb_str
+    directionangle, distance, interplanar_spacing, reciprocal, @m_str, @mb_str
 
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
@@ -35,7 +30,7 @@ end
 MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
 function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
     vecs = (v1, v2, v3)
-    return MetricTensor([dot(vecs[i], vecs[j]) for i in 1:3, j in 1:3])
+    return MetricTensor([dot(vecs[i], vecs[j]) for i = 1:3, j = 1:3])
 end
 function MetricTensor(@eponymargs(a, b, c, α, β, γ))
     g12 = a * b * cos(γ)
