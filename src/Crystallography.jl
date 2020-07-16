@@ -218,7 +218,8 @@ cellvolume(@eponymargs(a)) = a^3  # Cubic
 Calculates the cell volume from a `Lattice` or a `Cell`.
 """
 cellvolume(l::Lattice) = abs(det(convert(Matrix{eltype(l)}, l)))
-cellvolume(l::Lattice{<:AbstractQuantity}) = abs(det(ustrip.(convert(Matrix{eltype(l)}, l)))) * unit(eltype(l))^3
+cellvolume(l::Lattice{<:AbstractQuantity}) =
+    abs(det(ustrip.(convert(Matrix{eltype(l)}, l)))) * unit(eltype(l))^3
 cellvolume(c::Cell) = cellvolume(c.lattice)
 
 Base.size(::Lattice) = (3, 3)
