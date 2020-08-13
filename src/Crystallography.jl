@@ -64,8 +64,11 @@ const ACentering = BaseCentering{:A}
 const BCentering = BaseCentering{:B}
 const CCentering = BaseCentering{:C}
 
-struct Bravais{A<:CrystalSystem,B<:Centering} end
-Bravais(a::CrystalSystem, b::Centering) = Bravais{typeof(a),typeof(b)}()
+struct Bravais{A<:CrystalSystem,B<:Centering}
+    obverse::Bool
+end
+Bravais(a::CrystalSystem, b::Centering, obverse::Bool = true) =
+    Bravais{typeof(a),typeof(b)}(obverse)
 
 const PrimitiveTriclinic = Bravais{Triclinic,Primitive}
 const PrimitiveMonoclinic = Bravais{Monoclinic,Primitive}
