@@ -56,9 +56,11 @@ struct RotationAxis{N} <: PointSymmetry end
 struct Inversion <: PointSymmetry end
 struct RotoInversion{N} <: PointSymmetry end
 const Mirror = RotoInversion{2}
-RotationAxis(N::Int) = N ∈ (2, 3, 4, 6) ? RotationAxis{N}() :
+RotationAxis(N::Int) =
+    N ∈ (2, 3, 4, 6) ? RotationAxis{N}() :
     throw(ArgumentError("rotation axis must be either 2, 3, 4 or 6!"))
-RotoInversion(N::Int) = N ∈ (2, 3, 4, 6) ? RotoInversion{N}() :
+RotoInversion(N::Int) =
+    N ∈ (2, 3, 4, 6) ? RotoInversion{N}() :
     throw(ArgumentError("rotoinversion axis must be either 2, 3, 4 or 6!"))
 
 struct PointSymmetryPower{T<:PointSymmetry,N} end
