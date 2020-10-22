@@ -103,18 +103,18 @@ function CartesianFromCrystal(@eponymargs(a, b, c, α, β, γ))
     v = cellvolume(CellParameters(a, b, c, α, β, γ))
     x, y = sin(γ), cos(γ)
     return CartesianFromCrystal([
-        a b * y -c / x^2 * (_F(γ, α, β) + _F(β, α, γ) * y)
-        0 b * x -c * _F(β, α, γ) / x
-        0 0 v / (a * b * x)
+        a b*y -c/x^2*(_F(γ, α, β)+_F(β, α, γ)*y)
+        0 b*x -c*_F(β, α, γ)/x
+        0 0 v/(a*b*x)
     ])
 end # function CartesianFromCrystal
 function CrystalFromCartesian(@eponymargs(a, b, c, α, β, γ))  # This is wrong
     v = cellvolume(CellParameters(a, b, c, α, β, γ))
     x = sin(γ)
     return CrystalFromCartesian([
-        1 / a -1 / (a * tan(γ)) b * c * _F(γ, α, β) / (v * x)
-        0 1 / (b * x) a * c * _F(β, γ, α) / (v * x)
-        0 0 a * b * x / v
+        1/a -1/(a*tan(γ)) b*c*_F(γ, α, β)/(v*x)
+        0 1/(b*x) a*c*_F(β, γ, α)/(v*x)
+        0 0 a*b*x/v
     ])
 end # function CrystalFromCartesian
 
