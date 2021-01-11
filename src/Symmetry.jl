@@ -280,7 +280,11 @@ function genpath(nodes, densities)
         end
         return path
     else
-        throw(DimensionMismatch("the length of `densities` is either `length(nodes)` or `length(nodes) - 1`!"))
+        throw(
+            DimensionMismatch(
+                "the length of `densities` is either `length(nodes)` or `length(nodes) - 1`!",
+            ),
+        )
     end
 end # function genpath
 genpath(nodes, density::Integer, iscircular::Bool = false) =
