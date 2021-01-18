@@ -168,12 +168,6 @@ function crystalsystem(@eponymargs(a, b, c, α, β, γ))
         end
     end
 end # function crystalsystem
-crystalsystem(@eponymargs(a, b, c, β)) = Monoclinic()
-crystalsystem(@eponymargs(a, b, c, γ)) = Monoclinic()
-crystalsystem(@eponymargs(a, b, c)) = Orthorhombic()
-crystalsystem(@eponymargs(a, c, γ)) = γ == 90 ? Tetragonal() : Hexagonal()
-crystalsystem(@eponymargs(a, α)) = Trigonal()
-crystalsystem(@eponymargs(a)) = Cubic()
 function crystalsystem(lattice::Lattice)
     v1, v2, v3 = destruct(lattice)
     a, b, c = norm(v1), norm(v2), norm(v3)
@@ -209,12 +203,6 @@ Calculates the cell volume from 6 cell parameters.
 """
 cellvolume(@eponymargs(a, b, c, α, β, γ)) =
     a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
-cellvolume(@eponymargs(a, b, c, β)) = a * b * c * sin(β)  # Monoclinic
-cellvolume(@eponymargs(a, b, c, γ)) = a * b * c * sin(γ)  # Monoclinic
-cellvolume(@eponymargs(a, b, c)) = a * b * c  # Orthorhombic
-cellvolume(@eponymargs(a, c, γ)) = γ == 90 ? a^2 * c : √3 * a^2 * c / 2  # Tetragonal & Hexagonal
-cellvolume(@eponymargs(a, α)) = a^3 * sqrt(1 - 3 * cos(α)^2 + 2 * cos(α)^3)  # Trigonal
-cellvolume(@eponymargs(a)) = a^3  # Cubic
 """
     cellvolume(l::Lattice)
     cellvolume(c::Cell)
