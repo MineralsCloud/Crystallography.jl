@@ -131,13 +131,14 @@ function Cell(
         N = length(positions)
         return Cell(
             SVector{N}([
-                AtomicPosition(atom, position)
-                for (atom, position) in zip(atoms, positions)
+                AtomicPosition(atom, position) for (atom, position) in zip(atoms, positions)
             ]),
             Lattice(lattice),
         )
     else
-        throw(DimensionMismatch("the number of positions should equal the number of atoms!"))
+        throw(
+            DimensionMismatch("the number of positions should equal the number of atoms!"),
+        )
     end
 end # function Cell
 
