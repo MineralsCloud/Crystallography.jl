@@ -101,7 +101,7 @@ const ORTHORHOMBIC = Union{
 const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
 
 const CellParameters = NamedTuple{(:a, :b, :c, :α, :β, :γ)}  # Use as type
-CellParameters(a, b, c, α, β, γ) = (a = a, b = b, c = c, α = α, β = β, γ = γ)  # Use as constructor
+CellParameters(a, b, c, α, β, γ) = CellParameters((a, b, c, α, β, γ))  # Use as constructor
 
 struct Lattice{T}
     data::SMatrix{3,3,T}
