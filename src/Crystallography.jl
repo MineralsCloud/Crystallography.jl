@@ -216,7 +216,6 @@ Base.size(::Lattice) = (3, 3)
 Base.length(::Lattice) = 9  # Number of elements
 Base.getindex(A::Lattice, i::Integer, j::Integer) = getindex(A.data, i, j)
 Base.eltype(::Lattice{T}) where {T} = T
-Base.convert(::Type{Matrix{T}}, lattice::Lattice{T}) where {T} = Matrix{T}(lattice.data)
 
 Base.length(iter::AtomicIterator) = length(iter.data)
 Base.size(iter::AtomicIterator) = (length(iter.data),)
