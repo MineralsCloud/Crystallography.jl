@@ -5,7 +5,6 @@ version = "0.1.1"
 
 [deps]
 CoordinateTransformations = "150eb455-5306-5404-9cee-2592286d6298"
-EponymTuples = "97e2ac4a-e175-5f49-beb1-4d6866a6cdc3"
 LibSymspg = "2098c8a6-82c4-11e9-1f54-e72760d085ce"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
@@ -13,7 +12,6 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
 CoordinateTransformations = "0.5, 0.6"
-EponymTuples = "0.2"
 LibSymspg = "0.2, 0.3, 0.4"
 StaticArrays = "0.8.3, 0.9, 0.10, 0.11, 0.12, 1"
 Unitful = "0.18, 1"
