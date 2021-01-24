@@ -1,6 +1,5 @@
 module Crystallography
 
-using EponymTuples: @eponymargs
 using LinearAlgebra: Diagonal, det, dot, norm
 using StaticArrays: SVector, SMatrix
 using Unitful: AbstractQuantity, ustrip, unit
@@ -153,7 +152,8 @@ eachatom(cell::Cell) = AtomicIterator(cell.atompos)
 centering(::Bravais{A,B}) where {A,B} = B()
 
 crystalsystem(::Bravais{A,B}) where {A,B} = A()
-function crystalsystem(@eponymargs(a, b, c, α, β, γ))
+function crystalsystem(x::CellParameters)
+    a, b, c, α, β, γ = x
     if a == b == c
         if α == β == γ
             α == 90 ? Cubic() : Trigonal()
@@ -201,8 +201,10 @@ end # function supercell
 
 Calculates the cell volume from 6 cell parameters.
 """
-cellvolume(@eponymargs(a, b, c, α, β, γ)) =
-    a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
+function cellvolume(x::CellParameters)
+    a, b, c, α, β, γ = x
+    return a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
+end
 """
     cellvolume(l::Lattice)
     cellvolume(c::Cell)
