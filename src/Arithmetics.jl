@@ -1,7 +1,6 @@
 module Arithmetics
 
 using CoordinateTransformations: IdentityTransformation
-using EponymTuples: @eponymargs
 using LinearAlgebra: I, cross, det, dot, norm
 using StaticArrays: SVector, SMatrix, SHermitianCompact
 
@@ -32,7 +31,8 @@ function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector
     vecs = (v1, v2, v3)
     return MetricTensor([dot(vecs[i], vecs[j]) for i = 1:3, j = 1:3])
 end
-function MetricTensor(@eponymargs(a, b, c, α, β, γ))
+function MetricTensor(x::CellParameters)
+    a, b, c, α, β, γ = x
     g12 = a * b * cos(γ)
     g13 = a * c * cos(β)
     g23 = b * c * cos(α)
@@ -99,8 +99,9 @@ for T in (:CartesianFromCrystal, :CrystalFromCartesian)
         $T(lattice::Lattice) = $T(convert(Matrix{eltype(lattice)}, lattice))
     end)
 end
-function CartesianFromCrystal(@eponymargs(a, b, c, α, β, γ))
-    v = cellvolume(CellParameters(a, b, c, α, β, γ))
+function CartesianFromCrystal(cp::CellParameters)
+    a, b, c, α, β, γ = cp
+    v = cellvolume(cp)
     x, y = sin(γ), cos(γ)
     return CartesianFromCrystal(
         [
@@ -110,8 +111,9 @@ function CartesianFromCrystal(@eponymargs(a, b, c, α, β, γ))
         ],
     )
 end # function CartesianFromCrystal
-function CrystalFromCartesian(@eponymargs(a, b, c, α, β, γ))  # This is wrong
-    v = cellvolume(CellParameters(a, b, c, α, β, γ))
+function CrystalFromCartesian(cp::CellParameters)  # This is wrong
+    a, b, c, α, β, γ = cp
+    v = cellvolume(cp)
     x = sin(γ)
     return CrystalFromCartesian(
         [
@@ -135,8 +137,9 @@ Calculates the cell volume from a `MetricTensor`.
 """
 Crystallography.cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
 
-function Crystallography.Lattice(@eponymargs(a, b, c, α, β, γ))
+function Crystallography.Lattice(cp::CellParameters)
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
+    a, b, c, α, β, γ = cp
     v = cellvolume(CellParameters(1, 1, 1, α, β, γ))
     # reciprocal lattice
     a_recip = sin(α) / (a * v)
