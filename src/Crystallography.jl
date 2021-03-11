@@ -38,7 +38,6 @@ export CrystalSystem,
     FaceCenteredCubic,
     PrimitiveHexagonal,
     RCenteredHexagonal,
-    AtomicPosition,
     Cell,
     CellParameters,
     Lattice
@@ -112,35 +111,11 @@ Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) =
 
 destruct(lattice::Lattice) = (lattice.data[1, :], lattice.data[2, :], lattice.data[3, :])
 
-struct AtomicPosition{S,T}
-    atom::S
-    pos::SVector{3,T}
+struct Cell{N,A,B,C}
+    atoms::SVector{N,A}
+    positions::SVector{N,B}
+    lattice::Lattice{C}
 end
-AtomicPosition(atom, pos::AbstractVector) = AtomicPosition(atom, SVector{3}(pos))
-
-struct Cell{N,L,S,T}
-    atompos::SVector{N,AtomicPosition{S,T}}
-    lattice::Lattice{L}
-end
-function Cell(
-    atoms::AbstractVector,
-    positions::AbstractVector{<:AbstractVector},
-    lattice::AbstractVecOrMat,
-)
-    if length(positions) == length(atoms)
-        N = length(positions)
-        return Cell(
-            SVector{N}([
-                AtomicPosition(atom, position) for (atom, position) in zip(atoms, positions)
-            ]),
-            Lattice(lattice),
-        )
-    else
-        throw(
-            DimensionMismatch("the number of positions should equal the number of atoms!"),
-        )
-    end
-end # function Cell
 
 centering(::Bravais{A,B}) where {A,B} = B()
 
