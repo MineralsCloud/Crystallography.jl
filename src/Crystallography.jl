@@ -38,11 +38,10 @@ export CrystalSystem,
     FaceCenteredCubic,
     PrimitiveHexagonal,
     RCenteredHexagonal,
-    AtomicPosition,
     Cell,
     CellParameters,
     Lattice
-export centering, crystalsystem, eachatom, destruct, cellvolume
+export centering, crystalsystem, destruct, cellvolume
 
 abstract type CrystalSystem end
 struct Triclinic <: CrystalSystem end
@@ -83,6 +82,7 @@ const FaceCenteredOrthorhombic = Bravais{Orthorhombic,FaceCentering}
 const PrimitiveTetragonal = Bravais{Tetragonal,Primitive}
 const BodyCenteredTetragonal = Bravais{Tetragonal,BodyCentering}
 const PrimitiveCubic = Bravais{Cubic,Primitive}
+
 const BodyCenteredCubic = Bravais{Cubic,BodyCentering}
 const FaceCenteredCubic = Bravais{Cubic,FaceCentering}
 const PrimitiveHexagonal = Bravais{Hexagonal,Primitive}
@@ -111,43 +111,11 @@ Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) =
 
 destruct(lattice::Lattice) = (lattice.data[1, :], lattice.data[2, :], lattice.data[3, :])
 
-struct AtomicPosition{S,T}
-    atom::S
-    pos::SVector{3,T}
+struct Cell{N,A,B,C}
+    atoms::SVector{N,A}
+    positions::SVector{N,B}
+    lattice::Lattice{C}
 end
-AtomicPosition(atom, pos::AbstractVector) = AtomicPosition(atom, SVector{3}(pos))
-
-struct Cell{N,L,S,T}
-    atompos::SVector{N,AtomicPosition{S,T}}
-    lattice::Lattice{L}
-end
-function Cell(
-    atoms::AbstractVector,
-    positions::AbstractVector{<:AbstractVector},
-    lattice::AbstractVecOrMat,
-)
-    if length(positions) == length(atoms)
-        N = length(positions)
-        return Cell(
-            SVector{N}([
-                AtomicPosition(atom, position) for (atom, position) in zip(atoms, positions)
-            ]),
-            Lattice(lattice),
-        )
-    else
-        throw(
-            DimensionMismatch("the number of positions should equal the number of atoms!"),
-        )
-    end
-end # function Cell
-
-# This is an internal type and should not be exported!
-struct AtomicIterator{T}
-    data::T
-end
-
-eachatom(atompos::AbstractVector{<:AtomicPosition}) = AtomicIterator(atompos)
-eachatom(cell::Cell) = AtomicIterator(cell.atompos)
 
 centering(::Bravais{A,B}) where {A,B} = B()
 
@@ -218,12 +186,6 @@ Base.size(::Lattice) = (3, 3)
 Base.length(::Lattice) = 9  # Number of elements
 Base.getindex(A::Lattice, i::Integer, j::Integer) = getindex(A.data, i, j)
 Base.eltype(::Lattice{T}) where {T} = T
-
-Base.length(iter::AtomicIterator) = length(iter.data)
-Base.size(iter::AtomicIterator) = (length(iter.data),)
-Base.iterate(iter::AtomicIterator{<:AbstractVector{<:AtomicPosition}}, i = 1) =
-    i > length(iter) ? nothing : (iter.data[i], i + 1)
-Base.eltype(::AtomicIterator{<:AbstractVector{T}}) where {T<:AtomicPosition} = T
 
 include("Arithmetics.jl")
 include("Symmetry.jl")

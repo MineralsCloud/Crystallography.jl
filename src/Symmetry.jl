@@ -100,7 +100,7 @@ function _numbers(a::AbstractVector{T}) where {T}
     return [d[v] for v in a]
 end
 
-function getsymmetry(cell::Cell, symprec::AbstractFloat = 1e-5; seitz::Bool = false)
+function getsymmetry(cell::Cell, symprec = 1e-5; seitz::Bool = false)
     maps, translations = get_symmetry(
         cell.lattice,
         cell.positions,
@@ -115,7 +115,7 @@ function getsymmetry(cell::Cell, symprec::AbstractFloat = 1e-5; seitz::Bool = fa
     end
 end
 
-function getspacegroup(cell::Cell, symprec::AbstractFloat = 1e-5)
+function getspacegroup(cell::Cell, symprec = 1e-5)
     return get_spacegroup(
         cell.lattice,
         cell.positions,
@@ -127,10 +127,10 @@ end # function getspacegroup
 
 function irreciprocalmesh(
     cell::Cell,
-    mesh::AbstractVector{Int},
-    symprec::AbstractFloat = 1e-5;
-    is_shift::AbstractVector{Bool} = falses(3),
-    is_time_reversal::Bool = false,
+    mesh::AbstractVector,
+    symprec = 1e-5;
+    is_shift = falses(3),
+    is_time_reversal = false,
 )
     return ir_reciprocal_mesh(
         mesh,
@@ -273,7 +273,7 @@ function genpath(nodes, densities)
         for (i, (thisnode, nextnode, density)) in
             enumerate(zip(nodes, circshift(nodes, -1), densities))
             step = @. (nextnode - thisnode) / density
-            for j = 1:density
+            for j in 1:density
                 path[s+j] = @. thisnode + j * step
             end
             s += density
@@ -288,7 +288,7 @@ function genpath(nodes, densities)
     end
 end # function genpath
 genpath(nodes, density::Integer, iscircular::Bool = false) =
-    genpath(nodes, (density for _ = 1:(length(nodes)-(iscircular ? 0 : 1))))
+    genpath(nodes, (density for _ in 1:(length(nodes)-(iscircular ? 0 : 1))))
 
 Base.getindex(A::SeitzOperator, I::Vararg{Int}) = getindex(A.data, I...)
 
