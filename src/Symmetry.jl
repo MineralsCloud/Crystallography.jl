@@ -102,8 +102,8 @@ end
 
 function getsymmetry(cell::Cell, symprec = 1e-5; seitz::Bool = false)
     maps, translations = get_symmetry(
-        Matrix(cell.lattice),
-        Matrix(transpose(hcat(cell.positions))),
+        Matrix{Float64}(cell.lattice),
+        Matrix{Float64}(transpose(hcat(cell.positions...))),
         _numbers(cell.atoms),
         length(cell.atoms),
         symprec,
@@ -117,8 +117,8 @@ end
 
 function getspacegroup(cell::Cell, symprec = 1e-5)
     return get_spacegroup(
-        Matrix(cell.lattice),
-        Matrix(transpose(hcat(cell.positions))),
+        Matrix{Float64}(cell.lattice),
+        Matrix{Float64}(transpose(hcat(cell.positions...))),
         _numbers(cell.atoms),
         length(cell.atoms),
         symprec,
@@ -136,8 +136,8 @@ function irreciprocalmesh(
         mesh,
         collect(is_shift),
         is_time_reversal,
-        Matrix(cell.lattice.data),
-        Matrix(transpose(hcat(cell.positions))),
+        Matrix{Float64}(cell.lattice.data),
+        Matrix{Float64}(transpose(hcat(cell.positions...))),
         _numbers(cell.atoms),
         length(cell.atoms),
         symprec,
