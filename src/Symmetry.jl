@@ -125,6 +125,7 @@ function getspacegroup(cell::Cell, symprec = 1e-5)
     )
 end # function getspacegroup
 
+# See example in https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
 function irreciprocalmesh(
     cell::Cell,
     mesh::AbstractVector,
@@ -132,7 +133,7 @@ function irreciprocalmesh(
     is_shift = falses(3),
     is_time_reversal = false,
 )
-    return ir_reciprocal_mesh(
+    num, grid, mapping = ir_reciprocal_mesh(
         mesh,
         collect(is_shift),
         is_time_reversal,
@@ -142,6 +143,11 @@ function irreciprocalmesh(
         length(cell.atoms),
         symprec,
     )
+    shift = map(x -> x ? 0.5 : 0, is_shift)
+    # Add 1 because array index starts with 0
+    result = [(grid[i+1] .+ shift) ./ mesh for i in unique(mapping)]
+    @assert length(result) == num
+    return result
 end # function irreciprocalmesh
 
 """
