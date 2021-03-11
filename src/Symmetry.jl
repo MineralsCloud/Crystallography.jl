@@ -94,10 +94,10 @@ end # function symmetrytype
 symmetrytype(op::PointSymmetry) = symmetrytype(tr(op), det(op))
 
 # These are helper methods and should not be exported!
-_numbers(a::AbstractVector{<:Integer}) = a
+_numbers(a::AbstractVector{<:Integer}) = convert(Vector{Int64}, a)
 function _numbers(a::AbstractVector{T}) where {T}
     d = Dict(value => key for (key, value) in pairs(unique(a)))
-    return [d[v] for v in a]
+    return Int64[d[v] for v in a]
 end
 
 function getsymmetry(cell::Cell, symprec = 1e-5; seitz::Bool = false)
