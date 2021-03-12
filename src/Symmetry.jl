@@ -161,9 +161,8 @@ function irreciprocalmesh(
     shift = map(x -> x ? 0.5 : 0, is_shift)
     weights = counter(mapping)
     mesh_crystal = map(unique(mapping)) do i
-        index = i + 1  # Add 1 because `mapping` index starts from 0
-        x, y, z = (grid[:, index] .+ shift) ./ mesh
-        weight = weights[index]
+        x, y, z = (grid[:, i+1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
+        weight = weights[i]  # Should use `i` not `i + 1`!
         SpecialPoint(x, y, z, weight)
     end
     if cartesian
