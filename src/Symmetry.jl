@@ -1,6 +1,7 @@
 module Symmetry
 
 using CoordinateTransformations: AffineMap, Translation, LinearMap
+using DataStructures: counter
 using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
 using LinearAlgebra: I, diagm, det, tr
 using StaticArrays: SVector, SMatrix, SDiagonal, FieldVector
@@ -144,7 +145,7 @@ function irreciprocalmesh(
     is_shift = falses(3),
     is_time_reversal = false,
 )
-    num, grid, mapping = ir_reciprocal_mesh(
+    _, grid, mapping = ir_reciprocal_mesh(
         mesh,
         collect(is_shift),
         is_time_reversal,
@@ -156,9 +157,13 @@ function irreciprocalmesh(
     )
     shift = map(x -> x ? 0.5 : 0, is_shift)
     # Add 1 because array index starts with 0
-    result = [(grid[i+1] .+ shift) ./ mesh for i in unique(mapping)]
-    @assert length(result) == num
-    return result
+    tally = counter(mapping)
+    return map(unique(mapping)) do i
+        index = i + 1
+        x, y, z = (grid[:, index] .+ shift) ./ mesh
+        weight = tally[index]
+        SpecialPoint(x, y, z, weight)
+    end
 end # function irreciprocalmesh
 
 """
