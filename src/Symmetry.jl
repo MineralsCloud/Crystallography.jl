@@ -144,6 +144,7 @@ function irreciprocalmesh(
     symprec = 1e-5;
     is_shift = falses(3),
     is_time_reversal = false,
+    cartesian = false,
 )
     _, grid, mapping = ir_reciprocal_mesh(
         mesh,
@@ -158,11 +159,19 @@ function irreciprocalmesh(
     shift = map(x -> x ? 0.5 : 0, is_shift)
     # Add 1 because array index starts with 0
     tally = counter(mapping)
-    return map(unique(mapping)) do i
+    mesh_crystal = map(unique(mapping)) do i
         index = i + 1
         x, y, z = (grid[:, index] .+ shift) ./ mesh
         weight = tally[index]
         SpecialPoint(x, y, z, weight)
+    end
+    if cartesian
+        reciprocal_lattice = inv(cell.lattice.data)
+        return map(mesh_crystal) do k
+            SpecialPoint(reciprocal_lattice * k[1:3]..., k.w)
+        end
+    else
+        return mesh_crystal
     end
 end # function irreciprocalmesh
 
