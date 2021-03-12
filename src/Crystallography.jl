@@ -108,6 +108,7 @@ end
 Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
 Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) =
     Lattice(transpose(hcat(a, b, c)))
+Lattice(x::Lattice) = x
 
 destruct(lattice::Lattice) = (lattice.data[1, :], lattice.data[2, :], lattice.data[3, :])
 
@@ -115,6 +116,18 @@ struct Cell{N,A,B,C}
     atoms::SVector{N,A}
     positions::SVector{N,B}
     lattice::Lattice{C}
+end
+function Cell(atoms::AbstractVector, positions::AbstractVector, lattice)
+    if length(atoms) != length(positions)
+        throw(DimensionMismatch("atoms and positions do not have equal length!"))
+    end
+    N = length(atoms)
+    return Cell(SVector{N}(atoms), SVector{N}(positions), Lattice(lattice))
+end
+function Cell(atoms::AbstractVector, positions::AbstractMatrix, lattice)
+    @assert size(positions, 2) == 3
+    positions = collect(Iterators.partition(positions', 3))
+    return Cell(atoms, positions, lattice)
 end
 
 centering(::Bravais{A,B}) where {A,B} = B()

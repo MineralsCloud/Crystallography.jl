@@ -1,11 +1,13 @@
 module Symmetry
 
 using CoordinateTransformations: AffineMap, Translation, LinearMap
+using DataStructures: counter
 using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
 using LinearAlgebra: I, diagm, det, tr
-using StaticArrays: SVector, SMatrix, SDiagonal
+using StaticArrays: SVector, SMatrix, SDiagonal, FieldVector
 
 using Crystallography
+using Crystallography.Arithmetics: reciprocal
 
 import LinearAlgebra
 
@@ -125,17 +127,32 @@ function getspacegroup(cell::Cell, symprec = 1e-5)
     )
 end # function getspacegroup
 
+"""
+    SpecialKPoint(x, y, z, w)
+Represent a special point of the 3D Brillouin zone. Each of them has a weight `w`.
+"""
+struct SpecialPoint <: FieldVector{4,Float64}
+    x::Float64
+    y::Float64
+    z::Float64
+    w::Float64
+end
+
 # See example in https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
 function irreciprocalmesh(
     cell::Cell,
-    mesh::AbstractVector,
+    mesh,
     symprec = 1e-5;
     is_shift = falses(3),
     is_time_reversal = false,
+    cartesian = false,
+    ir_only = true,
 )
-    num, grid, mapping = ir_reciprocal_mesh(
+    @assert length(mesh) == length(is_shift) == 3
+    mesh, is_shift = collect(mesh), collect(is_shift)
+    _, grid, mapping = ir_reciprocal_mesh(
         mesh,
-        collect(is_shift),
+        is_shift,
         is_time_reversal,
         Matrix{Float64}(cell.lattice.data),
         Matrix{Float64}(transpose(hcat(cell.positions...))),
@@ -143,11 +160,21 @@ function irreciprocalmesh(
         length(cell.atoms),
         symprec,
     )
-    shift = map(x -> x ? 0.5 : 0, is_shift)
-    # Add 1 because array index starts with 0
-    result = [(grid[i+1] .+ shift) ./ mesh for i in unique(mapping)]
-    @assert length(result) == num
-    return result
+    shift = is_shift ./ 2  # true / 2 = 0.5, false / 2 = 0
+    weights = counter(mapping)
+    mesh_crystal = map(ir_only ? unique(mapping) : mapping) do i
+        x, y, z = (grid[:, i+1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
+        weight = weights[i]  # Should use `i` not `i + 1`!
+        SpecialPoint(x, y, z, weight)
+    end
+    if cartesian
+        mat = reciprocal(cell.lattice)
+        return map(mesh_crystal) do k
+            SpecialPoint(mat * k[1:3]..., k.w)
+        end
+    else
+        return mesh_crystal
+    end
 end # function irreciprocalmesh
 
 """
