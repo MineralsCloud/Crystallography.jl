@@ -160,7 +160,7 @@ function irreciprocalmesh(
         length(cell.atoms),
         symprec,
     )
-    shift = map(x -> x ? 0.5 : 0, is_shift)
+    shift = is_shift ./ 2  # true / 2 = 0.5, false / 2 = 0
     weights = counter(mapping)
     mesh_crystal = map(ir_only ? unique(mapping) : mapping) do i
         x, y, z = (grid[:, i+1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
