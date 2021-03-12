@@ -140,15 +140,17 @@ end
 # See example in https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
 function irreciprocalmesh(
     cell::Cell,
-    mesh::AbstractVector,
+    mesh,
     symprec = 1e-5;
     is_shift = falses(3),
     is_time_reversal = false,
     cartesian = false,
 )
+    @assert length(mesh) == length(is_shift) == 3
+    mesh, is_shift = collect(mesh), collect(is_shift)
     _, grid, mapping = ir_reciprocal_mesh(
         mesh,
-        collect(is_shift),
+        is_shift,
         is_time_reversal,
         Matrix{Float64}(cell.lattice.data),
         Matrix{Float64}(transpose(hcat(cell.positions...))),
@@ -157,12 +159,11 @@ function irreciprocalmesh(
         symprec,
     )
     shift = map(x -> x ? 0.5 : 0, is_shift)
-    # Add 1 because array index starts with 0
-    tally = counter(mapping)
+    weights = counter(mapping)
     mesh_crystal = map(unique(mapping)) do i
-        index = i + 1
+        index = i + 1  # Add 1 because `mapping` index starts from 0
         x, y, z = (grid[:, index] .+ shift) ./ mesh
-        weight = tally[index]
+        weight = weights[index]
         SpecialPoint(x, y, z, weight)
     end
     if cartesian
