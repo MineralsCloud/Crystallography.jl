@@ -7,6 +7,7 @@ using LinearAlgebra: I, diagm, det, tr
 using StaticArrays: SVector, SMatrix, SDiagonal, FieldVector
 
 using Crystallography
+using Crystallography.Arithmetics: reciprocal
 
 import LinearAlgebra
 
@@ -167,9 +168,9 @@ function irreciprocalmesh(
         SpecialPoint(x, y, z, weight)
     end
     if cartesian
-        reciprocal_lattice = inv(cell.lattice.data)
+        mat = reciprocal(cell.lattice)
         return map(mesh_crystal) do k
-            SpecialPoint(reciprocal_lattice * k[1:3]..., k.w)
+            SpecialPoint(mat * k[1:3]..., k.w)
         end
     else
         return mesh_crystal
