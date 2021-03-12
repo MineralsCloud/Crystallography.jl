@@ -3,7 +3,7 @@ module Symmetry
 using CoordinateTransformations: AffineMap, Translation, LinearMap
 using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
 using LinearAlgebra: I, diagm, det, tr
-using StaticArrays: SVector, SMatrix, SDiagonal
+using StaticArrays: SVector, SMatrix, SDiagonal, FieldVector
 
 using Crystallography
 
@@ -124,6 +124,17 @@ function getspacegroup(cell::Cell, symprec = 1e-5)
         symprec,
     )
 end # function getspacegroup
+
+"""
+    SpecialKPoint(x, y, z, w)
+Represent a special point of the 3D Brillouin zone. Each of them has a weight `w`.
+"""
+struct SpecialPoint <: FieldVector{4,Float64}
+    x::Float64
+    y::Float64
+    z::Float64
+    w::Float64
+end
 
 # See example in https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
 function irreciprocalmesh(
