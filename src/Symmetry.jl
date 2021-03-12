@@ -145,6 +145,7 @@ function irreciprocalmesh(
     is_shift = falses(3),
     is_time_reversal = false,
     cartesian = false,
+    ir_only = true,
 )
     @assert length(mesh) == length(is_shift) == 3
     mesh, is_shift = collect(mesh), collect(is_shift)
@@ -160,7 +161,7 @@ function irreciprocalmesh(
     )
     shift = map(x -> x ? 0.5 : 0, is_shift)
     weights = counter(mapping)
-    mesh_crystal = map(unique(mapping)) do i
+    mesh_crystal = map(ir_only ? unique(mapping) : mapping) do i
         x, y, z = (grid[:, i+1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
         weight = weights[i]  # Should use `i` not `i + 1`!
         SpecialPoint(x, y, z, weight)
