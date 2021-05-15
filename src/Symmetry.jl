@@ -144,7 +144,7 @@ function irreciprocalmesh(
     mesh,
     symprec = 1e-5;
     is_shift = falses(3),
-    is_time_reversal = false,
+    is_time_reversal = true,
     cartesian = false,
     ir_only = true,
 )
