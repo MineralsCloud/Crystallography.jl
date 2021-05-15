@@ -211,7 +211,7 @@ end
     numbers = [14, 14, 14, 14, 14, 14, 14, 14]
     silicon_dist = Cell(numbers, positions, lattice)
     @test getspacegroup(silicon_dist) == ("P1", 1)
-    @test irreciprocalmesh(silicon_dist, [6, 6, 6]) == [
+    @test irreciprocalmesh(silicon_dist, [6, 6, 6]) ≈ [
         [0.0, 0.0, 0.0, 1.0],
         [0.16666667, 0.0, 0.0, 2.0],
         [0.33333333, 0.0, 0.0, 2.0],
@@ -324,7 +324,7 @@ end
         [0.16666667, 0.5, 0.5, 2.0],
         [0.33333333, 0.5, 0.5, 2.0],
         [0.5, 0.5, 0.5, 1.0],
-    ]
+    ]  # Python result
 end
 
 @testset "Test MgB2 structure" begin
@@ -343,7 +343,7 @@ end
     numbers = [12, 5, 5]
     MgB2 = Cell(numbers, positions, lattice)
     @test getspacegroup(MgB2) == ("P6/mmm", 191)
-    @test irreciprocalmesh(cell, [7, 7, 7]) - [
+    @test irreciprocalmesh(MgB2, [7, 7, 7]) ≈ [
         [0.0, 0.0, 0.0, 1.0],
         [0.14285714, 0.0, 0.0, 6.0],
         [0.28571429, 0.0, 0.0, 6.0],
