@@ -13,8 +13,6 @@ import LinearAlgebra
 
 export SeitzOperator,
     symmetrytype,
-    getsymmetry,
-    getspacegroup,
     reciprocal_points,
     isidentity,
     istranslation,
@@ -101,31 +99,6 @@ function _numbers(a::AbstractVector{T}) where {T}
     d = Dict(value => key for (key, value) in pairs(unique(a)))
     return Int64[d[v] for v in a]
 end
-
-function getsymmetry(cell::Cell, symprec = 1e-5; seitz::Bool = false)
-    maps, translations = get_symmetry(
-        Matrix{Float64}(cell.lattice.data),
-        Matrix{Float64}(transpose(hcat(cell.positions...))),
-        _numbers(cell.atoms),
-        length(cell.atoms),
-        symprec,
-    )
-    return if seitz
-        (SeitzOperator(LinearMap(m), Translation(t)) for (m, t) in zip(maps, translations))
-    else
-        (AffineMap(m, t) for (m, t) in zip(maps, translations))
-    end
-end
-
-function getspacegroup(cell::Cell, symprec = 1e-5)
-    return get_spacegroup(
-        Matrix{Float64}(cell.lattice.data),
-        Matrix{Float64}(transpose(hcat(cell.positions...))),
-        _numbers(cell.atoms),
-        length(cell.atoms),
-        symprec,
-    )
-end # function getspacegroup
 
 """
     SpecialKPoint(x, y, z, w)
