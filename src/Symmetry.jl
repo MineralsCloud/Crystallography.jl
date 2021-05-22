@@ -2,7 +2,7 @@ module Symmetry
 
 using CoordinateTransformations: AffineMap, Translation, LinearMap
 using DataStructures: counter
-using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
+using Spglib: Cell, get_symmetry, get_spacegroup_type, get_ir_reciprocal_mesh
 using LinearAlgebra: I, diagm, det, tr
 using StaticArrays: SVector, SMatrix, SDiagonal, FieldVector
 
@@ -15,7 +15,7 @@ export SeitzOperator,
     symmetrytype,
     getsymmetry,
     getspacegroup,
-    irreciprocalmesh,
+    reciprocal_points,
     isidentity,
     istranslation,
     ispointsymmetry,
@@ -139,7 +139,7 @@ struct SpecialPoint <: FieldVector{4,Float64}
 end
 
 # See example in https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
-function irreciprocalmesh(
+function reciprocal_points(
     cell::Cell,
     mesh,
     symprec = 1e-5;
@@ -148,32 +148,32 @@ function irreciprocalmesh(
     cartesian = false,
     ir_only = true,
 )
-    @assert length(mesh) == length(is_shift) == 3
-    mesh, is_shift = collect(mesh), collect(is_shift)
-    _, grid, mapping = ir_reciprocal_mesh(
+    _, mapping, grid = get_ir_reciprocal_mesh(
+        cell,
         mesh,
-        is_shift,
-        is_time_reversal,
-        Matrix{Float64}(cell.lattice.data),
-        Matrix{Float64}(transpose(hcat(cell.positions...))),
-        _numbers(cell.atoms),
-        length(cell.atoms),
-        symprec,
+        is_shift;
+        is_time_reversal = is_time_reversal,
+        symprec = symprec,
     )
     shift = is_shift ./ 2  # true / 2 = 0.5, false / 2 = 0
     weights = counter(mapping)
-    mesh_crystal = map(ir_only ? unique(mapping) : mapping) do i
-        x, y, z = (grid[:, i+1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
-        weight = weights[i]  # Should use `i` not `i + 1`!
+    mapping = convert(Vector{Int}, mapping)
+    # `unique(mapping)` and `mapping` are irreducible points and all points, respectively. They have different shapes.
+    if ir_only
+        unique!(mapping)
+    end
+    coord_crystal = map(mapping) do id
+        x, y, z = (grid[:, id+1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
+        weight = weights[id]  # Should use `id` not `id + 1`!
         SpecialPoint(x, y, z, weight)
     end
     if cartesian
         mat = reciprocal(cell.lattice)
-        return map(mesh_crystal) do k
+        return map(coord_crystal) do k
             SpecialPoint(mat * k[1:3]..., k.w)
         end
     else
-        return mesh_crystal
+        return coord_crystal
     end
 end # function irreciprocalmesh
 
