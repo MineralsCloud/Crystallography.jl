@@ -141,7 +141,7 @@ function reciprocal_points(
         SpecialPoint(x, y, z, weight)
     end
     if cartesian
-        mat = reciprocal(cell.lattice)
+        mat = reciprocal(Lattice(cell.lattice))
         return map(coord_crystal) do k
             SpecialPoint(mat * k[1:3]..., k.w)
         end
