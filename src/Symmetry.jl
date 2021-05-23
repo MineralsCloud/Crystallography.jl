@@ -101,15 +101,17 @@ function _numbers(a::AbstractVector{T}) where {T}
 end
 
 """
-    SpecialKPoint(x, y, z, w)
+    ReciprocalPoint(x, y, z, w)
+
 Represent a special point of the 3D Brillouin zone. Each of them has a weight `w`.
 """
-struct SpecialPoint <: FieldVector{4,Float64}
-    x::Float64
-    y::Float64
-    z::Float64
-    w::Float64
+struct ReciprocalPoint{T}
+    coord::SVector{3,T}
+    weight::Float64
 end
+ReciprocalPoint(coord::AbstractVector{T}, weight) where {T} =
+    ReciprocalPoint{T}(SVector{3}(coord), weight)
+ReciprocalPoint(x, y, z, w) = ReciprocalPoint(SVector(x, y, z), w)
 
 # See example in https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
 function reciprocal_mesh(
