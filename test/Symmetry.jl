@@ -16,7 +16,7 @@ using Test
     ]
     types = [14, 14, 8, 8, 8, 8]
     rutile = Cell(lattice, positions, types)
-    @show reciprocal_points(rutile, [6, 6, 6]) ≈ [
+    @show reciprocal_mesh(rutile, [6, 6, 6]) ≈ [
         [0.0, 0.0, 0.0, 1.0],
         [0.16666667, 0.0, 0.0, 4.0],
         [0.33333333, 0.0, 0.0, 4.0],
@@ -58,7 +58,7 @@ using Test
         [0.5, 0.33333333, 0.5, 4.0],
         [0.5, 0.5, 0.5, 1.0],
     ]
-    @test reciprocal_points(rutile, [6, 6, 6]; is_shift = trues(3)) ≈ [
+    @test reciprocal_mesh(rutile, [6, 6, 6]; is_shift = trues(3)) ≈ [
         [0.08333333, 0.08333333, 0.08333333, 8.0],
         [0.25, 0.08333333, 0.08333333, 16.0],
         [0.41666667, 0.08333333, 0.08333333, 16.0],
@@ -89,7 +89,7 @@ end
     positions = [[0.875, 0.875, 0.875], [0.125, 0.125, 0.125]]
     types = [1, 1]
     cell = Cell(lattice, positions, types)
-    @test reciprocal_points(cell, [8, 8, 8]) == [
+    @test reciprocal_mesh(cell, [8, 8, 8]) == [
         [0.0, 0.0, 0.0, 1.0],
         [0.125, 0.0, 0.0, 8.0],
         [0.25, 0.0, 0.0, 8.0],
@@ -120,7 +120,7 @@ end
         [-0.375, 0.5, 0.125, 12.0],
         [-0.25, 0.5, 0.25, 6.0],
     ]
-    @test reciprocal_points(cell, [8, 8, 8]; is_shift = trues(3)) == [
+    @test reciprocal_mesh(cell, [8, 8, 8]; is_shift = trues(3)) == [
         [0.0625, 0.0625, 0.0625, 2.0],
         [0.1875, 0.0625, 0.0625, 6.0],
         [0.3125, 0.0625, 0.0625, 6.0],
@@ -202,7 +202,7 @@ end
     ]
     types = [14, 14, 14, 14, 14, 14, 14, 14]
     silicon_dist = Cell(lattice, positions, types)
-    @test reciprocal_points(silicon_dist, [6, 6, 6]) ≈ [
+    @test reciprocal_mesh(silicon_dist, [6, 6, 6]) ≈ [
         [0.0, 0.0, 0.0, 1.0],
         [0.16666667, 0.0, 0.0, 2.0],
         [0.33333333, 0.0, 0.0, 2.0],

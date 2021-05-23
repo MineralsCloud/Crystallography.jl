@@ -13,7 +13,7 @@ import LinearAlgebra
 
 export SeitzOperator,
     symmetrytype,
-    reciprocal_points,
+    reciprocal_mesh,
     isidentity,
     istranslation,
     ispointsymmetry,
@@ -112,7 +112,7 @@ struct SpecialPoint <: FieldVector{4,Float64}
 end
 
 # See example in https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
-function reciprocal_points(
+function reciprocal_mesh(
     cell::Cell,
     mesh,
     symprec = 1e-5;
@@ -148,7 +148,7 @@ function reciprocal_points(
     else
         return coord_crystal
     end
-end # function irreciprocalmesh
+end
 
 """
     SeitzOperator(m::AbstractMatrix)
