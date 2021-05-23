@@ -10,17 +10,13 @@ using Test
         0 0 3
     ]
     positions = [
-        0.0 0.0 0.0
-        0.5 0.5 0.5
-        0.3 0.3 0.0
-        0.7 0.7 0.0
-        0.2 0.8 0.5
-        0.8 0.2 0.5
+        0.0 0.5 0.3 0.7 0.2 0.8
+        0.0 0.5 0.3 0.7 0.8 0.2
+        0.0 0.5 0.0 0.0 0.5 0.5
     ]
-    numbers = [14, 14, 8, 8, 8, 8]
-    rutile = Cell(numbers, positions, lattice)
-    @test getspacegroup(rutile) == ("P4_2/mnm", 136)
-    @show irreciprocalmesh(rutile, [6, 6, 6]) ≈ [
+    types = [14, 14, 8, 8, 8, 8]
+    rutile = Cell(lattice, positions, types)
+    @show reciprocal_points(rutile, [6, 6, 6]) ≈ [
         [0.0, 0.0, 0.0, 1.0],
         [0.16666667, 0.0, 0.0, 4.0],
         [0.33333333, 0.0, 0.0, 4.0],
@@ -62,7 +58,7 @@ using Test
         [0.5, 0.33333333, 0.5, 4.0],
         [0.5, 0.5, 0.5, 1.0],
     ]
-    @test irreciprocalmesh(rutile, [6, 6, 6]; is_shift = trues(3)) ≈ [
+    @test reciprocal_points(rutile, [6, 6, 6]; is_shift = trues(3)) ≈ [
         [0.08333333, 0.08333333, 0.08333333, 8.0],
         [0.25, 0.08333333, 0.08333333, 16.0],
         [0.41666667, 0.08333333, 0.08333333, 16.0],
@@ -82,7 +78,6 @@ using Test
         [0.41666667, 0.25, 0.41666667, 16.0],
         [0.41666667, 0.41666667, 0.41666667, 8.0],
     ]
-    # get_symmetry(rutile; symprec = 1e-5)
 end
 
 @testset "`spglib` doc example" begin  # See https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
@@ -92,10 +87,9 @@ end
         0.5 0.5 0
     ] * 5.4
     positions = [[0.875, 0.875, 0.875], [0.125, 0.125, 0.125]]
-    numbers = [1, 1]
-    cell = Cell(numbers, positions, lattice)
-    @test getspacegroup(cell) == ("Fd-3m", 227)
-    @test irreciprocalmesh(cell, [8, 8, 8]) == [
+    types = [1, 1]
+    cell = Cell(lattice, positions, types)
+    @test reciprocal_points(cell, [8, 8, 8]) == [
         [0.0, 0.0, 0.0, 1.0],
         [0.125, 0.0, 0.0, 8.0],
         [0.25, 0.0, 0.0, 8.0],
@@ -126,7 +120,7 @@ end
         [-0.375, 0.5, 0.125, 12.0],
         [-0.25, 0.5, 0.25, 6.0],
     ]
-    @test irreciprocalmesh(cell, [8, 8, 8]; is_shift = trues(3)) == [
+    @test reciprocal_points(cell, [8, 8, 8]; is_shift = trues(3)) == [
         [0.0625, 0.0625, 0.0625, 2.0],
         [0.1875, 0.0625, 0.0625, 6.0],
         [0.3125, 0.0625, 0.0625, 6.0],
@@ -206,10 +200,9 @@ end
         0.75 0.25 0.75
         0.75 0.75 0.25
     ]
-    numbers = [14, 14, 14, 14, 14, 14, 14, 14]
-    silicon_dist = Cell(numbers, positions, lattice)
-    @test getspacegroup(silicon_dist) == ("P1", 1)
-    @test irreciprocalmesh(silicon_dist, [6, 6, 6]) ≈ [
+    types = [14, 14, 14, 14, 14, 14, 14, 14]
+    silicon_dist = Cell(lattice, positions, types)
+    @test reciprocal_points(silicon_dist, [6, 6, 6]) ≈ [
         [0.0, 0.0, 0.0, 1.0],
         [0.16666667, 0.0, 0.0, 2.0],
         [0.33333333, 0.0, 0.0, 2.0],
