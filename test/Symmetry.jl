@@ -1,5 +1,3 @@
-module Symmetry
-
 using Crystallography
 using Crystallography.Symmetry
 
@@ -377,6 +375,4 @@ end
         [0.42857143, 0.14285714, 0.42857143, 12.0],
         [0.28571429, 0.28571429, 0.42857143, 12.0],
     ]
-end
-
 end
