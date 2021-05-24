@@ -133,22 +133,27 @@ function reciprocal_mesh(
     shift = is_shift ./ 2  # true / 2 = 0.5, false / 2 = 0
     weights = counter(mapping)
     mapping = convert(Vector{Int}, mapping)
-    # `unique(mapping)` and `mapping` are irreducible points and all points, respectively. They have different shapes.
-    if ir_only
-        unique!(mapping)
-    end
-    coord_crystal = map(mapping) do id
-        x, y, z = (grid[:, id+1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
-        weight = weights[id]  # Should use `id` not `id + 1`!
-        SpecialPoint(x, y, z, weight)
+    total_number = length(mapping)  # Number of all k-points, not only the irreducible ones
+    crystal_coord = if ir_only
+        map(mapping) do id
+            x, y, z = (grid[:, id+1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
+            weight = weights[id] / total_number  # Should use `id` not `id + 1`!
+            ReciprocalPoint(x, y, z, weight)
+        end
+    else
+        mapslices(grid; dims = 1) do point
+            x, y, z = (point .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
+            weight = 1 / total_number
+            ReciprocalPoint(x, y, z, weight)
+        end |> vec
     end
     if cartesian
         mat = reciprocal(Lattice(cell.lattice))
-        return map(coord_crystal) do k
-            SpecialPoint(mat * k[1:3]..., k.w)
+        return map(crystal_coord) do k
+            ReciprocalPoint(mat * k[1:3]..., k.w)
         end
     else
-        return coord_crystal
+        return crystal_coord
     end
 end
 
