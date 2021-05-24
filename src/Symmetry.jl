@@ -137,7 +137,7 @@ function reciprocal_mesh(
     mapping = convert(Vector{Int}, mapping)
     total_number = length(mapping)  # Number of all k-points, not only the irreducible ones
     crystal_coord = if ir_only
-        map(mapping) do id
+        map(unique(mapping)) do id
             x, y, z = (grid[:, id+1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
             weight = weights[id] / total_number  # Should use `id` not `id + 1`!
             ReciprocalPoint(x, y, z, weight)
