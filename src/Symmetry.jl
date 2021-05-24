@@ -14,6 +14,8 @@ import LinearAlgebra
 export SeitzOperator,
     symmetrytype,
     reciprocal_mesh,
+    coordinates,
+    weights,
     isidentity,
     istranslation,
     ispointsymmetry,
@@ -156,6 +158,10 @@ function reciprocal_mesh(
         return crystal_coord
     end
 end
+
+coordinates(arr::AbstractArray{<:ReciprocalPoint}) = map(x -> x.coord, arr)
+
+weights(arr::AbstractArray{<:ReciprocalPoint}) = map(x -> x.weight, arr)
 
 """
     SeitzOperator(m::AbstractMatrix)
