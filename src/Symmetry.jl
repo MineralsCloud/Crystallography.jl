@@ -119,9 +119,9 @@ ReciprocalPoint(x, y, z, w) = ReciprocalPoint(SVector(x, y, z), w)
 function reciprocal_mesh(
     cell::Cell,
     mesh,
-    symprec = 1e-5;
-    is_shift = falses(3),
+    is_shift = falses(3);
     is_time_reversal = true,
+    symprec = 1e-5,
     cartesian = false,
     ir_only = true,
 )
