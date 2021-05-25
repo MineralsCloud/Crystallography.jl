@@ -150,7 +150,7 @@ function reciprocal_mesh(
         end |> vec
     end
     if cartesian
-        mat = reciprocal(Lattice(cell.lattice))
+        mat = reciprocal(Lattice(cell.lattice))'
         return map(crystal_coord) do point
             ReciprocalPoint(mat * point.coord, point.weight)
         end
