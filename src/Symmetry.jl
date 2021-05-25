@@ -12,6 +12,7 @@ using Crystallography.Arithmetics: reciprocal
 import LinearAlgebra
 
 export SeitzOperator,
+    ReciprocalPoint,
     symmetrytype,
     reciprocal_mesh,
     coordinates,
