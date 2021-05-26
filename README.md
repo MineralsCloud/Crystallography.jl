@@ -13,7 +13,8 @@ This package:
 
 - Builds `Bravais` lattices, `Cell`s, etc.
 - Finds crystal symmetries
-- Converts coordinates between crystal and Cartesian frames, real and reciprocal spaces
+- Converts coordinates between crystal and Cartesian frames, real and reciprocal
+  spaces
 
 TODO:
 
