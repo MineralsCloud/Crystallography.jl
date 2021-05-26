@@ -1,7 +1,7 @@
 module Symmetry
 
 using CoordinateTransformations: AffineMap, Translation, LinearMap
-using DataStructures: counter
+using Counters: counter
 using Spglib: Cell, get_symmetry, get_spacegroup_type, get_ir_reciprocal_mesh
 using LinearAlgebra: I, diagm, det, tr
 using StaticArrays: SVector, SMatrix, SDiagonal, FieldVector
