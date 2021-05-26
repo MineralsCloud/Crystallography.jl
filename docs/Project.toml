@@ -1,2 +1,3 @@
 [deps]
+Crystallography = "06308cd2-f292-494b-9308-80930bf85278"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
