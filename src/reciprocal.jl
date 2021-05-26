@@ -29,8 +29,8 @@ function reciprocal_mesh(
         symprec = symprec,
     )
     shift = is_shift ./ 2  # true / 2 = 0.5, false / 2 = 0
-    weights = counter(mapping)
     mapping = convert(Vector{Int}, mapping)
+    weights = counter(mapping)
     total_number = length(mapping)  # Number of all k-points, not only the irreducible ones
     crystal_coord = if ir_only
         map(unique(mapping)) do id
