@@ -6,15 +6,14 @@ version = "0.1.1"
 [deps]
 CoordinateTransformations = "150eb455-5306-5404-9cee-2592286d6298"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-LibSymspg = "2098c8a6-82c4-11e9-1f54-e72760d085ce"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Spglib = "f761d5c5-86db-4880-b97f-9680a7cccfb5"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
 CoordinateTransformations = "0.5, 0.6"
 DataStructures = "0.18"
-LibSymspg = "0.2, 0.3, 0.4"
 StaticArrays = "0.8.3, 0.9, 0.10, 0.11, 0.12, 1"
 Unitful = "0.18, 1"
 julia = "1"

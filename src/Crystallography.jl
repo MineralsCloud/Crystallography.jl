@@ -1,8 +1,11 @@
 module Crystallography
 
 using LinearAlgebra: Diagonal, det, dot, norm
+using Spglib: Cell
 using StaticArrays: SVector, SMatrix
 using Unitful: AbstractQuantity, ustrip, unit
+
+import Spglib: basis_vectors
 
 export CrystalSystem,
     Triclinic,
@@ -41,7 +44,7 @@ export CrystalSystem,
     Cell,
     CellParameters,
     Lattice
-export centering, crystalsystem, destruct, cellvolume
+export centering, crystalsystem, cellvolume, basis_vectors
 
 abstract type CrystalSystem end
 struct Triclinic <: CrystalSystem end
@@ -106,28 +109,12 @@ struct Lattice{T}
     data::SMatrix{3,3,T}
 end
 Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
-Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) =
-    Lattice(transpose(hcat(a, b, c)))
+Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) = Lattice(hcat(a, b, c))
 Lattice(x::Lattice) = x
 
-destruct(lattice::Lattice) = (lattice.data[1, :], lattice.data[2, :], lattice.data[3, :])
-
-struct Cell{N,A,B,C}
-    atoms::SVector{N,A}
-    positions::SVector{N,B}
-    lattice::Lattice{C}
-end
-function Cell(atoms::AbstractVector, positions::AbstractVector, lattice)
-    if length(atoms) != length(positions)
-        throw(DimensionMismatch("atoms and positions do not have equal length!"))
-    end
-    N = length(atoms)
-    return Cell(SVector{N}(atoms), SVector{N}(positions), Lattice(lattice))
-end
-function Cell(atoms::AbstractVector, positions::AbstractMatrix, lattice)
-    @assert size(positions, 2) == 3
-    positions = collect(Iterators.partition(positions', 3))
-    return Cell(atoms, positions, lattice)
+function basis_vectors(lattice::Lattice)
+    data = lattice.data
+    return data[:, 1], data[:, 2], data[:, 3]
 end
 
 centering(::Bravais{A,B}) where {A,B} = B()
@@ -150,7 +137,7 @@ function crystalsystem(x::CellParameters)
     end
 end # function crystalsystem
 function crystalsystem(lattice::Lattice)
-    v1, v2, v3 = destruct(lattice)
+    v1, v2, v3 = basis_vectors(lattice)
     a, b, c = norm(v1), norm(v2), norm(v3)
     γ = acos(dot(v1, v2) / a / b)
     β = acos(dot(v2, v3) / b / c)
@@ -192,8 +179,8 @@ end
 
 Calculates the cell volume from a `Lattice` or a `Cell`.
 """
-cellvolume(l::Lattice) = abs(det(l.data))
-cellvolume(c::Cell) = cellvolume(c.lattice)
+cellvolume(lattice::Lattice) = abs(det(lattice.data))
+cellvolume(cell::Cell) = cellvolume(cell.lattice)
 
 Base.size(::Lattice) = (3, 3)
 Base.length(::Lattice) = 9  # Number of elements

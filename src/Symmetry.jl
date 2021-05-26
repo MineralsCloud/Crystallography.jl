@@ -2,7 +2,7 @@ module Symmetry
 
 using CoordinateTransformations: AffineMap, Translation, LinearMap
 using DataStructures: counter
-using LibSymspg: get_symmetry, get_spacegroup, ir_reciprocal_mesh
+using Spglib: Cell, get_symmetry, get_spacegroup_type, get_ir_reciprocal_mesh
 using LinearAlgebra: I, diagm, det, tr
 using StaticArrays: SVector, SMatrix, SDiagonal, FieldVector
 
@@ -12,10 +12,11 @@ using Crystallography.Arithmetics: reciprocal
 import LinearAlgebra
 
 export SeitzOperator,
+    ReciprocalPoint,
     symmetrytype,
-    getsymmetry,
-    getspacegroup,
-    irreciprocalmesh,
+    reciprocal_mesh,
+    coordinates,
+    weights,
     isidentity,
     istranslation,
     ispointsymmetry,
@@ -102,80 +103,7 @@ function _numbers(a::AbstractVector{T}) where {T}
     return Int64[d[v] for v in a]
 end
 
-function getsymmetry(cell::Cell, symprec = 1e-5; seitz::Bool = false)
-    maps, translations = get_symmetry(
-        Matrix{Float64}(cell.lattice.data),
-        Matrix{Float64}(transpose(hcat(cell.positions...))),
-        _numbers(cell.atoms),
-        length(cell.atoms),
-        symprec,
-    )
-    return if seitz
-        (SeitzOperator(LinearMap(m), Translation(t)) for (m, t) in zip(maps, translations))
-    else
-        (AffineMap(m, t) for (m, t) in zip(maps, translations))
-    end
-end
-
-function getspacegroup(cell::Cell, symprec = 1e-5)
-    return get_spacegroup(
-        Matrix{Float64}(cell.lattice.data),
-        Matrix{Float64}(transpose(hcat(cell.positions...))),
-        _numbers(cell.atoms),
-        length(cell.atoms),
-        symprec,
-    )
-end # function getspacegroup
-
-"""
-    SpecialKPoint(x, y, z, w)
-Represent a special point of the 3D Brillouin zone. Each of them has a weight `w`.
-"""
-struct SpecialPoint <: FieldVector{4,Float64}
-    x::Float64
-    y::Float64
-    z::Float64
-    w::Float64
-end
-
-# See example in https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
-function irreciprocalmesh(
-    cell::Cell,
-    mesh,
-    symprec = 1e-5;
-    is_shift = falses(3),
-    is_time_reversal = false,
-    cartesian = false,
-    ir_only = true,
-)
-    @assert length(mesh) == length(is_shift) == 3
-    mesh, is_shift = collect(mesh), collect(is_shift)
-    _, grid, mapping = ir_reciprocal_mesh(
-        mesh,
-        is_shift,
-        is_time_reversal,
-        Matrix{Float64}(cell.lattice.data),
-        Matrix{Float64}(transpose(hcat(cell.positions...))),
-        _numbers(cell.atoms),
-        length(cell.atoms),
-        symprec,
-    )
-    shift = is_shift ./ 2  # true / 2 = 0.5, false / 2 = 0
-    weights = counter(mapping)
-    mesh_crystal = map(ir_only ? unique(mapping) : mapping) do i
-        x, y, z = (grid[:, i+1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
-        weight = weights[i]  # Should use `i` not `i + 1`!
-        SpecialPoint(x, y, z, weight)
-    end
-    if cartesian
-        mat = reciprocal(cell.lattice)
-        return map(mesh_crystal) do k
-            SpecialPoint(mat * k[1:3]..., k.w)
-        end
-    else
-        return mesh_crystal
-    end
-end # function irreciprocalmesh
+include("reciprocal.jl")
 
 """
     SeitzOperator(m::AbstractMatrix)
