@@ -6,11 +6,11 @@ DocMeta.setdocmeta!(Crystallography, :DocTestSetup, :(using Crystallography); re
 makedocs(;
     modules=[Crystallography],
     authors="Qi Zhang <singularitti@outlook.com>",
-    repo="https://github.com/singularitti/Crystallography.jl/blob/{commit}{path}#{line}",
+    repo="https://github.com/MineralsCloud/Crystallography.jl/blob/{commit}{path}#{line}",
     sitename="Crystallography.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://singularitti.github.io/Crystallography.jl",
+        canonical="https://mineralscloud.github.io/Crystallography.jl",
         assets=String[],
     ),
     pages=[
@@ -24,5 +24,5 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/singularitti/Crystallography.jl",
+    repo="github.com/MineralsCloud/Crystallography.jl",
 )
