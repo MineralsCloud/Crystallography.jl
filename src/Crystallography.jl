@@ -189,5 +189,6 @@ Base.eltype(::Lattice{T}) where {T} = T
 
 include("Arithmetics.jl")
 include("Symmetry.jl")
+include("transform.jl")
 
 end # module
