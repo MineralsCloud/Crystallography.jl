@@ -1,5 +1,3 @@
-module Arithmetics
-
 using CoordinateTransformations: IdentityTransformation
 using LinearAlgebra: I, cross, det, dot, norm
 using Spglib: Cell, basis_vectors
@@ -206,5 +204,3 @@ Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:ReciprocalSpace} 
 
 LinearAlgebra.dot(a::AbstractVector, g::MetricTensor, b::AbstractVector) = a' * g.data * b
 LinearAlgebra.norm(a::AbstractVector, g::MetricTensor) = sqrt(dot(a, g, a))
-
-end

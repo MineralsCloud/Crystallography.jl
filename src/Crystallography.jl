@@ -23,7 +23,7 @@ Base.length(::Lattice) = 9  # Number of elements
 Base.getindex(A::Lattice, i::Integer, j::Integer) = getindex(A.data, i, j)
 Base.eltype(::Lattice{T}) where {T} = T
 
-include("Arithmetics.jl")
+include("arithmetics.jl")
 include("Symmetry.jl")
 include("transform.jl")
 
