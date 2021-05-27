@@ -1,8 +1,4 @@
-export RealSpace, ReciprocalSpace
 
-abstract type AbstractSpace end
-struct RealSpace <: AbstractSpace end
-struct ReciprocalSpace <: AbstractSpace end
 
 """
     cellvolume(a, b, c, α, β, γ)

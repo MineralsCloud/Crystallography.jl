@@ -1,4 +1,9 @@
-export Miller, MillerBravais, @m_str, @mb_str
+export Miller, MillerBravais, RealSpace, ReciprocalSpace
+export @m_str, @mb_str
+
+abstract type AbstractSpace end
+struct RealSpace <: AbstractSpace end
+struct ReciprocalSpace <: AbstractSpace end
 
 struct Miller{S<:AbstractSpace} <: AbstractVector{Int}
     data::SVector{3,Int}
