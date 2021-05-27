@@ -2,7 +2,13 @@ using CoordinateTransformations: IdentityTransformation
 using LinearAlgebra: I
 
 export FractionalFromCartesian,
-    CartesianFromFractional, FractionalToCartesian, CartesianToFractional
+    CartesianFromFractional,
+    FractionalToCartesian,
+    CartesianToFractional,
+    StandardizedFromPrimitive,
+    PrimitiveFromStandardized,
+    PrimitiveToStandardized,
+    StandardizedToPrimitive
 
 struct CartesianFromFractional
     tf::SMatrix{3,3}
