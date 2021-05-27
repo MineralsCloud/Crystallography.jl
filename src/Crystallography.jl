@@ -135,7 +135,7 @@ function crystalsystem(x::CellParameters)
             α == β == 90 || β == γ == 90 || α == γ == 90 ? Monoclinic() : Triclinic()
         end
     end
-end # function crystalsystem
+end
 function crystalsystem(lattice::Lattice)
     v1, v2, v3 = basis_vectors(lattice)
     a, b, c = norm(v1), norm(v2), norm(v3)
@@ -143,7 +143,7 @@ function crystalsystem(lattice::Lattice)
     β = acos(dot(v2, v3) / b / c)
     α = acos(dot(v1, v3) / a / c)
     return crystalsystem(CellParameters(a, b, c, α, β, γ))
-end # function crystalsystem
+end
 
 """
     supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
@@ -153,7 +153,7 @@ Allow the supercell to be a tilted extension of `cell`.
 function supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
     @assert(det(expansion) != 0, "matrix `expansion` cannot be a singular integer matrix!")
     return expansion * cell
-end # function supercell
+end
 """
     supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
 
@@ -162,7 +162,7 @@ Return a supercell based on `cell` and expansion coefficients.
 function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
     @assert length(expansion) == 3
     return supercell(cell, Diagonal(expansion))
-end # function supercell
+end
 
 """
     cellvolume(p::CellParameters)
@@ -191,4 +191,4 @@ include("Arithmetics.jl")
 include("Symmetry.jl")
 include("transform.jl")
 
-end # module
+end

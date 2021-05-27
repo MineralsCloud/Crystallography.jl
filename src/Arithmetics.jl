@@ -77,7 +77,7 @@ function _indices_str(r::Regex, s::AbstractString, ::Type{T}) where {T<:INDICES}
             error("not a valid expression!")
         end
     end
-end # function _indices_str
+end
 
 macro m_str(s)
     r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
@@ -111,7 +111,7 @@ function CartesianFromCrystal(cp::CellParameters)
             0 0 v/(a*b*x)
         ],
     )
-end # function CartesianFromCrystal
+end
 function CrystalFromCartesian(cp::CellParameters)  # This is wrong
     a, b, c, α, β, γ = cp
     v = cellvolume(cp)
@@ -123,7 +123,7 @@ function CrystalFromCartesian(cp::CellParameters)  # This is wrong
             0 0 a*b*x/v
         ],
     )
-end # function CrystalFromCartesian
+end
 
 # This is a helper function and should not be exported!
 _F(α, β, γ) = cos(α) * cos(β) - cos(γ)
@@ -150,13 +150,13 @@ function Crystallography.Lattice(cp::CellParameters)
     a2 = [0, b * sin(α), b * cos(α)]
     a3 = [0, 0, c]
     return Lattice(a1, a2, a3)
-end # function Lattice
+end
 
 function reciprocal(lattice::Lattice)
     volume = cellvolume(lattice)
     a1, a2, a3 = basis_vectors(lattice)
     return 1 / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
-end # function reciprocal
+end
 
 directioncosine(a::AbstractVector, g::MetricTensor, b::AbstractVector) =
     dot(a, g, b) / (norm(a, g) * norm(b, g))
@@ -197,10 +197,10 @@ function Base.convert(::Type{CellParameters}, g::MetricTensor)
     a, b, c = map(sqrt, (a2, b2, c2))
     γ, β, α = acos(ab / (a * b)), acos(ac / (a * c)), acos(bc / (b * c))
     return CellParameters(a, b, c, α, β, γ)
-end # function Base.convert
+end
 Base.convert(::Type{Lattice}, g::MetricTensor) = Lattice(convert(CellParameters, g))
 
 LinearAlgebra.dot(a::AbstractVector, g::MetricTensor, b::AbstractVector) = a' * g.data * b
 LinearAlgebra.norm(a::AbstractVector, g::MetricTensor) = sqrt(dot(a, g, a))
 
-end # module Arithmetics
+end
