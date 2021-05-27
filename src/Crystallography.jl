@@ -160,7 +160,7 @@ function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
 end
 
 """
-    cellvolume(p::CellParameters)
+    cellvolume(a, b, c, α, β, γ)
 
 Calculates the cell volume from 6 cell parameters.
 """
