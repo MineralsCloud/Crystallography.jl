@@ -84,7 +84,7 @@ const PrimitiveHexagonal = Bravais{Hexagonal,Primitive}
 const RCenteredHexagonal = Bravais{Hexagonal,RhombohedralCentering}
 
 struct Lattice{T}
-    data::SMatrix{3,3,T}
+    data::SMatrix{3,3,T,9}
 end
 Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
 Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) = Lattice(hcat(a, b, c))

@@ -102,7 +102,7 @@ end
 Construct a `SeitzOperator` from a 4×4 matrix.
 """
 struct SeitzOperator{T}
-    data::SMatrix{4,4,T}
+    data::SMatrix{4,4,T,16}
 end
 SeitzOperator(m::AbstractMatrix) = SeitzOperator(SMatrix{4,4}(m))
 function SeitzOperator(l::LinearMap)
