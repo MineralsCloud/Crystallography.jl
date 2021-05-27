@@ -78,7 +78,7 @@ function PointSymmetryPower(::RotationAxis{N}, M::Int) where {N}
     else  # Until M < N
         PointSymmetryPower{RotationAxis{N},M}()
     end
-end # function PointSymmetryPower
+end
 
 function symmetrytype(trace, determinant)
     return Dict(
@@ -93,7 +93,7 @@ function symmetrytype(trace, determinant)
         (-1, -1) => RotoInversion(4),
         (-2, -1) => RotoInversion(6),
     )[(trace, determinant)]
-end # function symmetrytype
+end
 symmetrytype(op::PointSymmetry) = symmetrytype(tr(op), det(op))
 
 # These are helper methods and should not be exported!
@@ -127,7 +127,7 @@ function SeitzOperator(t::Translation)
     x = diagm(ones(eltype(v), 4))
     x[1:3, 4] = v
     return SeitzOperator(x)
-end # function TranslationOperator
+end
 """
     SeitzOperator(l::LinearMap, t::Translation)
     SeitzOperator(a::AffineMap)
@@ -176,7 +176,7 @@ function istranslation(op::SeitzOperator)
         return false
     end
     return true
-end # function istranslation
+end
 
 function ispointsymmetry(op::SeitzOperator)
     m = op.data
@@ -189,7 +189,7 @@ function ispointsymmetry(op::SeitzOperator)
         return false
     end
     return true
-end # function ispointsymmetry
+end
 
 """
     genpath(nodes, densities)
@@ -247,7 +247,7 @@ function genpath(nodes, densities)
             ),
         )
     end
-end # function genpath
+end
 genpath(nodes, density::Integer, iscircular::Bool = false) =
     genpath(nodes, (density for _ in 1:(length(nodes)-(iscircular ? 0 : 1))))
 
@@ -275,11 +275,11 @@ Base.:∘(a::SeitzOperator, b::SeitzOperator) = SeitzOperator(a.data * b.data)
 function Base.convert(::Type{Translation}, op::SeitzOperator)
     @assert(istranslation(op), "operator is not a translation!")
     return Translation(collect(op.data[1:3, 4]))
-end # function Base.convert
+end
 function Base.convert(::Type{LinearMap}, op::SeitzOperator)
     @assert(ispointsymmetry(op), "operator is not a point symmetry!")
     return LinearMap(collect(op.data[1:3, 1:3]))
-end # function Base.convert
+end
 
 LinearAlgebra.tr(::Identity) = 3
 LinearAlgebra.tr(::RotationAxis) where {N} = N - 3  # 2, 3, 4
@@ -290,4 +290,4 @@ LinearAlgebra.det(::Union{Identity,RotationAxis}) = 1
 LinearAlgebra.det(::Inversion) = -1
 LinearAlgebra.det(::RotoInversion) = -1
 
-end # module Symmetry
+end
