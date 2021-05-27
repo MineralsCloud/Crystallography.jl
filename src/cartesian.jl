@@ -23,13 +23,9 @@ end
 struct FractionalFromCartesian
     m::SMatrix{3,3}
 end
-for T in (:CartesianFromFractional, :FractionalFromCartesian)
-    eval(quote
-        $T(lattice::Lattice) = $T(convert(Matrix{eltype(lattice)}, lattice))
-    end)
-end
 # This requires the a-vector is parallel to the Cartesian x-axis.
 # See https://en.wikipedia.org/wiki/Fractional_coordinates
+CartesianFromFractional(lattice::Lattice) = CartesianFromFractional(lattice.data)
 function CartesianFromFractional(a, b, c, α, β, γ)
     Ω = cellvolume(a, b, c, α, β, γ)
     b_sinγ, b_cosγ = b .* sincos(γ)
@@ -41,6 +37,7 @@ function CartesianFromFractional(a, b, c, α, β, γ)
         ],
     )
 end
+FractionalFromCartesian(lattice::Lattice) = FractionalFromCartesian(inv(lattice.data))
 function FractionalFromCartesian(a, b, c, α, β, γ)
     Ω = cellvolume(a, b, c, α, β, γ)
     b_sinγ = b * sin(γ)
@@ -58,8 +55,7 @@ const CartesianToFractional = FractionalFromCartesian
 # This is a helper function and should not be exported!
 _auxiliary(α, β, γ) = (cos(α) - cos(β) * cos(γ)) / sin(γ)
 
-(x::CartesianFromFractional)(v::AbstractVector) = x.m * v
-(x::FractionalFromCartesian)(v::AbstractVector) = inv(x.m) * v
+(x::Union{CartesianFromFractional,FractionalFromCartesian})(v) = x.m * collect(v)
 
 Base.inv(x::FractionalFromCartesian) = CartesianFromFractional(inv(x.m))
 Base.inv(x::CartesianFromFractional) = FractionalFromCartesian(inv(x.m))
