@@ -18,10 +18,10 @@ struct Fractional{T} <: Coordinates{T}
 end
 
 struct CartesianFromFractional
-    m::SMatrix{3,3}
+    tf::SMatrix{3,3}
 end
 struct FractionalFromCartesian
-    m::SMatrix{3,3}
+    tf::SMatrix{3,3}
 end
 # This requires the a-vector is parallel to the Cartesian x-axis.
 # See https://en.wikipedia.org/wiki/Fractional_coordinates
@@ -55,9 +55,9 @@ const CartesianToFractional = FractionalFromCartesian
 # This is a helper function and should not be exported!
 _auxiliary(α, β, γ) = (cos(α) - cos(β) * cos(γ)) / sin(γ)
 
-(x::Union{CartesianFromFractional,FractionalFromCartesian})(v) = x.m * collect(v)
+(x::Union{CartesianFromFractional,FractionalFromCartesian})(v) = x.tf * collect(v)
 
-Base.inv(x::FractionalFromCartesian) = CartesianFromFractional(inv(x.m))
-Base.inv(x::CartesianFromFractional) = FractionalFromCartesian(inv(x.m))
+Base.inv(x::FractionalFromCartesian) = CartesianFromFractional(inv(x.tf))
+Base.inv(x::CartesianFromFractional) = FractionalFromCartesian(inv(x.tf))
 Base.:∘(x::FractionalFromCartesian, y::CartesianFromFractional) =
-    x.m * y.m ≈ I ? IdentityTransformation() : error("undefined!")
+    x.tf * y.tf ≈ I ? IdentityTransformation() : error("undefined!")
