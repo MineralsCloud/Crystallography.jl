@@ -18,7 +18,13 @@ export RealSpace,
     CrystalFromCartesian,
     CartesianFromCrystal
 export directioncosine,
-    directionangle, distance, interplanar_spacing, reciprocal, @m_str, @mb_str
+    directionangle,
+    distance,
+    interplanar_spacing,
+    reciprocal,
+    cellparameters,
+    @m_str,
+    @mb_str
 
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
