@@ -42,7 +42,6 @@ export CrystalSystem,
     PrimitiveHexagonal,
     RCenteredHexagonal,
     Cell,
-    CellParameters,
     Lattice
 export centering, crystalsystem, cellvolume, basis_vectors
 
@@ -102,9 +101,6 @@ const ORTHORHOMBIC = Union{
 }
 const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
 
-const CellParameters = NamedTuple{(:a, :b, :c, :α, :β, :γ)}  # Use as type
-CellParameters(a, b, c, α, β, γ) = CellParameters((a, b, c, α, β, γ))  # Use as constructor
-
 struct Lattice{T}
     data::SMatrix{3,3,T}
 end
@@ -120,8 +116,7 @@ end
 centering(::Bravais{A,B}) where {A,B} = B()
 
 crystalsystem(::Bravais{A,B}) where {A,B} = A()
-function crystalsystem(x::CellParameters)
-    a, b, c, α, β, γ = x
+function crystalsystem(a, b, c, α, β, γ)
     if a == b == c
         if α == β == γ
             α == 90 ? Cubic() : Trigonal()
@@ -142,7 +137,7 @@ function crystalsystem(lattice::Lattice)
     γ = acos(dot(v1, v2) / a / b)
     β = acos(dot(v2, v3) / b / c)
     α = acos(dot(v1, v3) / a / c)
-    return crystalsystem(CellParameters(a, b, c, α, β, γ))
+    return crystalsystem(a, b, c, α, β, γ)
 end
 
 """
@@ -169,10 +164,8 @@ end
 
 Calculates the cell volume from 6 cell parameters.
 """
-function cellvolume(x::CellParameters)
-    a, b, c, α, β, γ = x
-    return a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
-end
+cellvolume(a, b, c, α, β, γ) =
+    a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
 """
     cellvolume(l::Lattice)
     cellvolume(c::Cell)
