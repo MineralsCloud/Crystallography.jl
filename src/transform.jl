@@ -46,6 +46,7 @@ _auxiliary(α, β, γ) = (cos(α) - cos(β) * cos(γ)) / sin(γ)
 
 Base.inv(x::FractionalFromCartesian) = CartesianFromFractional(inv(x.tf))
 Base.inv(x::CartesianFromFractional) = FractionalFromCartesian(inv(x.tf))
+Base.:∘(x::CartesianFromFractional, y::FractionalFromCartesian) = ∘(y, x)
 Base.:∘(x::FractionalFromCartesian, y::CartesianFromFractional) =
     x.tf * y.tf ≈ I ? IdentityTransformation() : error("undefined!")
 
@@ -122,3 +123,6 @@ const STD_PRIM_F = PrimitiveFromStandardized{FaceCentering}([
 
 Base.inv(x::StandardizedFromPrimitive) = PrimitiveFromStandardized(inv(x.tf))
 Base.inv(x::PrimitiveFromStandardized) = StandardizedFromPrimitive(inv(x.tf))
+Base.:∘(x::PrimitiveFromStandardized, y::StandardizedFromPrimitive) = ∘(y, x)
+Base.:∘(x::StandardizedFromPrimitive, y::PrimitiveFromStandardized) =
+    x.tf * y.tf ≈ I ? IdentityTransformation() : error("undefined!")
