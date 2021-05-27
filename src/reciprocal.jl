@@ -1,3 +1,9 @@
+function reciprocal(lattice::Lattice)
+    volume = cellvolume(lattice)
+    a1, a2, a3 = basis_vectors(lattice)
+    return 1 / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
+end
+
 """
     ReciprocalPoint(x, y, z, w)
 

@@ -102,8 +102,6 @@ function _numbers(a::AbstractVector{T}) where {T}
     return Int64[d[v] for v in a]
 end
 
-include("reciprocal.jl")
-
 """
     SeitzOperator(m::AbstractMatrix)
 

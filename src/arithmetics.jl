@@ -59,13 +59,8 @@ function Lattice(a, b, c, α, β, γ)
     return Lattice(a1, a2, a3)
 end
 
-function reciprocal(lattice::Lattice)
-    volume = cellvolume(lattice)
-    a1, a2, a3 = basis_vectors(lattice)
-    return 1 / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
-end
-
 include("metric.jl")
+include("reciprocal.jl")
 
 Base.inv(x::CrystalFromCartesian) = CartesianFromCrystal(inv(x.m))
 Base.inv(x::CartesianFromCrystal) = CrystalFromCartesian(inv(x.m))
