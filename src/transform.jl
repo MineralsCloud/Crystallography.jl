@@ -57,6 +57,8 @@ end
 struct PrimitiveFromStandardized{T<:Centering}
     tf::SMatrix{3,3}
 end
+const PrimitiveToStandardized = StandardizedFromPrimitive
+const StandardizedToPrimitive = PrimitiveFromStandardized
 
 (::StandardizedFromPrimitive{Primitive})(v) = v
 (::PrimitiveFromStandardized{Primitive})(v) = v
