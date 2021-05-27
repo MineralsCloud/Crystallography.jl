@@ -27,31 +27,33 @@ for T in (:CartesianFromCrystal, :CrystalFromCartesian)
         $T(lattice::Lattice) = $T(convert(Matrix{eltype(lattice)}, lattice))
     end)
 end
+# This requires the a-vector is parallel to the Cartesian x-axis.
+# See https://en.wikipedia.org/wiki/Fractional_coordinates
 function CartesianFromCrystal(a, b, c, α, β, γ)
-    v = cellvolume(a, b, c, α, β, γ)
-    x, y = sin(γ), cos(γ)
+    Ω = cellvolume(a, b, c, α, β, γ)
+    b_sinγ, b_cosγ = b .* sincos(γ)
     return CartesianFromCrystal(
         [
-            a b*y -c/x^2*(_F(γ, α, β)+_F(β, α, γ)*y)
-            0 b*x -c*_F(β, α, γ)/x
-            0 0 v/(a*b*x)
+            a b_cosγ c*cos(β)
+            0 b_sinγ c*_auxiliary(α, β, γ)
+            0 0 Ω/(a*b_sinγ)
         ],
     )
 end
-function CrystalFromCartesian(a, b, c, α, β, γ)  # This is wrong
-    v = cellvolume(a, b, c, α, β, γ)
-    x = sin(γ)
+function CrystalFromCartesian(a, b, c, α, β, γ)
+    Ω = cellvolume(a, b, c, α, β, γ)
+    b_sinγ = b * sin(γ)
     return CrystalFromCartesian(
         [
-            1/a -1/(a*tan(γ)) b*c*_F(γ, α, β)/(v*x)
-            0 1/(b*x) a*c*_F(β, γ, α)/(v*x)
-            0 0 a*b*x/v
+            1/a -cot(γ)/a -b*c*_auxiliary(β, α, γ)/Ω
+            0 1/b_sinγ -a*c*_auxiliary(α, β, γ)/Ω
+            0 0 a*b_sinγ/Ω
         ],
     )
 end
 
 # This is a helper function and should not be exported!
-_F(α, β, γ) = cos(α) * cos(β) - cos(γ)
+_auxiliary(α, β, γ) = (cos(α) - cos(β) * cos(γ)) / sin(γ)
 
 (x::CartesianFromCrystal)(v::AbstractVector) = x.m * v
 (x::CrystalFromCartesian)(v::AbstractVector) = inv(x.m) * v
