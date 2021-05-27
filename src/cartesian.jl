@@ -1,7 +1,20 @@
 using CoordinateTransformations: IdentityTransformation
 using LinearAlgebra: I
+using StaticArrays: FieldVector
 
 export CrystalFromCartesian, CartesianFromCrystal
+
+abstract type Coordinates{T} <: FieldVector{3,T} end
+struct Cartesian{T} <: Coordinates{T}
+    x::T
+    y::T
+    z::T
+end
+struct Fractional{T} <: Coordinates{T}
+    x::T
+    y::T
+    z::T
+end
 
 struct CartesianFromCrystal
     m::SMatrix{3,3}
