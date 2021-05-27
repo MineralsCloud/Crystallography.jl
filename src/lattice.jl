@@ -78,7 +78,6 @@ const FaceCenteredOrthorhombic = Bravais{Orthorhombic,FaceCentering}
 const PrimitiveTetragonal = Bravais{Tetragonal,Primitive}
 const BodyCenteredTetragonal = Bravais{Tetragonal,BodyCentering}
 const PrimitiveCubic = Bravais{Cubic,Primitive}
-
 const BodyCenteredCubic = Bravais{Cubic,BodyCentering}
 const FaceCenteredCubic = Bravais{Cubic,FaceCentering}
 const PrimitiveHexagonal = Bravais{Hexagonal,Primitive}

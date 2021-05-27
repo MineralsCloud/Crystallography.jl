@@ -18,13 +18,6 @@ function MetricTensor(a, b, c, α, β, γ)
     return MetricTensor(SHermitianCompact(SVector(a^2, g12, g13, b^2, g23, c^2)))
 end
 
-"""
-    cellvolume(g::MetricTensor)
-
-Calculates the cell volume from a `MetricTensor`.
-"""
-cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
-
 Lattice(g::MetricTensor) = Lattice(cellparameters(g))
 
 function cellparameters(g::MetricTensor)
