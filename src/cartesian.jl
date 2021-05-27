@@ -2,7 +2,7 @@ using CoordinateTransformations: IdentityTransformation
 using LinearAlgebra: I
 using StaticArrays: FieldVector
 
-export CrystalFromCartesian, CartesianFromCrystal
+export CrystalFromCartesian, CartesianFromCrystal, CrystalToCartesian, CartesianToCrystal
 
 abstract type Coordinates{T} <: FieldVector{3,T} end
 struct Cartesian{T} <: Coordinates{T}
@@ -51,6 +51,8 @@ function CrystalFromCartesian(a, b, c, α, β, γ)
         ],
     )
 end
+const CrystalToCartesian = CartesianFromCrystal
+const CartesianToCrystal = CrystalFromCartesian
 
 # This is a helper function and should not be exported!
 _auxiliary(α, β, γ) = (cos(α) - cos(β) * cos(γ)) / sin(γ)
