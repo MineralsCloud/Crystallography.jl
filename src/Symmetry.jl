@@ -1,13 +1,12 @@
 module Symmetry
 
 using CoordinateTransformations: AffineMap, Translation, LinearMap
-using Spglib: Cell, get_symmetry, get_spacegroup_type
-using LinearAlgebra: I, diagm, det, tr
-using StaticArrays: SVector, SMatrix, SDiagonal, FieldVector
+using LinearAlgebra: I, diagm
+using StaticArrays: SVector, SMatrix, SDiagonal
 
 using Crystallography
 
-import LinearAlgebra
+import LinearAlgebra: det, tr
 
 export SeitzOperator,
     symmetrytype,
@@ -273,13 +272,13 @@ function Base.convert(::Type{LinearMap}, op::SeitzOperator)
     return LinearMap(collect(op.data[1:3, 1:3]))
 end
 
-LinearAlgebra.tr(::Identity) = 3
-LinearAlgebra.tr(::RotationAxis) where {N} = N - 3  # 2, 3, 4
-LinearAlgebra.tr(::RotationAxis{6}) = 2
-LinearAlgebra.tr(::Inversion) = -3
-LinearAlgebra.tr(::RotoInversion{N}) where {N} = -tr(RotationAxis(N))
-LinearAlgebra.det(::Union{Identity,RotationAxis}) = 1
-LinearAlgebra.det(::Inversion) = -1
-LinearAlgebra.det(::RotoInversion) = -1
+tr(::Identity) = 3
+tr(::RotationAxis) where {N} = N - 3  # 2, 3, 4
+tr(::RotationAxis{6}) = 2
+tr(::Inversion) = -3
+tr(::RotoInversion{N}) where {N} = -tr(RotationAxis(N))
+det(::Union{Identity,RotationAxis}) = 1
+det(::Inversion) = -1
+det(::RotoInversion) = -1
 
 end
