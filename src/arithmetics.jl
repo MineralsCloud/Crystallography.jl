@@ -62,19 +62,6 @@ _F(α, β, γ) = cos(α) * cos(β) - cos(γ)
 (x::CartesianFromCrystal)(v::AbstractVector) = x.m * v
 (x::CrystalFromCartesian)(v::AbstractVector) = inv(x.m) * v
 
-function Lattice(a, b, c, α, β, γ)
-    # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
-    v = cellvolume(1, 1, 1, α, β, γ)
-    # reciprocal lattice
-    a_recip = sin(α) / (a * v)
-    csg = (cos(α) * cos(β) - cos(γ)) / (sin(α) * sin(β))
-    sg = sqrt(1 - csg^2)
-    a1 = [1 / a_recip, -csg / sg / a_recip, cos(β) * a]
-    a2 = [0, b * sin(α), b * cos(α)]
-    a3 = [0, 0, c]
-    return Lattice(a1, a2, a3)
-end
-
 include("metric.jl")
 include("reciprocal.jl")
 
