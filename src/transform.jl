@@ -51,19 +51,19 @@ Base.:∘(x::FractionalFromCartesian, y::CartesianFromFractional) =
 
 # Idea from https://spglib.github.io/spglib/definition.html#transformation-to-the-primitive-cell
 struct StandardizedFromPrimitive{T<:Centering}
-    transformation::SMatrix{3,3}
+    tf::SMatrix{3,3}
 end
 struct PrimitiveFromStandardized{T<:Centering}
-    transformation::SMatrix{3,3}
+    tf::SMatrix{3,3}
 end
 
 (::StandardizedFromPrimitive{Primitive})(x) = x
-(x::StandardizedFromPrimitive)(lattice::Lattice) = Lattice(lattice.data * x.transformation)
-(x::StandardizedFromPrimitive)(coord::AbstractVector) = inv(x.transformation) * coord
+(x::StandardizedFromPrimitive)(lattice::Lattice) = Lattice(lattice.data * x.tf)
+(x::StandardizedFromPrimitive)(coord::AbstractVector) = inv(x.tf) * coord
 
 (::PrimitiveFromStandardized{Primitive})(x) = x
-(x::PrimitiveFromStandardized)(lattice::Lattice) = Lattice(lattice.data * x.transformation)
-(x::PrimitiveFromStandardized)(coord::AbstractVector) = inv(x.transformation) * coord
+(x::PrimitiveFromStandardized)(lattice::Lattice) = Lattice(lattice.data * x.tf)
+(x::PrimitiveFromStandardized)(coord::AbstractVector) = inv(x.tf) * coord
 
 const PRIM_STD_A = StandardizedFromPrimitive{ACentering}([
     1 0 0
@@ -120,5 +120,5 @@ const STD_PRIM_F = PrimitiveFromStandardized{FaceCentering}([
     1 1 -1
 ])
 
-Base.inv(x::StandardizedFromPrimitive) = PrimitiveFromStandardized(inv(x.transformation))
-Base.inv(x::PrimitiveFromStandardized) = StandardizedFromPrimitive(inv(x.transformation))
+Base.inv(x::StandardizedFromPrimitive) = PrimitiveFromStandardized(inv(x.tf))
+Base.inv(x::PrimitiveFromStandardized) = StandardizedFromPrimitive(inv(x.tf))
