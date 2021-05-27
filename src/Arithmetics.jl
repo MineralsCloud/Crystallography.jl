@@ -30,7 +30,7 @@ end
 MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
 function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
     vecs = (v1, v2, v3)
-    return MetricTensor([dot(vecs[i], vecs[j]) for i in 1:3, j in 1:3])
+    return MetricTensor([dot(vecs[i], vecs[j]) for i = 1:3, j = 1:3])
 end
 function MetricTensor(x::CellParameters)
     a, b, c, α, β, γ = x
@@ -85,7 +85,8 @@ macro m_str(s)
 end
 
 macro mb_str(s)
-    r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
+    r =
+        r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
     _indices_str(r, s, MillerBravais)
 end
 

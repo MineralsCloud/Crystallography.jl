@@ -1,19 +1,24 @@
 using Crystallography
 using Documenter
 
-DocMeta.setdocmeta!(Crystallography, :DocTestSetup, :(using Crystallography); recursive=true)
+DocMeta.setdocmeta!(
+    Crystallography,
+    :DocTestSetup,
+    :(using Crystallography);
+    recursive = true,
+)
 
 makedocs(;
-    modules=[Crystallography],
-    authors="Qi Zhang <singularitti@outlook.com>",
-    repo="https://github.com/MineralsCloud/Crystallography.jl/blob/{commit}{path}#{line}",
-    sitename="Crystallography.jl",
-    format=Documenter.HTML(;
-        prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://mineralscloud.github.io/Crystallography.jl",
-        assets=String[],
+    modules = [Crystallography],
+    authors = "Qi Zhang <singularitti@outlook.com>",
+    repo = "https://github.com/MineralsCloud/Crystallography.jl/blob/{commit}{path}#{line}",
+    sitename = "Crystallography.jl",
+    format = Documenter.HTML(;
+        prettyurls = get(ENV, "CI", "false") == "true",
+        canonical = "https://mineralscloud.github.io/Crystallography.jl",
+        assets = String[],
     ),
-    pages=[
+    pages = [
         "Home" => "index.md",
         "Manual" => Any["Installation"=>"install.md", "Development"=>"develop.md"],
         "API by modules" => Any[
@@ -23,6 +28,4 @@ makedocs(;
     ],
 )
 
-deploydocs(;
-    repo="github.com/MineralsCloud/Crystallography.jl",
-)
+deploydocs(; repo = "github.com/MineralsCloud/Crystallography.jl")
