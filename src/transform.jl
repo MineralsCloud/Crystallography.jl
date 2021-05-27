@@ -10,12 +10,14 @@ export FractionalFromCartesian,
     PrimitiveToStandardized,
     StandardizedToPrimitive
 
-struct CartesianFromFractional
-    tf::SMatrix{3,3}
+struct CartesianFromFractional{T}
+    tf::SMatrix{3,3,T,9}
 end
-struct FractionalFromCartesian
-    tf::SMatrix{3,3}
+struct FractionalFromCartesian{T}
+    tf::SMatrix{3,3,T,9}
 end
+CartesianFromFractional(tf::AbstractMatrix) = CartesianFromFractional{eltype(tf)}(tf)
+FractionalFromCartesian(tf::AbstractMatrix) = FractionalFromCartesian{eltype(tf)}(tf)
 # This requires the a-vector is parallel to the Cartesian x-axis.
 # See https://en.wikipedia.org/wiki/Fractional_coordinates
 CartesianFromFractional(lattice::Lattice) = CartesianFromFractional(lattice.data)
@@ -57,12 +59,16 @@ Base.:∘(x::FractionalFromCartesian, y::CartesianFromFractional) =
     x.tf * y.tf ≈ I ? IdentityTransformation() : error("undefined!")
 
 # Idea from https://spglib.github.io/spglib/definition.html#transformation-to-the-primitive-cell
-struct StandardizedFromPrimitive{T<:Centering}
-    tf::SMatrix{3,3}
+struct StandardizedFromPrimitive{C<:Centering,T}
+    tf::SMatrix{3,3,T,9}
 end
-struct PrimitiveFromStandardized{T<:Centering}
-    tf::SMatrix{3,3}
+struct PrimitiveFromStandardized{C<:Centering,T}
+    tf::SMatrix{3,3,T,9}
 end
+PrimitiveFromStandardized{C}(tf::AbstractMatrix) where {C} =
+    PrimitiveFromStandardized{C,eltype(tf)}(tf)
+StandardizedFromPrimitive{C}(tf::AbstractMatrix) where {C} =
+    StandardizedFromPrimitive{C,eltype(tf)}(tf)
 const PrimitiveToStandardized = StandardizedFromPrimitive
 const StandardizedToPrimitive = PrimitiveFromStandardized
 
