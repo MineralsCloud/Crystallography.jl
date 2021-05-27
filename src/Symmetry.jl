@@ -1,8 +1,7 @@
 module Symmetry
 
 using CoordinateTransformations: AffineMap, Translation, LinearMap
-using Counters: counter
-using Spglib: Cell, get_symmetry, get_spacegroup_type, get_ir_reciprocal_mesh
+using Spglib: Cell, get_symmetry, get_spacegroup_type
 using LinearAlgebra: I, diagm, det, tr
 using StaticArrays: SVector, SMatrix, SDiagonal, FieldVector
 
@@ -11,11 +10,7 @@ using Crystallography
 import LinearAlgebra
 
 export SeitzOperator,
-    ReciprocalPoint,
     symmetrytype,
-    reciprocal_mesh,
-    coordinates,
-    weights,
     isidentity,
     istranslation,
     ispointsymmetry,

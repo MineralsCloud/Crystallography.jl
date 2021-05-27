@@ -1,3 +1,7 @@
+using StaticArrays: SHermitianCompact
+
+import LinearAlgebra: dot, norm
+
 export MetricTensor
 export directioncosine, directionangle, distance, interplanar_spacing, cellparameters
 
