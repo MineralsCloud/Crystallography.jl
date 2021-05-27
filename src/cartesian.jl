@@ -1,21 +1,8 @@
 using CoordinateTransformations: IdentityTransformation
 using LinearAlgebra: I
-using StaticArrays: FieldVector
 
 export FractionalFromCartesian,
     CartesianFromFractional, FractionalToCartesian, CartesianToFractional
-
-abstract type Coordinates{T} <: FieldVector{3,T} end
-struct Cartesian{T} <: Coordinates{T}
-    x::T
-    y::T
-    z::T
-end
-struct Fractional{T} <: Coordinates{T}
-    x::T
-    y::T
-    z::T
-end
 
 struct CartesianFromFractional
     tf::SMatrix{3,3}
