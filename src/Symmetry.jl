@@ -7,7 +7,6 @@ using LinearAlgebra: I, diagm, det, tr
 using StaticArrays: SVector, SMatrix, SDiagonal, FieldVector
 
 using Crystallography
-using Crystallography.Arithmetics: reciprocal
 
 import LinearAlgebra
 

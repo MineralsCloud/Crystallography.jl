@@ -1,10 +1,3 @@
-using LinearAlgebra: Diagonal, det, dot, norm
-using Spglib: Cell
-using StaticArrays: SVector, SMatrix
-using Unitful: AbstractQuantity, ustrip, unit
-
-import Spglib: basis_vectors
-
 export CrystalSystem,
     Triclinic,
     Monoclinic,

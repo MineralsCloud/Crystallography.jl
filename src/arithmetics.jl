@@ -1,13 +1,3 @@
-using CoordinateTransformations: IdentityTransformation
-using LinearAlgebra: I, cross, det, dot, norm
-using Spglib: Cell, basis_vectors
-using StaticArrays: SVector, SMatrix, SHermitianCompact
-
-using Crystallography: Lattice, cellvolume
-
-import LinearAlgebra
-import Crystallography
-
 export RealSpace,
     ReciprocalSpace,
     MetricTensor,
@@ -138,9 +128,9 @@ _F(α, β, γ) = cos(α) * cos(β) - cos(γ)
 
 Calculates the cell volume from a `MetricTensor`.
 """
-Crystallography.cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
+cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
 
-function Crystallography.Lattice(a, b, c, α, β, γ)
+function Lattice(a, b, c, α, β, γ)
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
     v = cellvolume(1, 1, 1, α, β, γ)
     # reciprocal lattice
@@ -152,7 +142,7 @@ function Crystallography.Lattice(a, b, c, α, β, γ)
     a3 = [0, 0, c]
     return Lattice(a1, a2, a3)
 end
-Crystallography.Lattice(g::MetricTensor) = Lattice(cellparameters(g))
+Lattice(g::MetricTensor) = Lattice(cellparameters(g))
 
 function cellparameters(g::MetricTensor)
     data = g.data
@@ -202,5 +192,5 @@ Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:RealSpace} =
 Base.convert(::Type{MillerBravais{T}}, m::Miller{T}) where {T<:ReciprocalSpace} =
     MillerBravais{T}(m[1], m[2], -(m[1] + m[2]), m[3])
 
-LinearAlgebra.dot(a::AbstractVector, g::MetricTensor, b::AbstractVector) = a' * g.data * b
-LinearAlgebra.norm(a::AbstractVector, g::MetricTensor) = sqrt(dot(a, g, a))
+dot(a::AbstractVector, g::MetricTensor, b::AbstractVector) = a' * g.data * b
+norm(a::AbstractVector, g::MetricTensor) = sqrt(dot(a, g, a))
