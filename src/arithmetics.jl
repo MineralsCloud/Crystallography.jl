@@ -1,25 +1,8 @@
-export RealSpace, ReciprocalSpace, MetricTensor, CrystalFromCartesian, CartesianFromCrystal
-export directioncosine,
-    directionangle, distance, interplanar_spacing, reciprocal, cellparameters
+export RealSpace, ReciprocalSpace, CrystalFromCartesian, CartesianFromCrystal
 
 abstract type AbstractSpace end
 struct RealSpace <: AbstractSpace end
 struct ReciprocalSpace <: AbstractSpace end
-
-struct MetricTensor{T} <: AbstractMatrix{T}
-    data::SHermitianCompact{3,T}
-end
-MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
-function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
-    vecs = (v1, v2, v3)
-    return MetricTensor([dot(vecs[i], vecs[j]) for i in 1:3, j in 1:3])
-end
-function MetricTensor(a, b, c, α, β, γ)
-    g12 = a * b * cos(γ)
-    g13 = a * c * cos(β)
-    g23 = b * c * cos(α)
-    return MetricTensor(SHermitianCompact(SVector(a^2, g12, g13, b^2, g23, c^2)))
-end
 
 include("miller.jl")
 
@@ -63,13 +46,6 @@ _F(α, β, γ) = cos(α) * cos(β) - cos(γ)
 (x::CartesianFromCrystal)(v::AbstractVector) = x.m * v
 (x::CrystalFromCartesian)(v::AbstractVector) = inv(x.m) * v
 
-"""
-    cellvolume(g::MetricTensor)
-
-Calculates the cell volume from a `MetricTensor`.
-"""
-cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
-
 function Lattice(a, b, c, α, β, γ)
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
     v = cellvolume(1, 1, 1, α, β, γ)
@@ -82,16 +58,6 @@ function Lattice(a, b, c, α, β, γ)
     a3 = [0, 0, c]
     return Lattice(a1, a2, a3)
 end
-Lattice(g::MetricTensor) = Lattice(cellparameters(g))
-
-function cellparameters(g::MetricTensor)
-    data = g.data
-    a2, b2, c2, ab, ac, bc =
-        data[1, 1], data[2, 2], data[3, 3], data[1, 2], data[1, 3], data[2, 3]
-    a, b, c = map(sqrt, (a2, b2, c2))
-    γ, β, α = acos(ab / (a * b)), acos(ac / (a * c)), acos(bc / (b * c))
-    return a, b, c, α, β, γ
-end
 
 function reciprocal(lattice::Lattice)
     volume = cellvolume(lattice)
@@ -99,25 +65,9 @@ function reciprocal(lattice::Lattice)
     return 1 / volume * [cross(a2, a3) cross(a3, a1) cross(a1, a2)]
 end
 
-directioncosine(a::AbstractVector, g::MetricTensor, b::AbstractVector) =
-    dot(a, g, b) / (norm(a, g) * norm(b, g))
+include("metric.jl")
 
-directionangle(a::AbstractVector, g::MetricTensor, b::AbstractVector) =
-    acos(directioncosine(a, g, b))
-
-distance(a::AbstractVector, g::MetricTensor, b::AbstractVector) = norm(b - a, g)
-
-interplanar_spacing(a::AbstractVector, g::MetricTensor) = 1 / norm(a, g)
-
-Base.size(::MetricTensor) = (3, 3)
-
-Base.getindex(A::MetricTensor, I::Vararg{Int}) = getindex(A.data, I...)
-
-Base.inv(g::MetricTensor) = MetricTensor(inv(g.data))
 Base.inv(x::CrystalFromCartesian) = CartesianFromCrystal(inv(x.m))
 Base.inv(x::CartesianFromCrystal) = CrystalFromCartesian(inv(x.m))
 Base.:∘(x::CrystalFromCartesian, y::CartesianFromCrystal) =
     x.m * y.m ≈ I ? IdentityTransformation() : error("undefined!")
-
-dot(a::AbstractVector, g::MetricTensor, b::AbstractVector) = a' * g.data * b
-norm(a::AbstractVector, g::MetricTensor) = sqrt(dot(a, g, a))
