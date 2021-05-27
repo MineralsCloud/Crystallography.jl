@@ -90,17 +90,6 @@ const FaceCenteredCubic = Bravais{Cubic,FaceCentering}
 const PrimitiveHexagonal = Bravais{Hexagonal,Primitive}
 const RCenteredHexagonal = Bravais{Hexagonal,RhombohedralCentering}
 
-const TETRAGONAL = Union{PrimitiveTetragonal,BodyCenteredTetragonal}
-const CUBIC = Union{PrimitiveCubic,BodyCenteredCubic,FaceCenteredCubic}
-const ORTHORHOMBIC = Union{
-    PrimitiveOrthorhombic,
-    BCenteredOrthorhombic,
-    CCenteredOrthorhombic,
-    BodyCenteredOrthorhombic,
-    FaceCenteredOrthorhombic,
-}
-const MONOCLINIC = Union{PrimitiveMonoclinic,BCenteredMonoclinic,CCenteredMonoclinic}
-
 struct Lattice{T}
     data::SMatrix{3,3,T}
 end
