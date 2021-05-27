@@ -153,6 +153,7 @@ function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
     @assert length(expansion) == 3
     return supercell(cell, Diagonal(expansion))
 end
+function supercell(cell::Cell, expansion) end
 
 Base.size(::Lattice) = (3, 3)
 Base.length(::Lattice) = 9  # Number of elements
