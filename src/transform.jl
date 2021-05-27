@@ -58,13 +58,9 @@ struct PrimitiveFromStandardized{T<:Centering}
     tf::SMatrix{3,3}
 end
 
-(::StandardizedFromPrimitive{Primitive})(x) = x
-(x::StandardizedFromPrimitive)(lattice::Lattice) = Lattice(lattice.data * x.tf)
-(x::StandardizedFromPrimitive)(coord::AbstractVector) = inv(x.tf) * coord
-
-(::PrimitiveFromStandardized{Primitive})(x) = x
-(x::PrimitiveFromStandardized)(lattice::Lattice) = Lattice(lattice.data * x.tf)
-(x::PrimitiveFromStandardized)(coord::AbstractVector) = inv(x.tf) * coord
+(::StandardizedFromPrimitive{Primitive})(v) = v
+(::PrimitiveFromStandardized{Primitive})(v) = v
+(x::Union{StandardizedFromPrimitive,PrimitiveFromStandardized})(v) = x.tf * collect(v)
 
 const PRIM_STD_A = StandardizedFromPrimitive{ACentering}([
     1 0 0
