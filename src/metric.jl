@@ -4,7 +4,7 @@ export MetricTensor
 export directioncosine, directionangle, distance, interplanar_spacing, cellparameters
 
 struct MetricTensor{T} <: AbstractMatrix{T}
-    data::SHermitianCompact{3,T}
+    data::SHermitianCompact{3,T,6}
 end
 MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
 function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
