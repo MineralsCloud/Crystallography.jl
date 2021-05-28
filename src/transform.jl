@@ -70,56 +70,52 @@ const StandardizedToPrimitive = PrimitiveFromStandardized
 
 (x::Union{StandardizedFromPrimitive,PrimitiveFromStandardized})(v) = inv(x.tf) * collect(v)
 
-const PRIM_STD_A = StandardizedFromPrimitive{ACentering}([
+StandardizedFromPrimitive(::ACentering) = StandardizedFromPrimitive([
     1 0 0
     0 1//2 -1//2
     0 1//2 1//2
 ])
-const PRIM_STD_C = StandardizedFromPrimitive{CCentering}([
+StandardizedFromPrimitive(::CCentering) = StandardizedFromPrimitive([
     1//2 1//2 0
     -1//2 1//2 0
     0 0 1
 ])
-const PRIM_STD_R = StandardizedFromPrimitive{RhombohedralCentering}(
-    [
-        2//3 -1//3 -1//3
-        1//3 1//3 -2//3
-        1//3 1//3 1//3
-    ],
-)
-const PRIM_STD_I = StandardizedFromPrimitive{BodyCentering}(
-    [
-        -1//2 1//2 1//2
-        1//2 -1//2 1//2
-        1//2 1//2 -1//2
-    ],
-)
-const PRIM_STD_F = StandardizedFromPrimitive{FaceCentering}([
+StandardizedFromPrimitive(::RhombohedralCentering) = StandardizedFromPrimitive([
+    2//3 -1//3 -1//3
+    1//3 1//3 -2//3
+    1//3 1//3 1//3
+])
+StandardizedFromPrimitive(::BodyCentering) = StandardizedFromPrimitive([
+    -1//2 1//2 1//2
+    1//2 -1//2 1//2
+    1//2 1//2 -1//2
+])
+StandardizedFromPrimitive(::FaceCentering) = StandardizedFromPrimitive([
     0 1//2 1//2
     1//2 0 1//2
     1//2 1//2 0
 ])
-const STD_PRIM_A = PrimitiveFromStandardized{ACentering}([
+PrimitiveFromStandardized(::ACentering) = PrimitiveFromStandardized([
     1 0 0
     0 1 1
     0 -1 1
 ])
-const STD_PRIM_C = PrimitiveFromStandardized{CCentering}([
+PrimitiveFromStandardized(::CCentering) = PrimitiveFromStandardized([
     1 -1 0
     1 1 0
     0 0 1
 ])
-const STD_PRIM_R = PrimitiveFromStandardized{RhombohedralCentering}([
+PrimitiveFromStandardized(::RhombohedralCentering) = PrimitiveFromStandardized([
     1 0 1
     -1 1 1
     0 -1 1
 ])
-const STD_PRIM_I = PrimitiveFromStandardized{BodyCentering}([
+PrimitiveFromStandardized(::BodyCentering) = PrimitiveFromStandardized([
     0 1 1
     1 0 1
     1 1 0
 ])
-const STD_PRIM_F = PrimitiveFromStandardized{FaceCentering}([
+PrimitiveFromStandardized(::FaceCentering) = PrimitiveFromStandardized([
     -1 1 1
     1 -1 1
     1 1 -1
