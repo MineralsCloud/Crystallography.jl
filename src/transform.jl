@@ -57,16 +57,14 @@ Base.:∘(x::FractionalFromCartesian, y::CartesianFromFractional) =
     x.tf * y.tf ≈ I ? IdentityTransformation() : error("undefined!")
 
 # Idea from https://spglib.github.io/spglib/definition.html#transformation-to-the-primitive-cell
-struct StandardizedFromPrimitive{C<:Centering,T}
+struct StandardizedFromPrimitive{T} <: Transformation
     tf::SMatrix{3,3,T,9}
 end
-struct PrimitiveFromStandardized{C<:Centering,T}
+struct PrimitiveFromStandardized{T} <: Transformation
     tf::SMatrix{3,3,T,9}
 end
-PrimitiveFromStandardized{C}(tf::AbstractMatrix) where {C} =
-    PrimitiveFromStandardized{C,eltype(tf)}(tf)
-StandardizedFromPrimitive{C}(tf::AbstractMatrix) where {C} =
-    StandardizedFromPrimitive{C,eltype(tf)}(tf)
+PrimitiveFromStandardized(tf::AbstractMatrix) = PrimitiveFromStandardized{eltype(tf)}(tf)
+StandardizedFromPrimitive(tf::AbstractMatrix) = StandardizedFromPrimitive{eltype(tf)}(tf)
 const PrimitiveToStandardized = StandardizedFromPrimitive
 const StandardizedToPrimitive = PrimitiveFromStandardized
 
