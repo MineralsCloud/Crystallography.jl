@@ -1,8 +1,3 @@
-using Crystallography
-using Crystallography.Symmetry
-
-using Test
-
 @testset "Test rutile structure" begin
     lattice = [
         4 0 0

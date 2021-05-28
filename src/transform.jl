@@ -136,3 +136,24 @@ Base.inv(x::PrimitiveFromStandardized) = StandardizedFromPrimitive(inv(x.tf))
 Base.:∘(x::PrimitiveFromStandardized, y::StandardizedFromPrimitive) = ∘(y, x)
 Base.:∘(x::StandardizedFromPrimitive, y::PrimitiveFromStandardized) =
     x.tf * y.tf ≈ I ? IdentityTransformation() : error("undefined!")
+
+function Base.show(
+    io::IO,
+    x::Union{
+        CartesianFromFractional,
+        FractionalFromCartesian,
+        StandardizedFromPrimitive,
+        PrimitiveFromStandardized,
+    },
+)
+    if get(io, :compact, false)
+        print(io, string(typeof(x)), '(')
+        print(io, x.tf, ')')
+    else
+        println(io, string(nameof(typeof(x))))
+        for row in eachrow(x.tf)
+            print(io, " ")
+            println(io, row)
+        end
+    end
+end
