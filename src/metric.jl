@@ -12,19 +12,19 @@ function MetricTensor(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::Abstract
     return MetricTensor([dot(vecs[i], vecs[j]) for i in 1:3, j in 1:3])
 end
 function MetricTensor(a, b, c, α, β, γ)
-    g12 = a * b * cos(γ)
-    g13 = a * c * cos(β)
-    g23 = b * c * cos(α)
-    return MetricTensor(SHermitianCompact(SVector(a^2, g12, g13, b^2, g23, c^2)))
+    g₁₂ = a * b * cos(γ)
+    g₁₃ = a * c * cos(β)
+    g₂₃ = b * c * cos(α)
+    return MetricTensor(SHermitianCompact(SVector(a^2, g₁₂, g₁₃, b^2, g₂₃, c^2)))
 end
 
 Lattice(g::MetricTensor) = Lattice(cellparameters(g))
 
 function cellparameters(g::MetricTensor)
     data = g.data
-    a2, b2, c2, ab, ac, bc =
+    a², b², c², ab, ac, bc =
         data[1, 1], data[2, 2], data[3, 3], data[1, 2], data[1, 3], data[2, 3]
-    a, b, c = map(sqrt, (a2, b2, c2))
+    a, b, c = map(sqrt, (a², b², c²))
     γ, β, α = acos(ab / (a * b)), acos(ac / (a * c)), acos(bc / (b * c))
     return a, b, c, α, β, γ
 end
@@ -41,7 +41,7 @@ interplanar_spacing(𝐚::AbstractVector, g::MetricTensor) = 1 / norm(𝐚, g)
 
 Base.size(::MetricTensor) = (3, 3)
 
-Base.getindex(A::MetricTensor, I::Vararg{Int}) = getindex(A.data, I...)
+Base.getindex(g::MetricTensor, I::Vararg{Int}) = getindex(g.data, I...)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(g.data))
 
