@@ -16,8 +16,6 @@ end
 struct FractionalFromCartesian{T}
     tf::SMatrix{3,3,T,9}
 end
-CartesianFromFractional(tf::AbstractMatrix) = CartesianFromFractional{eltype(tf)}(tf)
-FractionalFromCartesian(tf::AbstractMatrix) = FractionalFromCartesian{eltype(tf)}(tf)
 # This requires the a-vector is parallel to the Cartesian x-axis.
 # See https://en.wikipedia.org/wiki/Fractional_coordinates
 CartesianFromFractional(lattice::Lattice) = CartesianFromFractional(lattice.data)
