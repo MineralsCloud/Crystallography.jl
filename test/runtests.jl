@@ -2,6 +2,10 @@ using Crystallography
 using Test
 
 @testset "Crystallography.jl" begin
-    include("Crystallography.jl")
+    using Crystallography
+    using Test
+    include("miller.jl")
+    include("metric.jl")
+    include("transform.jl")
     include("Symmetry.jl")
 end
