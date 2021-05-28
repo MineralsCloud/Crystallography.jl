@@ -1,3 +1,4 @@
+using LinearAlgebra: dot, norm
 using SymPy: symbols
 
 @testset "Test length in a hexagonal lattice" begin
