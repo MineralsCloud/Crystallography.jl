@@ -1,4 +1,4 @@
-using CoordinateTransformations: IdentityTransformation
+using CoordinateTransformations: IdentityTransformation, Transformation
 using LinearAlgebra: I
 
 export FractionalFromCartesian,
@@ -10,10 +10,10 @@ export FractionalFromCartesian,
     PrimitiveToStandardized,
     StandardizedToPrimitive
 
-struct CartesianFromFractional{T}
+struct CartesianFromFractional{T} <: Transformation
     tf::SMatrix{3,3,T,9}
 end
-struct FractionalFromCartesian{T}
+struct FractionalFromCartesian{T} <: Transformation
     tf::SMatrix{3,3,T,9}
 end
 # This requires the a-vector is parallel to the Cartesian x-axis.
