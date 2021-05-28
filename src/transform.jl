@@ -68,9 +68,7 @@ StandardizedFromPrimitive(tf::AbstractMatrix) = StandardizedFromPrimitive{eltype
 const PrimitiveToStandardized = StandardizedFromPrimitive
 const StandardizedToPrimitive = PrimitiveFromStandardized
 
-(::StandardizedFromPrimitive{Primitive})(v) = v
-(::PrimitiveFromStandardized{Primitive})(v) = v
-(x::Union{StandardizedFromPrimitive,PrimitiveFromStandardized})(v) = x.tf * collect(v)
+(x::Union{StandardizedFromPrimitive,PrimitiveFromStandardized})(v) = inv(x.tf) * collect(v)
 
 const PRIM_STD_A = StandardizedFromPrimitive{ACentering}([
     1 0 0
