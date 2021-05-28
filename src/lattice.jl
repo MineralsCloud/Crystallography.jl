@@ -87,7 +87,7 @@ struct Lattice{T}
     data::SMatrix{3,3,T,9}
 end
 Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
-Lattice(a::AbstractVector, b::AbstractVector, c::AbstractVector) = Lattice(hcat(a, b, c))
+Lattice(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector) = Lattice(hcat(𝐚, 𝐛, 𝐜))
 Lattice(x::Lattice) = x
 function Lattice(a, b, c, α, β, γ)
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
@@ -126,11 +126,11 @@ function crystalsystem(a, b, c, α, β, γ)
     end
 end
 function crystalsystem(lattice::Lattice)
-    v1, v2, v3 = basis_vectors(lattice)
-    a, b, c = norm(v1), norm(v2), norm(v3)
-    γ = acos(dot(v1, v2) / a / b)
-    β = acos(dot(v2, v3) / b / c)
-    α = acos(dot(v1, v3) / a / c)
+    𝐚, 𝐛, 𝐜 = basis_vectors(lattice)
+    a, b, c = norm(𝐚), norm(𝐛), norm(𝐜)
+    γ = acos(dot(𝐚, 𝐛) / a / b)
+    β = acos(dot(𝐛, 𝐜) / b / c)
+    α = acos(dot(𝐚, 𝐜) / a / c)
     return crystalsystem(a, b, c, α, β, γ)
 end
 

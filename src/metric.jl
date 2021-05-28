@@ -7,8 +7,8 @@ struct MetricTensor{T} <: AbstractMatrix{T}
     data::SHermitianCompact{3,T,6}
 end
 MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
-function MetricTensor(v1::AbstractVector, v2::AbstractVector, v3::AbstractVector)
-    vecs = (v1, v2, v3)
+function MetricTensor(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector)
+    vecs = (𝐚, 𝐛, 𝐜)
     return MetricTensor([dot(vecs[i], vecs[j]) for i in 1:3, j in 1:3])
 end
 function MetricTensor(a, b, c, α, β, γ)
@@ -29,15 +29,15 @@ function cellparameters(g::MetricTensor)
     return a, b, c, α, β, γ
 end
 
-directioncosine(a::AbstractVector, g::MetricTensor, b::AbstractVector) =
-    dot(a, g, b) / (norm(a, g) * norm(b, g))
+directioncosine(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector) =
+    dot(𝐚, g, 𝐛) / (norm(𝐚, g) * norm(𝐛, g))
 
-directionangle(a::AbstractVector, g::MetricTensor, b::AbstractVector) =
-    acos(directioncosine(a, g, b))
+directionangle(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector) =
+    acos(directioncosine(𝐚, g, 𝐛))
 
-distance(a::AbstractVector, g::MetricTensor, b::AbstractVector) = norm(b - a, g)
+distance(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector) = norm(𝐛 - 𝐚, g)
 
-interplanar_spacing(a::AbstractVector, g::MetricTensor) = 1 / norm(a, g)
+interplanar_spacing(𝐚::AbstractVector, g::MetricTensor) = 1 / norm(𝐚, g)
 
 Base.size(::MetricTensor) = (3, 3)
 
@@ -45,5 +45,5 @@ Base.getindex(A::MetricTensor, I::Vararg{Int}) = getindex(A.data, I...)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(g.data))
 
-dot(a::AbstractVector, g::MetricTensor, b::AbstractVector) = a' * g.data * b
-norm(a::AbstractVector, g::MetricTensor) = sqrt(dot(a, g, a))
+dot(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector) = 𝐚' * g.data * 𝐛
+norm(𝐚::AbstractVector, g::MetricTensor) = sqrt(dot(𝐚, g, 𝐚))
