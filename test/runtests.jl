@@ -7,5 +7,5 @@ using Test
     include("miller.jl")
     include("metric.jl")
     include("transform.jl")
-    include("Symmetry.jl")
+    include("reciprocal.jl")
 end
