@@ -1,4 +1,4 @@
-using CoordinateTransformations: IdentityTransformation
+using CoordinateTransformations: IdentityTransformation, Transformation
 using LinearAlgebra: I
 
 export FractionalFromCartesian,
@@ -10,14 +10,12 @@ export FractionalFromCartesian,
     PrimitiveToStandardized,
     StandardizedToPrimitive
 
-struct CartesianFromFractional{T}
+struct CartesianFromFractional{T} <: Transformation
     tf::SMatrix{3,3,T,9}
 end
-struct FractionalFromCartesian{T}
+struct FractionalFromCartesian{T} <: Transformation
     tf::SMatrix{3,3,T,9}
 end
-CartesianFromFractional(tf::AbstractMatrix) = CartesianFromFractional{eltype(tf)}(tf)
-FractionalFromCartesian(tf::AbstractMatrix) = FractionalFromCartesian{eltype(tf)}(tf)
 # This requires the a-vector is parallel to the Cartesian x-axis.
 # See https://en.wikipedia.org/wiki/Fractional_coordinates
 CartesianFromFractional(lattice::Lattice) = CartesianFromFractional(lattice.data)
@@ -59,73 +57,65 @@ Base.:∘(x::FractionalFromCartesian, y::CartesianFromFractional) =
     x.tf * y.tf ≈ I ? IdentityTransformation() : error("undefined!")
 
 # Idea from https://spglib.github.io/spglib/definition.html#transformation-to-the-primitive-cell
-struct StandardizedFromPrimitive{C<:Centering,T}
+struct StandardizedFromPrimitive{T} <: Transformation
     tf::SMatrix{3,3,T,9}
 end
-struct PrimitiveFromStandardized{C<:Centering,T}
+struct PrimitiveFromStandardized{T} <: Transformation
     tf::SMatrix{3,3,T,9}
 end
-PrimitiveFromStandardized{C}(tf::AbstractMatrix) where {C} =
-    PrimitiveFromStandardized{C,eltype(tf)}(tf)
-StandardizedFromPrimitive{C}(tf::AbstractMatrix) where {C} =
-    StandardizedFromPrimitive{C,eltype(tf)}(tf)
+PrimitiveFromStandardized(tf::AbstractMatrix) = PrimitiveFromStandardized{eltype(tf)}(tf)
+StandardizedFromPrimitive(tf::AbstractMatrix) = StandardizedFromPrimitive{eltype(tf)}(tf)
 const PrimitiveToStandardized = StandardizedFromPrimitive
 const StandardizedToPrimitive = PrimitiveFromStandardized
 
-(::StandardizedFromPrimitive{Primitive})(v) = v
-(::PrimitiveFromStandardized{Primitive})(v) = v
-(x::Union{StandardizedFromPrimitive,PrimitiveFromStandardized})(v) = x.tf * collect(v)
+(x::Union{StandardizedFromPrimitive,PrimitiveFromStandardized})(v) = inv(x.tf) * collect(v)
 
-const PRIM_STD_A = StandardizedFromPrimitive{ACentering}([
+StandardizedFromPrimitive(::ACentering) = StandardizedFromPrimitive([
     1 0 0
     0 1//2 -1//2
     0 1//2 1//2
 ])
-const PRIM_STD_C = StandardizedFromPrimitive{CCentering}([
+StandardizedFromPrimitive(::CCentering) = StandardizedFromPrimitive([
     1//2 1//2 0
     -1//2 1//2 0
     0 0 1
 ])
-const PRIM_STD_R = StandardizedFromPrimitive{RhombohedralCentering}(
-    [
-        2//3 -1//3 -1//3
-        1//3 1//3 -2//3
-        1//3 1//3 1//3
-    ],
-)
-const PRIM_STD_I = StandardizedFromPrimitive{BodyCentering}(
-    [
-        -1//2 1//2 1//2
-        1//2 -1//2 1//2
-        1//2 1//2 -1//2
-    ],
-)
-const PRIM_STD_F = StandardizedFromPrimitive{FaceCentering}([
+StandardizedFromPrimitive(::RhombohedralCentering) = StandardizedFromPrimitive([
+    2//3 -1//3 -1//3
+    1//3 1//3 -2//3
+    1//3 1//3 1//3
+])
+StandardizedFromPrimitive(::BodyCentering) = StandardizedFromPrimitive([
+    -1//2 1//2 1//2
+    1//2 -1//2 1//2
+    1//2 1//2 -1//2
+])
+StandardizedFromPrimitive(::FaceCentering) = StandardizedFromPrimitive([
     0 1//2 1//2
     1//2 0 1//2
     1//2 1//2 0
 ])
-const STD_PRIM_A = PrimitiveFromStandardized{ACentering}([
+PrimitiveFromStandardized(::ACentering) = PrimitiveFromStandardized([
     1 0 0
     0 1 1
     0 -1 1
 ])
-const STD_PRIM_C = PrimitiveFromStandardized{CCentering}([
+PrimitiveFromStandardized(::CCentering) = PrimitiveFromStandardized([
     1 -1 0
     1 1 0
     0 0 1
 ])
-const STD_PRIM_R = PrimitiveFromStandardized{RhombohedralCentering}([
+PrimitiveFromStandardized(::RhombohedralCentering) = PrimitiveFromStandardized([
     1 0 1
     -1 1 1
     0 -1 1
 ])
-const STD_PRIM_I = PrimitiveFromStandardized{BodyCentering}([
+PrimitiveFromStandardized(::BodyCentering) = PrimitiveFromStandardized([
     0 1 1
     1 0 1
     1 1 0
 ])
-const STD_PRIM_F = PrimitiveFromStandardized{FaceCentering}([
+PrimitiveFromStandardized(::FaceCentering) = PrimitiveFromStandardized([
     -1 1 1
     1 -1 1
     1 1 -1
