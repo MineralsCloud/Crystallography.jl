@@ -1,15 +1,15 @@
 @testset "Test constructors" begin
-    @test_throws TypeError MillerIndices{Int,Int}
-    @test_throws TypeError MillerBravaisIndices{Int,Int}
-    @test_throws TypeError MillerIndices{Int}(1, 2, 3)
-    @test_throws TypeError MillerBravaisIndices{Int}(1, 2, 3, 4)
-    @test_throws TypeError MillerIndices{Int}([1, 2, 3])
-    @test_throws TypeError MillerBravaisIndices{Int}([1, 2, 3, 4])
-    @test_throws TypeError MillerIndices{Int}((1, 2, 3))
-    @test_throws TypeError MillerBravaisIndices{Int}((1, 2, 3, 4))
+    @test_throws TypeError Miller{Int,Int}
+    @test_throws TypeError MillerBravais{Int,Int}
+    @test_throws TypeError Miller{Int}(1, 2, 3)
+    @test_throws TypeError MillerBravais{Int}(1, 2, 3, 4)
+    @test_throws TypeError Miller{Int}([1, 2, 3])
+    @test_throws TypeError MillerBravais{Int}([1, 2, 3, 4])
+    @test_throws TypeError Miller{Int}((1, 2, 3))
+    @test_throws TypeError MillerBravais{Int}((1, 2, 3, 4))
 end
 
-@testset "Test conversion between real `MillerIndices` and `MillerBravaisIndices`" begin
+@testset "Test conversion between real `Miller` and `MillerBravais`" begin
     millerreal = [[1, 1, 1], [-1, 0, 1], [0, -1, 1], [-1, -1, 1], [1, 0, 1], [0, 1, 1]]
     millerbravaisreal = [
         [1, 1, -2, 3],
@@ -20,22 +20,22 @@ end
         [-1, 2, -1, 3],
     ]
     for (x, y) in zip(millerreal, millerbravaisreal)
-        m = MillerIndices{RealSpace}(x)
-        mb = MillerBravaisIndices{RealSpace}(y)
-        @test convert(MillerBravaisIndices{RealSpace}, m) == mb
-        @test convert(MillerIndices{RealSpace}, mb) == m
-        @test convert(MillerIndices{RealSpace}, m) == m
-        @test convert(MillerBravaisIndices{RealSpace}, mb) == mb
-        @test_throws MethodError convert(MillerIndices{ReciprocalSpace}, m)
-        @test_throws MethodError convert(MillerBravaisIndices{ReciprocalSpace}, mb)
-        @test_throws MethodError convert(MillerBravaisIndices{ReciprocalSpace}, m)
-        @test_throws MethodError convert(MillerIndices{ReciprocalSpace}, mb)
-        @test_throws MethodError convert(MillerBravaisIndices, m)
-        @test_throws MethodError convert(MillerIndices, mb)
+        m = Miller{RealSpace}(x)
+        mb = MillerBravais{RealSpace}(y)
+        @test convert(MillerBravais{RealSpace}, m) == mb
+        @test convert(Miller{RealSpace}, mb) == m
+        @test convert(Miller{RealSpace}, m) == m
+        @test convert(MillerBravais{RealSpace}, mb) == mb
+        @test_throws MethodError convert(Miller{ReciprocalSpace}, m)
+        @test_throws MethodError convert(MillerBravais{ReciprocalSpace}, mb)
+        @test_throws MethodError convert(MillerBravais{ReciprocalSpace}, m)
+        @test_throws MethodError convert(Miller{ReciprocalSpace}, mb)
+        @test_throws MethodError convert(MillerBravais, m)
+        @test_throws MethodError convert(Miller, mb)
     end
 end
 
-@testset "Test conversion between reciprocal `MillerIndices` and `MillerBravaisIndices`" begin
+@testset "Test conversion between reciprocal `Miller` and `MillerBravais`" begin
     millerreciprocal =
         [[1, 0, 0], [0, 1, 0], [1, -1, 0], [-1, 0, 0], [0, -1, 0], [-1, 1, 0]]
     millerbravaisreciprocal = [
@@ -47,17 +47,17 @@ end
         [-1, 1, 0, 0],
     ]
     for (x, y) in zip(millerreciprocal, millerbravaisreciprocal)
-        m = MillerIndices{ReciprocalSpace}(x)
-        mb = MillerBravaisIndices{ReciprocalSpace}(y)
-        @test convert(MillerBravaisIndices{ReciprocalSpace}, m) == mb
-        @test convert(MillerIndices{ReciprocalSpace}, mb) == m
-        @test convert(MillerIndices{ReciprocalSpace}, m) == m
-        @test convert(MillerBravaisIndices{ReciprocalSpace}, mb) == mb
-        @test_throws MethodError convert(MillerIndices{RealSpace}, m)
-        @test_throws MethodError convert(MillerBravaisIndices{RealSpace}, mb)
-        @test_throws MethodError convert(MillerBravaisIndices{RealSpace}, m)
-        @test_throws MethodError convert(MillerIndices{RealSpace}, mb)
-        @test_throws MethodError convert(MillerBravaisIndices, m)
-        @test_throws MethodError convert(MillerIndices, mb)
+        m = Miller{ReciprocalSpace}(x)
+        mb = MillerBravais{ReciprocalSpace}(y)
+        @test convert(MillerBravais{ReciprocalSpace}, m) == mb
+        @test convert(Miller{ReciprocalSpace}, mb) == m
+        @test convert(Miller{ReciprocalSpace}, m) == m
+        @test convert(MillerBravais{ReciprocalSpace}, mb) == mb
+        @test_throws MethodError convert(Miller{RealSpace}, m)
+        @test_throws MethodError convert(MillerBravais{RealSpace}, mb)
+        @test_throws MethodError convert(MillerBravais{RealSpace}, m)
+        @test_throws MethodError convert(Miller{RealSpace}, mb)
+        @test_throws MethodError convert(MillerBravais, m)
+        @test_throws MethodError convert(Miller, mb)
     end
 end
