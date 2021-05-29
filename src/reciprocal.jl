@@ -10,14 +10,16 @@ end
 function ReciprocalLattice(lattice::Lattice)
     Ω = cellvolume(lattice)
     𝐚, 𝐛, 𝐜 = basis_vectors(lattice)
-    return ReciprocalLattice(1 / Ω * [cross(𝐛, 𝐜) cross(𝐜, 𝐚) cross(𝐚, 𝐛)]')
+    return ReciprocalLattice(
+        inv(Ω) * transpose(hcat(cross(𝐛, 𝐜), cross(𝐜, 𝐚), cross(𝐚, 𝐛))),
+    )
 end
 
 Base.inv(lattice::Lattice) = ReciprocalLattice(lattice)
 function Base.inv(lattice::ReciprocalLattice)
     Ω⁻¹ = cellvolume(lattice)
     𝐚⁻¹, 𝐛⁻¹, 𝐜⁻¹ = basis_vectors(lattice)
-    return Lattice(1 / Ω⁻¹ * [cross(𝐛⁻¹, 𝐜⁻¹) cross(𝐜⁻¹, 𝐚⁻¹) cross(𝐚⁻¹, 𝐛⁻¹)])
+    return Lattice(inv(Ω⁻¹) * hcat(cross(𝐛⁻¹, 𝐜⁻¹), cross(𝐜⁻¹, 𝐚⁻¹), cross(𝐚⁻¹, 𝐛⁻¹)))
 end
 
 basis_vectors(lattice::ReciprocalLattice) = lattice[1, :], lattice[2, :], lattice[3, :]
