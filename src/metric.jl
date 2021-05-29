@@ -9,7 +9,7 @@ end
 MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
 function MetricTensor(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector)
     vecs = (𝐚, 𝐛, 𝐜)
-    return MetricTensor([dot(vecs[i], vecs[j]) for i in 1:3, j in 1:3])
+    return MetricTensor([dot(vᵢ, vⱼ) for vᵢ in vecs, vⱼ in vecs])
 end
 function MetricTensor(a, b, c, α, β, γ)
     g₁₂ = a * b * cos(γ)
@@ -21,9 +21,7 @@ end
 Lattice(g::MetricTensor) = Lattice(cellparameters(g))
 
 function cellparameters(g::MetricTensor)
-    data = g.data
-    a², b², c², ab, ac, bc =
-        data[1, 1], data[2, 2], data[3, 3], data[1, 2], data[1, 3], data[2, 3]
+    a², b², c², ab, ac, bc = g[1, 1], g[2, 2], g[3, 3], g[1, 2], g[1, 3], g[2, 3]
     a, b, c = map(sqrt, (a², b², c²))
     γ, β, α = acos(ab / (a * b)), acos(ac / (a * c)), acos(bc / (b * c))
     return a, b, c, α, β, γ
