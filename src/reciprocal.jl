@@ -20,6 +20,8 @@ function Base.inv(lattice::ReciprocalLattice)
     return Lattice(1 / Ω⁻¹ * [cross(𝐛⁻¹, 𝐜⁻¹) cross(𝐜⁻¹, 𝐚⁻¹) cross(𝐚⁻¹, 𝐛⁻¹)])
 end
 
+basis_vectors(lattice::ReciprocalLattice) = lattice[1, :], lattice[2, :], lattice[3, :]
+
 """
     ReciprocalPoint(x, y, z, w)
 
