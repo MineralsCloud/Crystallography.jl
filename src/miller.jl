@@ -58,7 +58,9 @@ end
 Base.size(::Miller) = (3,)
 Base.size(::MillerBravais) = (4,)
 
-Base.getindex(A::Union{Miller,MillerBravais}, i::Int) = getindex(A.data, i)
+Base.IndexStyle(::Type{<:Union{Miller,MillerBravais}}) = IndexLinear()
+
+Base.getindex(x::Union{Miller,MillerBravais}, i::Integer) = getindex(x.data, i)
 
 Base.convert(::Type{T}, x::T) where {T<:INDICES} = x
 Base.convert(::Type{Miller{T}}, mb::MillerBravais{T}) where {T<:RealSpace} =

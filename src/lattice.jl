@@ -154,7 +154,23 @@ function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
 end
 function supercell(cell::Cell, expansion) end
 
-Base.size(::Lattice) = (3, 3)
-Base.length(::Lattice) = 9  # Number of elements
-Base.getindex(A::Lattice, i::Integer, j::Integer) = getindex(A.data, i, j)
+Base.iterate(lattice::Lattice) = iterate(lattice.data)
+Base.iterate(lattice::Lattice, state) = iterate(lattice.data, state)
+
 Base.eltype(::Lattice{T}) where {T} = T
+
+Base.length(::Lattice) = 9
+
+Base.size(::Lattice) = (3, 3)
+Base.size(::Lattice, dim::Integer) = dim <= 2 ? 3 : 1
+
+Base.IteratorSize(::Type{<:Lattice}) = Base.HasShape{2}()
+
+Base.axes(lattice::Lattice, dim::Integer) = axes(lattice.data, dim)
+
+Base.getindex(lattice::Lattice, i) = getindex(lattice.data, i)
+Base.getindex(lattice::Lattice, I::Vararg) = getindex(lattice.data, I...)
+
+Base.firstindex(::Lattice) = 1
+
+Base.lastindex(::Lattice) = 9
