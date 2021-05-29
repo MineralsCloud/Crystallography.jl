@@ -1,3 +1,5 @@
+export cellvolume
+
 """
     cellvolume(a, b, c, α, β, γ)
 
