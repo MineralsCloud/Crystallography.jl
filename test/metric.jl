@@ -23,7 +23,7 @@ end
 end
 
 @testset "Symbolic calculation" begin
-    a, b, c = symbols("a, b, c", positive = true)
-    @test MetricTensor(a, b, c, 90, 90, 120) ==
-          MetricTensor([a^2 -a^2/2 0; -a^2/2 a^2 0; 0 0 c^2])  # Primitive hexagonal
+    a, c = symbols("a, c", positive = true)
+    @test MetricTensor(a, a, c, 90, 90, 120) ==
+          MetricTensor([a^2 -0.5*a^2 0; -0.5*a^2 a^2 0; 0 0 c^2])  # Primitive hexagonal
 end
