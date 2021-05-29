@@ -4,10 +4,20 @@ using Spglib: get_ir_reciprocal_mesh
 
 export ReciprocalPoint, reciprocal_mesh, coordinates, weights
 
-function reciprocal(lattice::Lattice)
-    volume = cellvolume(lattice)
+struct ReciprocalLattice{T}
+    data::SMatrix{3,3,T,9}
+end
+function ReciprocalLattice(lattice::Lattice)
+    Ω = cellvolume(lattice)
     𝐚, 𝐛, 𝐜 = basis_vectors(lattice)
-    return 1 / volume * [cross(𝐛, 𝐜) cross(𝐜, 𝐚) cross(𝐚, 𝐛)]
+    return ReciprocalLattice(1 / Ω * [cross(𝐛, 𝐜) cross(𝐜, 𝐚) cross(𝐚, 𝐛)]')
+end
+
+Base.inv(lattice::Lattice) = ReciprocalLattice(lattice)
+function Base.inv(lattice::ReciprocalLattice)
+    Ω⁻¹ = cellvolume(lattice)
+    𝐚⁻¹, 𝐛⁻¹, 𝐜⁻¹ = basis_vectors(lattice)
+    return Lattice(1 / Ω⁻¹ * [cross(𝐛⁻¹, 𝐜⁻¹) cross(𝐜⁻¹, 𝐚⁻¹) cross(𝐚⁻¹, 𝐛⁻¹)])
 end
 
 """
