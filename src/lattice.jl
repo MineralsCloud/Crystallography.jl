@@ -125,6 +125,12 @@ end
 function crystalsystem(lattice::Lattice)
     𝐚, 𝐛, 𝐜 = basis_vectors(lattice)
     a, b, c = norm(𝐚), norm(𝐛), norm(𝐜)
+    γ, β, α =
+        acos(dot(𝐚, 𝐛) / (a * b)), acos(dot(𝐚, 𝐜) / (a * c)), acos(dot(𝐛, 𝐜) / (b * c))
+    return crystalsystem(a, b, c, α, β, γ)
+end
+    𝐚, 𝐛, 𝐜 = basis_vectors(lattice)
+    a, b, c = norm(𝐚), norm(𝐛), norm(𝐜)
     γ = acos(dot(𝐚, 𝐛) / a / b)
     β = acos(dot(𝐛, 𝐜) / b / c)
     α = acos(dot(𝐚, 𝐜) / a / c)
