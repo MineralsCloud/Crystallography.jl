@@ -93,11 +93,11 @@ function Lattice(a, b, c, α, β, γ)
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
     v = cellvolume(1, 1, 1, α, β, γ)
     # reciprocal lattice
-    a_recip = sin(α) / (a * v)
-    csg = (cos(α) * cos(β) - cos(γ)) / (sin(α) * sin(β))
+    a_recip = sind(α) / (a * v)
+    csg = (cosd(α) * cosd(β) - cosd(γ)) / (sind(α) * sind(β))
     sg = sqrt(1 - csg^2)
-    a1 = [1 / a_recip, -csg / sg / a_recip, cos(β) * a]
-    a2 = [0, b * sin(α), b * cos(α)]
+    a1 = [1 / a_recip, -csg / sg / a_recip, cosd(β) * a]
+    a2 = [0, b * sind(α), b * cosd(α)]
     a3 = [0, 0, c]
     return Lattice(a1, a2, a3)
 end
@@ -128,7 +128,7 @@ function cellparameters(lattice::Lattice)
     𝐚, 𝐛, 𝐜 = basis_vectors(lattice)
     a, b, c = norm(𝐚), norm(𝐛), norm(𝐜)
     γ, β, α =
-        acos(dot(𝐚, 𝐛) / (a * b)), acos(dot(𝐚, 𝐜) / (a * c)), acos(dot(𝐛, 𝐜) / (b * c))
+        acosd(dot(𝐚, 𝐛) / (a * b)), acosd(dot(𝐚, 𝐜) / (a * c)), acosd(dot(𝐛, 𝐜) / (b * c))
     return a, b, c, α, β, γ
 end
 

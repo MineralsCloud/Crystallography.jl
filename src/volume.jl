@@ -4,7 +4,7 @@
 Calculates the cell volume from 6 cell parameters.
 """
 cellvolume(a, b, c, α, β, γ) =
-    a * b * c * sqrt(sin(α)^2 - cos(β)^2 - cos(γ)^2 + 2 * cos(α) * cos(β) * cos(γ))
+    a * b * c * sqrt(sind(α)^2 - cosd(β)^2 - cosd(γ)^2 + 2 * cosd(α) * cosd(β) * cosd(γ))
 """
     cellvolume(l::Lattice)
     cellvolume(c::Cell)
