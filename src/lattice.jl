@@ -37,7 +37,7 @@ export CrystalSystem,
     RCenteredHexagonal,
     Cell,
     Lattice
-export centering, crystalsystem, basis_vectors
+export centering, crystalsystem, basis_vectors, cellparameters
 
 abstract type CrystalSystem end
 struct Triclinic <: CrystalSystem end
@@ -129,12 +129,13 @@ function crystalsystem(lattice::Lattice)
         acos(dot(𝐚, 𝐛) / (a * b)), acos(dot(𝐚, 𝐜) / (a * c)), acos(dot(𝐛, 𝐜) / (b * c))
     return crystalsystem(a, b, c, α, β, γ)
 end
+
+function cellparameters(lattice::Lattice)
     𝐚, 𝐛, 𝐜 = basis_vectors(lattice)
     a, b, c = norm(𝐚), norm(𝐛), norm(𝐜)
-    γ = acos(dot(𝐚, 𝐛) / a / b)
-    β = acos(dot(𝐛, 𝐜) / b / c)
-    α = acos(dot(𝐚, 𝐜) / a / c)
-    return crystalsystem(a, b, c, α, β, γ)
+    γ, β, α =
+        acos(dot(𝐚, 𝐛) / (a * b)), acos(dot(𝐚, 𝐜) / (a * c)), acos(dot(𝐛, 𝐜) / (b * c))
+    return a, b, c, α, β, γ
 end
 
 """
