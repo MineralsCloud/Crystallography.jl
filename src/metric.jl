@@ -1,7 +1,7 @@
 using StaticArrays: SHermitianCompact
 
 export MetricTensor
-export directioncosine, directionangle, distance, interplanar_spacing, cellparameters
+export directioncosine, directionangle, distance, interplanar_spacing
 
 struct MetricTensor{T} <: AbstractMatrix{T}
     data::SHermitianCompact{3,T,6}
