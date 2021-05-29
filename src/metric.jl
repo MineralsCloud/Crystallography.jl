@@ -9,7 +9,7 @@ end
 MetricTensor(m::AbstractMatrix) = MetricTensor(SHermitianCompact{3}(m))
 function MetricTensor(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector)
     vecs = (𝐚, 𝐛, 𝐜)
-    return MetricTensor([dot(vecs[i], vecs[j]) for i in 1:3, j in 1:3])
+    return MetricTensor([dot(vecs[i], vecs[j]) for i = 1:3, j = 1:3])
 end
 function MetricTensor(a, b, c, α, β, γ)
     g₁₂ = a * b * cos(γ)
