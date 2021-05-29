@@ -102,10 +102,7 @@ function Lattice(a, b, c, α, β, γ)
     return Lattice(a1, a2, a3)
 end
 
-function basis_vectors(lattice::Lattice)
-    data = lattice.data
-    return data[:, 1], data[:, 2], data[:, 3]
-end
+basis_vectors(lattice::Lattice) = lattice[:, 1], lattice[:, 2], lattice[:, 3]
 
 centering(::Bravais{A,B}) where {A,B} = B()
 
