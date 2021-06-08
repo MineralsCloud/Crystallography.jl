@@ -86,9 +86,10 @@ const RCenteredHexagonal = Bravais{Hexagonal,RhombohedralCentering}
 struct Lattice{T}
     data::SMatrix{3,3,T,9}
 end
-Lattice(m::AbstractMatrix) = Lattice(SMatrix{3,3}(m))
+Lattice(mat::AbstractMatrix) = Lattice(SMatrix{3,3}(mat))
 Lattice(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector) = Lattice(hcat(𝐚, 𝐛, 𝐜))
-Lattice(x::Lattice) = x
+Lattice(lattice::Lattice) = lattice
+Lattice(cell::Cell) = Lattice(cell.lattice)
 function Lattice(a, b, c, α, β, γ)
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
     v = cellvolume(1, 1, 1, α, β, γ)

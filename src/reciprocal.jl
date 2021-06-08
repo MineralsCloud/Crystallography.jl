@@ -2,13 +2,27 @@ using Counters: counter
 using LinearAlgebra: cross
 using Spglib: get_ir_reciprocal_mesh
 
-export ReciprocalPoint, reciprocal_mesh, coordinates, weights
+export ReciprocalPoint, ReciprocalLattice, reciprocal_mesh, coordinates, weights
 
-function reciprocal(lattice::Lattice)
-    volume = cellvolume(lattice)
-    𝐚, 𝐛, 𝐜 = basis_vectors(lattice)
-    return 1 / volume * [cross(𝐛, 𝐜) cross(𝐜, 𝐚) cross(𝐚, 𝐛)]
+struct ReciprocalLattice{T}
+    data::SMatrix{3,3,T,9}
 end
+function ReciprocalLattice(lattice::Lattice)
+    Ω = cellvolume(lattice)
+    𝐚, 𝐛, 𝐜 = basis_vectors(lattice)
+    return ReciprocalLattice(
+        inv(Ω) * transpose(hcat(cross(𝐛, 𝐜), cross(𝐜, 𝐚), cross(𝐚, 𝐛))),
+    )
+end
+
+Base.inv(lattice::Lattice) = ReciprocalLattice(lattice)
+function Base.inv(lattice::ReciprocalLattice)
+    Ω⁻¹ = cellvolume(lattice)
+    𝐚⁻¹, 𝐛⁻¹, 𝐜⁻¹ = basis_vectors(lattice)
+    return Lattice(inv(Ω⁻¹) * hcat(cross(𝐛⁻¹, 𝐜⁻¹), cross(𝐜⁻¹, 𝐚⁻¹), cross(𝐚⁻¹, 𝐛⁻¹)))
+end
+
+basis_vectors(lattice::ReciprocalLattice) = lattice[1, :], lattice[2, :], lattice[3, :]
 
 """
     ReciprocalPoint(x, y, z, w)
@@ -46,7 +60,7 @@ function reciprocal_mesh(
     total_number = length(mapping)  # Number of all k-points, not only the irreducible ones
     crystal_coord = if ir_only
         map(unique(mapping)) do id
-            x, y, z = (grid[:, id+1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
+            x, y, z = (grid[:, id + 1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
             weight = weights[id] / total_number  # Should use `id` not `id + 1`!
             ReciprocalPoint(x, y, z, weight)
         end
@@ -58,7 +72,7 @@ function reciprocal_mesh(
         end |> vec
     end
     if cartesian
-        mat = reciprocal(Lattice(cell.lattice))'
+        mat = transpose(inv(Lattice(cell.lattice)).data)
         return map(crystal_coord) do point
             ReciprocalPoint(mat * point.coord, point.weight)
         end
@@ -70,3 +84,24 @@ end
 coordinates(arr::AbstractArray{<:ReciprocalPoint}) = map(x -> x.coord, arr)
 
 weights(arr::AbstractArray{<:ReciprocalPoint}) = map(x -> x.weight, arr)
+
+Base.iterate(lattice::ReciprocalLattice) = iterate(lattice.data)
+Base.iterate(lattice::ReciprocalLattice, state) = iterate(lattice.data, state)
+
+Base.eltype(::ReciprocalLattice{T}) where {T} = T
+
+Base.length(::ReciprocalLattice) = 9
+
+Base.size(::ReciprocalLattice) = (3, 3)
+Base.size(::ReciprocalLattice, dim::Integer) = dim <= 2 ? 3 : 1
+
+Base.IteratorSize(::Type{<:ReciprocalLattice}) = Base.HasShape{2}()
+
+Base.axes(lattice::ReciprocalLattice, dim::Integer) = axes(lattice.data, dim)
+
+Base.getindex(lattice::ReciprocalLattice, i) = getindex(lattice.data, i)
+Base.getindex(lattice::ReciprocalLattice, I::Vararg) = getindex(lattice.data, I...)
+
+Base.firstindex(::ReciprocalLattice) = 1
+
+Base.lastindex(::ReciprocalLattice) = 9

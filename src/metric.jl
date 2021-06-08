@@ -35,7 +35,7 @@ directionangle(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector) =
 
 distance(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector) = norm(𝐛 - 𝐚, g)
 
-interplanar_spacing(𝐚::AbstractVector, g::MetricTensor) = 1 / norm(𝐚, g)
+interplanar_spacing(𝐚::AbstractVector, g::MetricTensor) = inv(norm(𝐚, g))
 
 Base.size(::MetricTensor) = (3, 3)
 
