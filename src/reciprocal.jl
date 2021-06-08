@@ -60,7 +60,7 @@ function reciprocal_mesh(
     total_number = length(mapping)  # Number of all k-points, not only the irreducible ones
     crystal_coord = if ir_only
         map(unique(mapping)) do id
-            x, y, z = (grid[:, id + 1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
+            x, y, z = (grid[:, id+1] .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
             weight = weights[id] / total_number  # Should use `id` not `id + 1`!
             ReciprocalPoint(x, y, z, weight)
         end
@@ -72,10 +72,8 @@ function reciprocal_mesh(
         end |> vec
     end
     if cartesian
-        mat = transpose(inv(Lattice(cell.lattice)).data)
-        return map(crystal_coord) do point
-            ReciprocalPoint(mat * point.coord, point.weight)
-        end
+        t = CartesianFromFractional(inv(Lattice(cell)))
+        return map(t, crystal_coord)
     else
         return crystal_coord
     end
