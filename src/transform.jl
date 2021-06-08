@@ -19,6 +19,8 @@ end
 # This requires the a-vector is parallel to the Cartesian x-axis.
 # See https://en.wikipedia.org/wiki/Fractional_coordinates
 CartesianFromFractional(lattice::Lattice) = CartesianFromFractional(lattice.data)
+CartesianFromFractional(lattice::ReciprocalLattice) =
+    CartesianFromFractional(transpose(lattice.data))
 function CartesianFromFractional(a, b, c, α, β, γ)
     Ω = cellvolume(a, b, c, α, β, γ)
     b_sinγ, b_cosγ = b .* (sind(γ), cosd(γ))
@@ -31,6 +33,8 @@ function CartesianFromFractional(a, b, c, α, β, γ)
     )
 end
 FractionalFromCartesian(lattice::Lattice) = FractionalFromCartesian(inv(lattice.data))
+FractionalFromCartesian(lattice::ReciprocalLattice) =
+    FractionalFromCartesian(inv(transpose(lattice.data)))
 function FractionalFromCartesian(a, b, c, α, β, γ)
     Ω = cellvolume(a, b, c, α, β, γ)
     b_sinγ = b * sind(γ)
@@ -49,6 +53,8 @@ const CartesianToFractional = FractionalFromCartesian
 _auxiliary(α, β, γ) = (cosd(α) - cosd(β) * cosd(γ)) / sind(γ)
 
 (x::Union{CartesianFromFractional,FractionalFromCartesian})(v) = x.tf * collect(v)
+(x::Union{CartesianFromFractional,FractionalFromCartesian})(p::ReciprocalPoint) =
+    ReciprocalPoint(x.tf * collect(p.coord), p.weight)
 
 Base.inv(x::FractionalFromCartesian) = CartesianFromFractional(inv(x.tf))
 Base.inv(x::CartesianFromFractional) = FractionalFromCartesian(inv(x.tf))
@@ -69,6 +75,8 @@ const PrimitiveToStandardized = StandardizedFromPrimitive
 const StandardizedToPrimitive = PrimitiveFromStandardized
 
 (x::Union{StandardizedFromPrimitive,PrimitiveFromStandardized})(v) = inv(x.tf) * collect(v)
+(x::PrimitiveFromStandardized)(lattice::Lattice) = Lattice(lattice.data * x.tf)
+(x::StandardizedFromPrimitive)(lattice::Lattice) = Lattice(lattice.data * inv(x.tf))
 
 StandardizedFromPrimitive(::ACentering) = StandardizedFromPrimitive([
     1 0 0
