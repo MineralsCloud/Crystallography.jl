@@ -2,5 +2,8 @@ using CrystallographyBase
 using Test
 
 @testset "CrystallographyBase.jl" begin
-    # Write your tests here.
+    include("miller.jl")
+    include("metric.jl")
+    include("transform.jl")
+    include("reciprocal.jl")
 end
