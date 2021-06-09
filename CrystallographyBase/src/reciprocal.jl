@@ -14,6 +14,7 @@ function ReciprocalLattice(lattice::Lattice)
         inv(Ω) * transpose(hcat(cross(𝐛, 𝐜), cross(𝐜, 𝐚), cross(𝐚, 𝐛))),
     )
 end
+@functor ReciprocalLattice
 
 Base.inv(lattice::Lattice) = ReciprocalLattice(lattice)
 function Base.inv(lattice::ReciprocalLattice)
