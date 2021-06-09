@@ -174,3 +174,14 @@ Base.getindex(lattice::Lattice, I::Vararg) = getindex(lattice.data, I...)
 Base.firstindex(::Lattice) = 1
 
 Base.lastindex(::Lattice) = 9
+
+for op in (:+, :-)
+    @eval Base.broadcast(::typeof($op), lattice::Lattice, number::Number) =
+        Lattice(broadcast($op, lattice.data, number))
+    @eval Base.broadcast(::typeof($op), number::Number, lattice::Lattice) =
+        broadcast($op, lattice, number)
+end
+for op in (:*, :/, ://)
+    @eval Base.$op(lattice::Lattice, number::Number) = Lattice(($op)(lattice.data, number))
+    @eval Base.$op(number::Number, lattice::Lattice) = ($op)(lattice, number)
+end
