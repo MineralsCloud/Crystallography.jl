@@ -17,6 +17,7 @@ function MetricTensor(a, b, c, α, β, γ)
     g₂₃ = b * c * cosd(α)
     return MetricTensor(SHermitianCompact(SVector(a^2, g₁₂, g₁₃, b^2, g₂₃, c^2)))
 end
+@functor MetricTensor
 
 Lattice(g::MetricTensor) = Lattice(cellparameters(g))
 
