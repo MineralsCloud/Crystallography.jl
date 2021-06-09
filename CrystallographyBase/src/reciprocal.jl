@@ -4,7 +4,7 @@ using Spglib: get_ir_reciprocal_mesh
 
 export ReciprocalPoint, ReciprocalLattice, reciprocal_mesh, coordinates, weights
 
-struct ReciprocalLattice{T}
+struct ReciprocalLattice{T} <: AbstractLattice{T}
     data::SMatrix{3,3,T,9}
 end
 function ReciprocalLattice(lattice::Lattice)
@@ -84,24 +84,3 @@ end
 coordinates(arr::AbstractArray{<:ReciprocalPoint}) = map(x -> x.coord, arr)
 
 weights(arr::AbstractArray{<:ReciprocalPoint}) = map(x -> x.weight, arr)
-
-Base.iterate(lattice::ReciprocalLattice) = iterate(lattice.data)
-Base.iterate(lattice::ReciprocalLattice, state) = iterate(lattice.data, state)
-
-Base.eltype(::ReciprocalLattice{T}) where {T} = T
-
-Base.length(::ReciprocalLattice) = 9
-
-Base.size(::ReciprocalLattice) = (3, 3)
-Base.size(::ReciprocalLattice, dim::Integer) = dim <= 2 ? 3 : 1
-
-Base.IteratorSize(::Type{<:ReciprocalLattice}) = Base.HasShape{2}()
-
-Base.axes(lattice::ReciprocalLattice, dim::Integer) = axes(lattice.data, dim)
-
-Base.getindex(lattice::ReciprocalLattice, i) = getindex(lattice.data, i)
-Base.getindex(lattice::ReciprocalLattice, I::Vararg) = getindex(lattice.data, I...)
-
-Base.firstindex(::ReciprocalLattice) = 1
-
-Base.lastindex(::ReciprocalLattice) = 9
