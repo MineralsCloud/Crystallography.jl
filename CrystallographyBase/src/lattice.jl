@@ -188,3 +188,16 @@ for op in (:*, :/, ://)
         Lattice(($op)(lattice.data, number))
     @eval Base.$op(number::Number, lattice::AbstractLattice) = ($op)(lattice, number)
 end
+
+function Base.show(io::IO, x::AbstractLattice)
+    if get(io, :compact, false)
+        print(io, string(typeof(x)), '(')
+        print(io, x.data, ')')
+    else
+        println(io, string(nameof(typeof(x))))
+        for row in eachrow(x.data)
+            print(io, " ")
+            println(io, row)
+        end
+    end
+end
