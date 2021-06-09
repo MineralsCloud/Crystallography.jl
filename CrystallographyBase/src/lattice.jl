@@ -102,6 +102,7 @@ function Lattice(a, b, c, α, β, γ)
     a3 = [0, 0, c]
     return Lattice(a1, a2, a3)
 end
+@functor Lattice
 
 basis_vectors(lattice::Lattice) = lattice[:, 1], lattice[:, 2], lattice[:, 3]
 

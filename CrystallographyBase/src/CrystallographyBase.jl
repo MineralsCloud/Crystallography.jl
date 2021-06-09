@@ -1,5 +1,6 @@
 module CrystallographyBase
 
+using Functors: @functor
 using LinearAlgebra: det
 using StaticArrays: SVector, SMatrix
 
