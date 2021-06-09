@@ -4,7 +4,7 @@ using Spglib: get_ir_reciprocal_mesh
 
 export ReciprocalPoint, ReciprocalLattice, reciprocal_mesh, coordinates, weights
 
-struct ReciprocalLattice{T}
+struct ReciprocalLattice{T} <: AbstractLattice{T}
     data::SMatrix{3,3,T,9}
 end
 function ReciprocalLattice(lattice::Lattice)
