@@ -83,7 +83,9 @@ const FaceCenteredCubic = Bravais{Cubic,FaceCentering}
 const PrimitiveHexagonal = Bravais{Hexagonal,Primitive}
 const RCenteredHexagonal = Bravais{Hexagonal,RhombohedralCentering}
 
-struct Lattice{T}
+abstract type AbstractLattice{T} end
+
+struct Lattice{T} <: AbstractLattice{T}
     data::SMatrix{3,3,T,9}
 end
 Lattice(mat::AbstractMatrix) = Lattice(SMatrix{3,3}(mat))
