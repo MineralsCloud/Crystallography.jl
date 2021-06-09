@@ -156,34 +156,35 @@ function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
 end
 function supercell(cell::Cell, expansion) end
 
-Base.iterate(lattice::Lattice) = iterate(lattice.data)
-Base.iterate(lattice::Lattice, state) = iterate(lattice.data, state)
+Base.iterate(lattice::AbstractLattice) = iterate(lattice.data)
+Base.iterate(lattice::AbstractLattice, state) = iterate(lattice.data, state)
 
-Base.eltype(::Lattice{T}) where {T} = T
+Base.eltype(::AbstractLattice{T}) where {T} = T
 
-Base.length(::Lattice) = 9
+Base.length(::AbstractLattice) = 9
 
-Base.size(::Lattice) = (3, 3)
-Base.size(::Lattice, dim::Integer) = dim <= 2 ? 3 : 1
+Base.size(::AbstractLattice) = (3, 3)
+Base.size(::AbstractLattice, dim::Integer) = dim <= 2 ? 3 : 1
 
-Base.IteratorSize(::Type{<:Lattice}) = Base.HasShape{2}()
+Base.IteratorSize(::Type{<:AbstractLattice}) = Base.HasShape{2}()
 
-Base.axes(lattice::Lattice, dim::Integer) = axes(lattice.data, dim)
+Base.axes(lattice::AbstractLattice, dim::Integer) = axes(lattice.data, dim)
 
-Base.getindex(lattice::Lattice, i) = getindex(lattice.data, i)
-Base.getindex(lattice::Lattice, I::Vararg) = getindex(lattice.data, I...)
+Base.getindex(lattice::AbstractLattice, i) = getindex(lattice.data, i)
+Base.getindex(lattice::AbstractLattice, I::Vararg) = getindex(lattice.data, I...)
 
-Base.firstindex(::Lattice) = 1
+Base.firstindex(::AbstractLattice) = 1
 
-Base.lastindex(::Lattice) = 9
+Base.lastindex(::AbstractLattice) = 9
 
 for op in (:+, :-)
-    @eval Base.broadcast(::typeof($op), lattice::Lattice, number::Number) =
+    @eval Base.broadcast(::typeof($op), lattice::AbstractLattice, number::Number) =
         Lattice(broadcast($op, lattice.data, number))
-    @eval Base.broadcast(::typeof($op), number::Number, lattice::Lattice) =
+    @eval Base.broadcast(::typeof($op), number::Number, lattice::AbstractLattice) =
         broadcast($op, lattice, number)
 end
 for op in (:*, :/, ://)
-    @eval Base.$op(lattice::Lattice, number::Number) = Lattice(($op)(lattice.data, number))
-    @eval Base.$op(number::Number, lattice::Lattice) = ($op)(lattice, number)
+    @eval Base.$op(lattice::AbstractLattice, number::Number) =
+        Lattice(($op)(lattice.data, number))
+    @eval Base.$op(number::Number, lattice::AbstractLattice) = ($op)(lattice, number)
 end
