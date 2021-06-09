@@ -37,6 +37,7 @@ end
 ReciprocalPoint(coord::AbstractVector{T}, weight) where {T} =
     ReciprocalPoint{T}(SVector{3}(coord), weight)
 ReciprocalPoint(x, y, z, w) = ReciprocalPoint(SVector(x, y, z), w)
+@functor ReciprocalPoint (coord,)
 
 # See example in https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
 function reciprocal_mesh(
