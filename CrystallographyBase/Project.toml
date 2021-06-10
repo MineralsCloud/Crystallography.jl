@@ -14,6 +14,7 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 [compat]
 CoordinateTransformations = "0.6"
 Counters = "0.3"
+Functors = "0.2"
 Spglib = "0.1"
 StaticArrays = "1"
 julia = "1"
