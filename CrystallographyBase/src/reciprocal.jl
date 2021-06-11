@@ -67,11 +67,11 @@ function reciprocal_mesh(
             ReciprocalPoint(x, y, z, weight)
         end
     else
-        mapslices(grid; dims = 1) do point
-            x, y, z = (point .+ shift) ./ mesh  # Add 1 because `mapping` index starts from 0
+        map(eachslice(grid; dims = 2)) do point
+            x, y, z = (point .+ shift) ./ mesh
             weight = 1 / total_number
             ReciprocalPoint(x, y, z, weight)
-        end |> vec
+        end
     end
     if cartesian
         t = CartesianFromFractional(inv(Lattice(cell)))
