@@ -1,3 +1,4 @@
+using Compat: eachslice
 using Counters: counter
 using LinearAlgebra: cross
 using Spglib: get_ir_reciprocal_mesh
