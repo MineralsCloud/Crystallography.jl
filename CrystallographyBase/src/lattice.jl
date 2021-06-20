@@ -39,25 +39,94 @@ export CrystalSystem,
     Lattice
 export centering, crystalsystem, basis_vectors, cellparameters
 
+"Represent one of the seven crystal systems."
 abstract type CrystalSystem end
+"""
+    Triclinic()
+
+Represent the triclinic system.
+"""
 struct Triclinic <: CrystalSystem end
+"""
+    Monoclinic()
+
+Represent the monoclinic system.
+"""
 struct Monoclinic <: CrystalSystem end
+"""
+    Orthorhombic()
+
+Represent the orthorhombic system.
+"""
 struct Orthorhombic <: CrystalSystem end
+"""
+    Tetragonal()
+
+Represent the tetragonal system.
+"""
 struct Tetragonal <: CrystalSystem end
+"""
+    Cubic()
+
+Represent the cubic system.
+"""
 struct Cubic <: CrystalSystem end
+"""
+    Trigonal()
+
+Represent the trigonal system.
+"""
 struct Trigonal <: CrystalSystem end
+"""
+    Hexagonal()
+
+Represent the hexagonal system.
+"""
 struct Hexagonal <: CrystalSystem end
 
+"Represent the centering types."
 abstract type Centering end
+"""
+    Primitive()
+
+Represent no centering.
+"""
 struct Primitive <: Centering end
+"""
+    BodyCentering()
+
+Represent the body-centering.
+"""
 struct BodyCentering <: Centering end
+"""
+    FaceCentering()
+
+Represent the face-centering.
+"""
 struct FaceCentering <: Centering end
+"""
+    RhombohedralCentering()
+
+Represent the rhombohedral-centering of the hexagonal system.
+"""
 struct RhombohedralCentering <: Centering end
+"""
+    BaseCentering{:A}()
+    BaseCentering{:B}()
+    BaseCentering{:C}()
+
+Represent the base-centering.
+"""
 struct BaseCentering{T} <: Centering end
 const ACentering = BaseCentering{:A}
 const BCentering = BaseCentering{:B}
 const CCentering = BaseCentering{:C}
 
+"""
+    Bravais(a::CrystalSystem, b::Centering, obverse::Bool=true)
+
+Represent a Bravais lattice type.
+"""
 struct Bravais{A<:CrystalSystem,B<:Centering}
     obverse::Bool
 end
