@@ -6,9 +6,18 @@ CurrentModule = CrystallographyBase
 
 Documentation for [CrystallographyBase](https://github.com/MineralsCloud/CrystallographyBase.jl).
 
-```@index
+## Manual Outline
+
+```@contents
+Pages = [
+    "installation.md",
+    "develop.md",
+    "api.md",
+]
+Depth = 3
 ```
 
-```@autodocs
-Modules = [CrystallographyBase]
+## [Index](@id main-index)
+
+```@index
 ```
