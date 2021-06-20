@@ -5,6 +5,14 @@ using Spglib: get_ir_reciprocal_mesh
 
 export ReciprocalPoint, ReciprocalLattice, reciprocal_mesh, coordinates, weights
 
+"""
+    ReciprocalLattice(mat::SMatrix)
+
+Construct a `ReciprocalLattice`.
+
+!!! warning
+    You should not use this function directly, always use `inv` of a `Lattice`.
+"""
 struct ReciprocalLattice{T} <: AbstractLattice{T}
     data::SMatrix{3,3,T,9}
 end
@@ -17,6 +25,12 @@ function ReciprocalLattice(lattice::Lattice)
 end
 @functor ReciprocalLattice
 
+"""
+    inv(lattice::Lattice)
+    inv(lattice::ReciprocalLattice)
+
+Get the reciprocal of a `Lattice` or a `ReciprocalLattice`.
+"""
 Base.inv(lattice::Lattice) = ReciprocalLattice(lattice)
 function Base.inv(lattice::ReciprocalLattice)
     Ω⁻¹ = cellvolume(lattice)
@@ -24,6 +38,11 @@ function Base.inv(lattice::ReciprocalLattice)
     return Lattice(inv(Ω⁻¹) * hcat(cross(𝐛⁻¹, 𝐜⁻¹), cross(𝐜⁻¹, 𝐚⁻¹), cross(𝐚⁻¹, 𝐛⁻¹)))
 end
 
+"""
+    basis_vectors(lattice::ReciprocalLattice)
+
+Get the three basis vectors from a `ReciprocalLattice`.
+"""
 basis_vectors(lattice::ReciprocalLattice) = lattice[1, :], lattice[2, :], lattice[3, :]
 
 """
@@ -41,6 +60,20 @@ ReciprocalPoint(x, y, z, w) = ReciprocalPoint(SVector(x, y, z), w)
 @functor ReciprocalPoint (coord,)
 
 # See example in https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
+"""
+    reciprocal_mesh(cell::Cell, mesh, is_shift; kwargs...)
+
+List the `ReciprocalPoint`s from the mesh of the reciprocal space of a `Cell`.
+
+# Arguments
+- `cell::Cell`: the cell.
+- `mesh`: a vector of three integers which specify the mesh numbers along reciprocal primitive axis.
+- `is_shift=falses(3)`: a vector of three elements specifying whether the mesh is shifted along the axis in half of adjacent mesh points irrespective of the mesh numbers. The allowed values are `0`, `1`, `true`, and `false`.
+- `is_time_reversal=true`: whether to impose the time reversal symmetry on the mesh.
+- `symprec=1e-5`: distance tolerance in Cartesian coordinates to find crystal symmetry.
+- `cartesian=false`: whether to return the reciprocal points in Cartesian coordinates.
+- `ir_only=true`: whether to return the reciprocal points only in the irreducible Brillouin zone.
+"""
 function reciprocal_mesh(
     cell::Cell,
     mesh,
@@ -82,6 +115,16 @@ function reciprocal_mesh(
     end
 end
 
+"""
+    coordinates(arr::AbstractArray{<:ReciprocalPoint})
+
+Get the coordinates of an array of `ReciprocalPoint`s.
+"""
 coordinates(arr::AbstractArray{<:ReciprocalPoint}) = map(x -> x.coord, arr)
 
+"""
+    weights(arr::AbstractArray{<:ReciprocalPoint})
+
+Get the weights of an array of `ReciprocalPoint`s.
+"""
 weights(arr::AbstractArray{<:ReciprocalPoint}) = map(x -> x.weight, arr)
