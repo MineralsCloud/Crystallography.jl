@@ -17,6 +17,15 @@ function MetricTensor(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::Abstract
     return MetricTensor([dot(vᵢ, vⱼ) for vᵢ in vecs, vⱼ in vecs])
 end
 """
+    MetricTensor(lattice::Lattice)
+
+Generate a `MetricTensor` from a `Lattice`.
+"""
+function MetricTensor(lattice::Lattice)
+    data = lattice.data
+    return MetricTensor(transpose(data) * data)
+end
+"""
     MetricTensor(a, b, c, α, β, γ)
 
 Generate a `MetricTensor` from the six cell parameters.
