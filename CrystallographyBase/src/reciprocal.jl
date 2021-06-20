@@ -16,13 +16,6 @@ Construct a `ReciprocalLattice`.
 struct ReciprocalLattice{T} <: AbstractLattice{T}
     data::SMatrix{3,3,T,9}
 end
-function ReciprocalLattice(lattice::Lattice)
-    Ω = cellvolume(lattice)
-    𝐚, 𝐛, 𝐜 = basis_vectors(lattice)
-    return ReciprocalLattice(
-        inv(Ω) * transpose(hcat(cross(𝐛, 𝐜), cross(𝐜, 𝐚), cross(𝐚, 𝐛))),
-    )
-end
 @functor ReciprocalLattice
 
 """
@@ -31,7 +24,13 @@ end
 
 Get the reciprocal of a `Lattice` or a `ReciprocalLattice`.
 """
-Base.inv(lattice::Lattice) = ReciprocalLattice(lattice)
+function Base.inv(lattice::Lattice)
+    Ω = cellvolume(lattice)
+    𝐚, 𝐛, 𝐜 = basis_vectors(lattice)
+    return ReciprocalLattice(
+        inv(Ω) * transpose(hcat(cross(𝐛, 𝐜), cross(𝐜, 𝐚), cross(𝐚, 𝐛))),
+    )
+end
 function Base.inv(lattice::ReciprocalLattice)
     Ω⁻¹ = cellvolume(lattice)
     𝐚⁻¹, 𝐛⁻¹, 𝐜⁻¹ = basis_vectors(lattice)
