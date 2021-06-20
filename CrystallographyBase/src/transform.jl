@@ -18,6 +18,12 @@ struct FractionalFromCartesian{T} <: Transformation
 end
 # This requires the a-vector is parallel to the Cartesian x-axis.
 # See https://en.wikipedia.org/wiki/Fractional_coordinates
+"""
+    CartesianFromFractional(lattice::Union{Lattice,ReciprocalLattice})
+    CartesianFromFractional(a, b, c, α, β, γ)
+
+Get the transformation from fractional coordinates to Cartesian coordinates.
+"""
 CartesianFromFractional(lattice::Lattice) = CartesianFromFractional(lattice.data)
 CartesianFromFractional(lattice::ReciprocalLattice) =
     CartesianFromFractional(transpose(lattice.data))
@@ -32,6 +38,12 @@ function CartesianFromFractional(a, b, c, α, β, γ)
         ],
     )
 end
+"""
+    FractionalFromCartesian(lattice::Union{Lattice,ReciprocalLattice})
+    FractionalFromCartesian(a, b, c, α, β, γ)
+
+Get the transformation from Cartesian coordinates to fractional coordinates.
+"""
 FractionalFromCartesian(lattice::Lattice) = FractionalFromCartesian(inv(lattice.data))
 FractionalFromCartesian(lattice::ReciprocalLattice) =
     FractionalFromCartesian(inv(transpose(lattice.data)))
@@ -69,7 +81,17 @@ end
 struct PrimitiveFromStandardized{T} <: Transformation
     tf::SMatrix{3,3,T,9}
 end
+"""
+    PrimitiveFromStandardized(tf::AbstractMatrix)
+
+Construct the transformation from a standardized cell to a primitive cell.
+"""
 PrimitiveFromStandardized(tf::AbstractMatrix) = PrimitiveFromStandardized{eltype(tf)}(tf)
+"""
+    StandardizedFromPrimitive(tf::AbstractMatrix)
+
+Construct the transformation from a primitive cell to a standardized cell.
+"""
 StandardizedFromPrimitive(tf::AbstractMatrix) = StandardizedFromPrimitive{eltype(tf)}(tf)
 const PrimitiveToStandardized = StandardizedFromPrimitive
 const StandardizedToPrimitive = PrimitiveFromStandardized

@@ -39,25 +39,94 @@ export CrystalSystem,
     Lattice
 export centering, crystalsystem, basis_vectors, cellparameters
 
+"Represent one of the seven crystal systems."
 abstract type CrystalSystem end
+"""
+    Triclinic()
+
+Represent the triclinic system.
+"""
 struct Triclinic <: CrystalSystem end
+"""
+    Monoclinic()
+
+Represent the monoclinic system.
+"""
 struct Monoclinic <: CrystalSystem end
+"""
+    Orthorhombic()
+
+Represent the orthorhombic system.
+"""
 struct Orthorhombic <: CrystalSystem end
+"""
+    Tetragonal()
+
+Represent the tetragonal system.
+"""
 struct Tetragonal <: CrystalSystem end
+"""
+    Cubic()
+
+Represent the cubic system.
+"""
 struct Cubic <: CrystalSystem end
+"""
+    Trigonal()
+
+Represent the trigonal system.
+"""
 struct Trigonal <: CrystalSystem end
+"""
+    Hexagonal()
+
+Represent the hexagonal system.
+"""
 struct Hexagonal <: CrystalSystem end
 
+"Represent the centering types."
 abstract type Centering end
+"""
+    Primitive()
+
+Represent no centering.
+"""
 struct Primitive <: Centering end
+"""
+    BodyCentering()
+
+Represent the body-centering.
+"""
 struct BodyCentering <: Centering end
+"""
+    FaceCentering()
+
+Represent the face-centering.
+"""
 struct FaceCentering <: Centering end
+"""
+    RhombohedralCentering()
+
+Represent the rhombohedral-centering of the hexagonal system.
+"""
 struct RhombohedralCentering <: Centering end
+"""
+    BaseCentering{:A}()
+    BaseCentering{:B}()
+    BaseCentering{:C}()
+
+Represent the base-centering.
+"""
 struct BaseCentering{T} <: Centering end
 const ACentering = BaseCentering{:A}
 const BCentering = BaseCentering{:B}
 const CCentering = BaseCentering{:C}
 
+"""
+    Bravais(a::CrystalSystem, b::Centering, obverse::Bool=true)
+
+Represent a Bravais lattice type.
+"""
 struct Bravais{A<:CrystalSystem,B<:Centering}
     obverse::Bool
 end
@@ -83,15 +152,39 @@ const FaceCenteredCubic = Bravais{Cubic,FaceCentering}
 const PrimitiveHexagonal = Bravais{Hexagonal,Primitive}
 const RCenteredHexagonal = Bravais{Hexagonal,RhombohedralCentering}
 
+"Represent the real lattices and the reciprocal lattices."
 abstract type AbstractLattice{T} end
 
 struct Lattice{T} <: AbstractLattice{T}
     data::SMatrix{3,3,T,9}
 end
+"""
+    Lattice(mat::AbstractMatrix)
+
+Construct a `Lattice` from a matrix.
+
+!!! note
+    The basis vectors of the matrix are stored as columns.
+"""
 Lattice(mat::AbstractMatrix) = Lattice(SMatrix{3,3}(mat))
+"""
+    Lattice(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector)
+
+Construct a `Lattice` from three basis vectors.
+"""
 Lattice(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector) = Lattice(hcat(𝐚, 𝐛, 𝐜))
 Lattice(lattice::Lattice) = lattice
+"""
+    Lattice(cell::Cell)
+
+Get the lattice of a `Cell`.
+"""
 Lattice(cell::Cell) = Lattice(cell.lattice)
+"""
+    Lattice(a, b, c, α, β, γ)
+
+Construct a `Lattice` from the six cell parameters.
+"""
 function Lattice(a, b, c, α, β, γ)
     # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
     v = cellvolume(1, 1, 1, α, β, γ)
@@ -106,11 +199,31 @@ function Lattice(a, b, c, α, β, γ)
 end
 @functor Lattice
 
+"""
+    basis_vectors(lattice::Lattice)
+
+Get the three basis vectors from a `lattice`.
+"""
 basis_vectors(lattice::Lattice) = lattice[:, 1], lattice[:, 2], lattice[:, 3]
 
+"""
+    centering(bravais::Bravais)
+
+Get the centering type of a Bravais type.
+"""
 centering(::Bravais{A,B}) where {A,B} = B()
 
+"""
+    crystalsystem(bravais::Bravais)
+
+Get the crystal system of a Bravais type.
+"""
 crystalsystem(::Bravais{A,B}) where {A,B} = A()
+"""
+    crystalsystem(a, b, c, α, β, γ)
+
+Guess the crystal system from the six cell parameters.
+"""
 function crystalsystem(a, b, c, α, β, γ)
     if a == b == c
         if α == β == γ
@@ -126,8 +239,18 @@ function crystalsystem(a, b, c, α, β, γ)
         end
     end
 end
+"""
+    crystalsystem(lattice::Lattice)
+
+Get the crystal system of a `lattice`.
+"""
 crystalsystem(lattice::Lattice) = crystalsystem(cellparameters(lattice))
 
+"""
+    cellparameters(lattice::Lattice)
+
+Get the six cell parameters from a `lattice`.
+"""
 function cellparameters(lattice::Lattice)
     𝐚, 𝐛, 𝐜 = basis_vectors(lattice)
     a, b, c = norm(𝐚), norm(𝐛), norm(𝐜)
