@@ -184,11 +184,15 @@ Lattice(cell::Cell) = Lattice(cell.lattice)
     Lattice(a, b, c, α, β, γ)
 
 Construct a `Lattice` from the six cell parameters.
+
+The convention we used here is that edge vector 𝐚 in the positive x-axis direction,
+edge vector 𝐛 in the x-y plane with positive y-axis component,
+and edge vector 𝐜 with positive z-axis component in the Cartesian-system.
+See [Wikipedia](https://en.wikipedia.org/w/index.php?title=Fractional_coordinates&oldid=961675499#In_crystallography).
 """
 function Lattice(a, b, c, α, β, γ)
     Ω = cellvolume(a, b, c, α, β, γ)
     sinγ, cosγ, cosβ = sind(γ), cosd(γ), cosd(β)
-    # From https://en.wikipedia.org/w/index.php?title=Fractional_coordinates&oldid=961675499#In_crystallography
     return Lattice(
         [a, 0, 0],
         [b * cosγ, b * sinγ, 0],
