@@ -192,11 +192,11 @@ See [Wikipedia](https://en.wikipedia.org/w/index.php?title=Fractional_coordinate
 """
 function Lattice(a, b, c, α, β, γ)
     Ω = cellvolume(a, b, c, α, β, γ)
-    sinγ, cosγ, cosβ = sind(γ), cosd(γ), cosd(β)
+    sinγ, cosγ, cosα, cosβ = sind(γ), cosd(γ), cosd(α), cosd(β)
     return Lattice(
         [a, 0, 0],
         [b * cosγ, b * sinγ, 0],
-        [c * cosβ, c * (cosd(α) - cosβ * cosγ) / sinγ, Ω / (a * b * sinγ)],
+        [c * cosβ, c * (cosα - cosβ * cosγ) / sinγ, Ω / (a * b * sinγ)],
     )
 end
 @functor Lattice
