@@ -259,24 +259,26 @@ function cellparameters(lattice::Lattice)
     return a, b, c, α, β, γ
 end
 
+# See https://en.wikipedia.org/wiki/Supercell_(crystal)
 """
     supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
 
 Allow the supercell to be a tilted extension of `cell`.
 """
-function supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
-    @assert(det(expansion) != 0, "matrix `expansion` cannot be a singular integer matrix!")
-    return expansion * cell
+function supercell(lattice::Lattice, expansion::AbstractMatrix)
+    if any(!isinteger(x) for x in expansion)
+        throw(ArgumentError("`expansion` must be an integer matrix!"))
+    end
+    @assert det(expansion) >= 1
+    return Lattice(lattice.data * expansion)
 end
 """
     supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
 
 Return a supercell based on `cell` and expansion coefficients.
 """
-function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
-    @assert length(expansion) == 3
-    return supercell(cell, Diagonal(expansion))
-end
+supercell(lattice::Lattice, expansion::AbstractVector) =
+    supercell(lattice, Diagonal(expansion))
 function supercell(cell::Cell, expansion) end
 
 Base.iterate(lattice::AbstractLattice) = iterate(lattice.data)
