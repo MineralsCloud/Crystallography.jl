@@ -261,7 +261,7 @@ end
 
 # See https://en.wikipedia.org/wiki/Supercell_(crystal)
 """
-    supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
+    supercell(lattice::Lattice, expansion::AbstractMatrix{<:Integer})
 
 Allow the supercell to be a tilted extension of `cell`.
 """
@@ -273,7 +273,7 @@ function supercell(lattice::Lattice, expansion::AbstractMatrix)
     return Lattice(lattice.data * expansion)
 end
 """
-    supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
+    supercell(lattice::Lattice, expansion::AbstractVector{<:Integer})
 
 Return a supercell based on `cell` and expansion coefficients.
 """
