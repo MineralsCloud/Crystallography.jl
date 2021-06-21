@@ -186,16 +186,14 @@ Lattice(cell::Cell) = Lattice(cell.lattice)
 Construct a `Lattice` from the six cell parameters.
 """
 function Lattice(a, b, c, α, β, γ)
-    # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
-    v = cellvolume(1, 1, 1, α, β, γ)
-    # reciprocal lattice
-    a_recip = sind(α) / (a * v)
-    csg = (cosd(α) * cosd(β) - cosd(γ)) / (sind(α) * sind(β))
-    sg = sqrt(1 - csg^2)
-    a1 = [1 / a_recip, -csg / sg / a_recip, cosd(β) * a]
-    a2 = [0, b * sind(α), b * cosd(α)]
-    a3 = [0, 0, c]
-    return Lattice(a1, a2, a3)
+    Ω = cellvolume(a, b, c, α, β, γ)
+    sinγ, cosγ, cosβ = sind(γ), cosd(γ), cosd(β)
+    # From https://en.wikipedia.org/w/index.php?title=Fractional_coordinates&oldid=961675499#In_crystallography
+    return Lattice(
+        [a, 0, 0],
+        [b * cosγ, b * sinγ, 0],
+        [c * cosβ, c * (cosd(α) - cosβ * cosγ) / sinγ, Ω / (a * b * sinγ)],
+    )
 end
 @functor Lattice
 
