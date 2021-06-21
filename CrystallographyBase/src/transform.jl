@@ -186,14 +186,13 @@ Base.firstindex(::ChangeOfBasis) = 1
 Base.lastindex(::ChangeOfBasis) = 9
 
 function Base.show(io::IO, x::ChangeOfBasis)
-    if get(io, :compact, false)
-        print(io, string(typeof(x)), '(')
-        print(io, x.tf, ')')
+    if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(x)
+        Base.show_default(IOContext(io, :limit => true), x)  # From https://github.com/mauro3/Parameters.jl/blob/ecbf8df/src/Parameters.jl#L556
     else
-        println(io, string(nameof(typeof(x))))
+        println(io, string(typeof(x)))
         for row in eachrow(x.tf)
             print(io, " ")
-            println(io, row)
+            println(io, join(row, " "))
         end
     end
 end
