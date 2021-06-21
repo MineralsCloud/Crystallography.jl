@@ -173,7 +173,6 @@ Lattice(mat::AbstractMatrix) = Lattice(SMatrix{3,3}(mat))
 Construct a `Lattice` from three basis vectors.
 """
 Lattice(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector) = Lattice(hcat(𝐚, 𝐛, 𝐜))
-Lattice(lattice::Lattice) = lattice
 """
     Lattice(cell::Cell)
 
@@ -184,18 +183,20 @@ Lattice(cell::Cell) = Lattice(cell.lattice)
     Lattice(a, b, c, α, β, γ)
 
 Construct a `Lattice` from the six cell parameters.
+
+The convention we used here is that edge vector 𝐚 in the positive x-axis direction,
+edge vector 𝐛 in the x-y plane with positive y-axis component,
+and edge vector 𝐜 with positive z-axis component in the Cartesian-system.
+See [Wikipedia](https://en.wikipedia.org/w/index.php?title=Fractional_coordinates&oldid=961675499#In_crystallography).
 """
 function Lattice(a, b, c, α, β, γ)
-    # From https://github.com/LaurentRDC/crystals/blob/dbb3a92/crystals/lattice.py#L321-L354
-    v = cellvolume(1, 1, 1, α, β, γ)
-    # reciprocal lattice
-    a_recip = sind(α) / (a * v)
-    csg = (cosd(α) * cosd(β) - cosd(γ)) / (sind(α) * sind(β))
-    sg = sqrt(1 - csg^2)
-    a1 = [1 / a_recip, -csg / sg / a_recip, cosd(β) * a]
-    a2 = [0, b * sind(α), b * cosd(α)]
-    a3 = [0, 0, c]
-    return Lattice(a1, a2, a3)
+    Ω = cellvolume(a, b, c, α, β, γ)
+    sinγ, cosγ, cosα, cosβ = sind(γ), cosd(γ), cosd(α), cosd(β)
+    return Lattice(
+        [a, 0, 0],
+        [b * cosγ, b * sinγ, 0],
+        [c * cosβ, c * (cosα - cosβ * cosγ) / sinγ, Ω / (a * b * sinγ)],
+    )
 end
 @functor Lattice
 
@@ -259,24 +260,26 @@ function cellparameters(lattice::Lattice)
     return a, b, c, α, β, γ
 end
 
+# See https://en.wikipedia.org/wiki/Supercell_(crystal)
 """
-    supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
+    supercell(lattice::Lattice, expansion::AbstractMatrix{<:Integer})
 
 Allow the supercell to be a tilted extension of `cell`.
 """
-function supercell(cell::Lattice, expansion::AbstractMatrix{<:Integer})
-    @assert(det(expansion) != 0, "matrix `expansion` cannot be a singular integer matrix!")
-    return expansion * cell
+function supercell(lattice::Lattice, expansion::AbstractMatrix)
+    if any(!isinteger(x) for x in expansion)
+        throw(ArgumentError("`expansion` must be an integer matrix!"))
+    end
+    @assert det(expansion) >= 1
+    return Lattice(lattice.data * expansion)
 end
 """
-    supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
+    supercell(lattice::Lattice, expansion::AbstractVector{<:Integer})
 
 Return a supercell based on `cell` and expansion coefficients.
 """
-function supercell(cell::Lattice, expansion::AbstractVector{<:Integer})
-    @assert length(expansion) == 3
-    return supercell(cell, Diagonal(expansion))
-end
+supercell(lattice::Lattice, expansion::AbstractVector) =
+    supercell(lattice, Diagonal(expansion))
 function supercell(cell::Cell, expansion) end
 
 Base.iterate(lattice::AbstractLattice) = iterate(lattice.data)
@@ -313,14 +316,13 @@ for op in (:*, :/, ://)
 end
 
 function Base.show(io::IO, x::AbstractLattice)
-    if get(io, :compact, false)
-        print(io, string(typeof(x)), '(')
-        print(io, x.data, ')')
+    if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(x)
+        Base.show_default(IOContext(io, :limit => true), x)  # From https://github.com/mauro3/Parameters.jl/blob/ecbf8df/src/Parameters.jl#L556
     else
-        println(io, string(nameof(typeof(x))))
+        println(io, string(typeof(x)))
         for row in eachrow(x.data)
             print(io, " ")
-            println(io, row)
+            println(io, join(row, "  "))
         end
     end
 end
