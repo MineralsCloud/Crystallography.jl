@@ -173,7 +173,6 @@ Lattice(mat::AbstractMatrix) = Lattice(SMatrix{3,3}(mat))
 Construct a `Lattice` from three basis vectors.
 """
 Lattice(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector) = Lattice(hcat(𝐚, 𝐛, 𝐜))
-Lattice(lattice::Lattice) = lattice
 """
     Lattice(cell::Cell)
 
