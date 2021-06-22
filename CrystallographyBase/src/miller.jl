@@ -36,7 +36,7 @@ ReciprocalMillerBravais(i, j, k, l) = ReciprocalMillerBravais([i, j, k, l])
 function _indices_str(r::Regex, s::AbstractString)
     m = match(r, strip(s))
     if m === nothing
-        error("not a valid expression!")
+        throw(ArgumentError("not a valid expression!"))
     else
         brackets = first(m.captures) * last(m.captures)
         x = (parse(Int, x) for x in m.captures[2:(end-1)])
@@ -49,7 +49,7 @@ function _indices_str(r::Regex, s::AbstractString)
         elseif brackets == "<>"
             MillerBravais(x...)
         else
-            error("not a valid expression!")
+            @assert false "this should never happen!"
         end
     end
 end
