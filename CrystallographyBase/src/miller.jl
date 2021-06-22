@@ -1,7 +1,8 @@
 export Miller, MillerBravais, ReciprocalMiller, ReciprocalMillerBravais
 export @m_str, @mb_str
 
-abstract type AbstractMiller <: AbstractVector{Int} end
+abstract type Indices <: AbstractVector{Int} end
+abstract type AbstractMiller <: Indices end
 struct Miller <: AbstractMiller
     data::SVector{3,Int}
     Miller(v) = new(iszero(v) ? v : v .÷ gcd(v))
@@ -13,7 +14,7 @@ struct ReciprocalMiller <: AbstractMiller
 end
 ReciprocalMiller(i, j, k) = ReciprocalMiller([i, j, k])
 
-abstract type AbstractMillerBravais <: AbstractVector{Int} end
+abstract type AbstractMillerBravais <: Indices end
 struct MillerBravais <: AbstractMillerBravais
     data::SVector{4,Int}
     function MillerBravais(v)
