@@ -46,3 +46,30 @@ end
         @test_throws MethodError convert(Miller, mb)
     end
 end
+
+# From https://ssd.phys.strath.ac.uk/wp-content/uploads/Crystallographic_maths.pdf
+@testset "Test conversion between reciprocal `Miller` and `MillerBravais`" begin
+    millerreciprocal =
+        [[1, 1, 0], [1, -2, 0], [-2, 1, 0], [-1, -1, 0], [-1, 2, 0], [2, -1, 0]]
+    millerbravaisreciprocal = [
+        [1, 1, -2, 0],
+        [1, -2, 1, 0],
+        [-2, 1, 1, 0],
+        [-1, -1, 2, 0],
+        [-1, 2, -1, 0],
+        [2, -1, -1, 0],
+    ]
+    for (x, y) in zip(millerreciprocal, millerbravaisreciprocal)
+        m = ReciprocalMiller(x)
+        mb = ReciprocalMillerBravais(y)
+        @test convert(ReciprocalMillerBravais, m) == mb
+        @test convert(ReciprocalMiller, mb) == m
+        @test convert(ReciprocalMiller, m) == m
+        @test convert(ReciprocalMillerBravais, mb) == mb
+        @test_throws MethodError convert(Miller, m)
+        @test_throws MethodError convert(MillerBravais, mb)
+        @test_throws MethodError convert(MillerBravais, m)
+        @test_throws MethodError convert(Miller, mb)
+    end
+end
+@test convert(MillerBravais, Miller([1, 0, 0])) == MillerBravais([2, -1, -1, 0])
