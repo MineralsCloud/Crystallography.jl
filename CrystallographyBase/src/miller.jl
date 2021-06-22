@@ -65,14 +65,14 @@ macro mb_str(s)
     return _indices_str(r, s)
 end
 
-Base.size(::Miller) = (3,)
-Base.size(::MillerBravais) = (4,)
+Base.size(::AbstractMiller) = (3,)
+Base.size(::AbstractMillerBravais) = (4,)
 
-Base.IndexStyle(::Type{<:Union{Miller,MillerBravais}}) = IndexLinear()
+Base.IndexStyle(::Type{<:Indices}) = IndexLinear()
 
-Base.getindex(x::Union{Miller,MillerBravais}, i::Integer) = getindex(x.data, i)
+Base.getindex(x::Indices, i) = getindex(x.data, i)
 
-Base.convert(::Type{T}, x::T) where {T<:Union{Miller,MillerBravais}} = x
+Base.convert(::Type{T}, x::T) where {T<:Indices} = x
 Base.convert(::Type{Miller}, mb::MillerBravais) =
     Miller(2 * mb[1] + mb[2], 2 * mb[2] + mb[1], mb[4])
 Base.convert(::Type{ReciprocalMiller}, mb::ReciprocalMillerBravais) =
