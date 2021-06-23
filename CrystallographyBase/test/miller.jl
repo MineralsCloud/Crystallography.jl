@@ -1,3 +1,20 @@
+@testset "Test `Indices` constructors" begin
+    @test Miller([-1, 0, 1]) == Miller(-1, 0, 1)
+    @test ReciprocalMiller(-1, 0, 1) == ReciprocalMiller([-1, 0, 1])
+    @test MillerBravais([-2, 1, 1, 3]) == MillerBravais([-2, 1, 1, 3])
+    @test ReciprocalMillerBravais([-2, 1, 1, 3]) == ReciprocalMillerBravais([-2, 1, 1, 3])
+end
+
+@testset "Test `@m_str` & `@mb_str`" begin
+    @test m"[-1, 0, 1]" == Miller([-1, 0, 1])
+    @test m"<2, -1, -1, 3>" == MillerBravais([2, -1, -1, 3])
+    @test m"[  2,-1, -1,3  ]" == MillerBravais([2, -1, -1, 3])
+    @test m"(-1, 0, 1  )" == ReciprocalMiller([-1, 0, 1])
+    @test m"{  -1,0, 1}" == ReciprocalMiller([-1, 0, 1])
+    @test m"(1, 0, -1, 0)" == ReciprocalMillerBravais(1, 0, -1, 0)
+    @test m"{  1,0, -1, 0}" == ReciprocalMillerBravais(1, 0, -1, 0)
+end
+
 @testset "Test conversion between real `Miller` and `MillerBravais`" begin
     millerreal = [[1, 1, 1], [-1, 0, 1], [0, -1, 1], [-1, -1, 1], [1, 0, 1], [0, 1, 1]]
     millerbravaisreal = [
