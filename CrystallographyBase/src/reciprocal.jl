@@ -127,3 +127,12 @@ coordinates(arr::AbstractArray{<:ReciprocalPoint}) = map(x -> x.coord, arr)
 Get the weights of an array of `ReciprocalPoint`s.
 """
 weights(arr::AbstractArray{<:ReciprocalPoint}) = map(x -> x.weight, arr)
+
+function Base.show(io::IO, x::ReciprocalPoint)
+    if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(x)
+        Base.show_default(IOContext(io, :limit => true), x)  # From https://github.com/mauro3/Parameters.jl/blob/ecbf8df/src/Parameters.jl#L556
+    else
+        println(io, string(typeof(x)))
+        print(io, " coord=", x.coord, ", weight=", x.weight)
+    end
+end
