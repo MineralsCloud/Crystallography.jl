@@ -4,6 +4,13 @@ CurrentModule = CrystallographyBase
 
 # API
 
+```@contents
+Pages = ["api.md"]
+Depth = 3
+```
+
+### Lattice
+
 ```@docs
 CrystalSystem
 Triclinic
@@ -26,20 +33,41 @@ centering
 crystalsystem
 basis_vectors
 cellparameters
+supercell
+```
+
+### Reciprocal space
+
+```@docs
 ReciprocalPoint
 ReciprocalLattice
 inv
 reciprocal_mesh
 coordinates
 weights
+```
+
+### Metric tensor
+
+```@docs
 MetricTensor
 directioncosine
 directionangle
 distance
 interplanar_spacing
-cellvolume
+```
+
+### Transformations
+
+```@docs
 CartesianFromFractional
 FractionalFromCartesian
 PrimitiveFromStandardized
 StandardizedFromPrimitive
+```
+
+### Others
+
+```@docs
+cellvolume
 ```
