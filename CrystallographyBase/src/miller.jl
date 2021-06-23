@@ -1,5 +1,7 @@
+using Combinatorics: permutations
+
 export Miller, MillerBravais, ReciprocalMiller, ReciprocalMillerBravais
-export @m_str, @mb_str
+export family, @m_str, @mb_str
 
 abstract type Indices <: AbstractVector{Int} end
 abstract type AbstractMiller <: Indices end
@@ -63,6 +65,21 @@ macro mb_str(s)
     r =
         r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
     return _indices_str(r, s)
+end
+
+function family(mb::T) where {T<:AbstractMillerBravais}
+    perm = collect(permutations(mb[1:3]))  # Permute the first 3 indices for equivalent basis vectors
+    negate = -perm  # Use negative indices
+    pool = unique(append!(perm, negate))
+    allowed = filter(v -> v[3] == -v[1] - v[2], pool)
+    return map(allowed) do x
+        T(x..., mb[4])  # Add the 4th index back
+    end
+end
+function family(m::T) where {T<:AbstractMiller}
+    mb = convert(T <: Miller ? MillerBravais : ReciprocalMillerBravais, m)  # Real or reciprocal space
+    vec = family(mb)
+    return map(x -> convert(T, x), vec)
 end
 
 Base.size(::AbstractMiller) = (3,)
