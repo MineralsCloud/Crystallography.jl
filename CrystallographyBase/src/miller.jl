@@ -42,14 +42,18 @@ function _indices_str(r::Regex, s::AbstractString)
     else
         brackets = first(m.captures) * last(m.captures)
         x = (parse(Int, x) for x in m.captures[2:(end-1)])
-        if brackets == "()"
-            ReciprocalMiller(x...)
-        elseif brackets == "{}"
-            ReciprocalMillerBravais(x...)
-        elseif brackets == "[]"
-            Miller(x...)
-        elseif brackets == "<>"
-            MillerBravais(x...)
+        if brackets in ("()", "{}")
+            if length(x) == 3
+                ReciprocalMiller(x...)
+            else  # length(x) == 4
+                ReciprocalMillerBravais(x...)
+            end
+        elseif brackets ∈ ("[]", "<>")
+            if length(x) == 3
+                Miller(x...)
+            else  # length(x) == 4
+                MillerBravais(x...)
+            end
         else
             @assert false "this should never happen!"
         end
