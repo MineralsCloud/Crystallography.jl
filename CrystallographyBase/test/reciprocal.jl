@@ -994,6 +994,26 @@ end
     end
 end
 
+# See https://github.com/JuliaMolSim/DFTK.jl/blob/a444606/test/testcases.jl#L48-L92
+@testset "Test Mg structure" begin
+    lattice = [
+        -3.0179389205999998 -3.0179389205999998 0.0000000000000000
+        -5.2272235447000002 5.2272235447000002 0.0000000000000000
+        0.0000000000000000 0.0000000000000000 -9.7736219469000005
+    ]
+    positions = [[2 / 3, 1 / 3, 1 / 4], [1 / 3, 2 / 3, 3 / 4]]
+    types = [1, 1]
+    cell = Cell(lattice, positions, types)
+    @test coordinates(reciprocal_mesh(cell, [3, 3, 3]; symprec = 1e-5)) == [
+        [0, 0, 0],
+        [1 / 3, 0, 0],
+        [1 / 3, 1 / 3, 0],
+        [0, 0, 1 / 3],
+        [1 / 3, 0, 1 / 3],
+        [1 / 3, 1 / 3, 1 / 3],
+    ]
+end
+
 @testset "Test MgB₂ structure" begin
     a = 3.07
     c = 3.52
