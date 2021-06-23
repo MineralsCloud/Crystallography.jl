@@ -280,7 +280,7 @@ Return a supercell based on `cell` and expansion coefficients.
 """
 supercell(lattice::Lattice, expansion::AbstractVector) =
     supercell(lattice, Diagonal(expansion))
-function supercell(cell::Cell, expansion) end
+# function supercell(cell::Cell, expansion) end
 
 Base.iterate(lattice::AbstractLattice) = iterate(lattice.data)
 Base.iterate(lattice::AbstractLattice, state) = iterate(lattice.data, state)
