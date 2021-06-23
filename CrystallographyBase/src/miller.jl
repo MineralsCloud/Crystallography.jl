@@ -1,7 +1,7 @@
 using Combinatorics: permutations
 
 export Miller, MillerBravais, ReciprocalMiller, ReciprocalMillerBravais
-export family, @m_str, @mb_str
+export family, @m_str
 
 abstract type Indices <: AbstractVector{Int} end
 abstract type AbstractMiller <: Indices end
@@ -61,13 +61,7 @@ function _indices_str(r::Regex, s::AbstractString)
 end
 
 macro m_str(s)
-    r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
-    return _indices_str(r, s)
-end
-
-macro mb_str(s)
-    r =
-        r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
+    r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)?[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
     return _indices_str(r, s)
 end
 
