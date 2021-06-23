@@ -3,20 +3,35 @@ using Combinatorics: permutations
 export Miller, MillerBravais, ReciprocalMiller, ReciprocalMillerBravais
 export family, @m_str
 
+"Represent the Miller indices or Miller–Bravais indices."
 abstract type Indices <: AbstractVector{Int} end
 abstract type AbstractMiller <: Indices end
+"""
+    Miller(i, j, k)
+
+Represent the Miller indices in the real space (crystal directions).
+"""
 struct Miller <: AbstractMiller
     data::SVector{3,Int}
     Miller(v) = new(iszero(v) ? v : v .÷ gcd(v))
 end
 Miller(i, j, k) = Miller([i, j, k])
+"""
+    ReciprocalMiller(i, j, k)
+
+Represent the Miller indices in the reciprocal space (planes).
+"""
 struct ReciprocalMiller <: AbstractMiller
     data::SVector{3,Int}
     ReciprocalMiller(v) = new(iszero(v) ? v : v .÷ gcd(v))
 end
 ReciprocalMiller(i, j, k) = ReciprocalMiller([i, j, k])
-
 abstract type AbstractMillerBravais <: Indices end
+"""
+    MillerBravais(i, j, k, l)
+
+Represent the Miller–Bravais indices in the real space (crystal directions).
+"""
 struct MillerBravais <: AbstractMillerBravais
     data::SVector{4,Int}
     function MillerBravais(v)
@@ -25,6 +40,11 @@ struct MillerBravais <: AbstractMillerBravais
     end
 end
 MillerBravais(i, j, k, l) = MillerBravais([i, j, k, l])
+"""
+    ReciprocalMillerBravais(i, j, k, l)
+
+Represent the Miller–Bravais indices in the reciprocal space (planes).
+"""
 struct ReciprocalMillerBravais <: AbstractMillerBravais
     data::SVector{4,Int}
     function ReciprocalMillerBravais(v)
@@ -62,12 +82,22 @@ function _indices_str(r::Regex, s::AbstractString)
     end
 end
 
+"""
+    m_str(s)
+
+Generate the Miller indices or Miller–Bravais indices quickly.
+"""
 macro m_str(s)
     r =
         r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)?[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
     return _indices_str(r, s)
 end
 
+"""
+    family(x::Union{Miller,MillerBravais,ReciprocalMiller,ReciprocalMillerBravais})
+
+List the all the directions/planes that are equivalent to `x` by symmetry.
+"""
 function family(mb::T) where {T<:AbstractMillerBravais}
     perm = collect(permutations(mb[1:3]))  # Permute the first 3 indices for equivalent basis vectors
     negate = -perm  # Use negative indices
