@@ -41,18 +41,20 @@ function _indices_str(r::Regex, s::AbstractString)
         throw(ArgumentError("not a valid expression!"))
     else
         brackets = first(m.captures) * last(m.captures)
-        x = (parse(Int, x) for x in m.captures[2:(end-1)])
+        indices = map(filter(x -> x !== nothing, m.captures[2:(end-1)])) do index
+            parse(Int, index)
+        end
         if brackets in ("()", "{}")
-            if length(x) == 3
-                ReciprocalMiller(x...)
-            else  # length(x) == 4
-                ReciprocalMillerBravais(x...)
+            if m[4] === nothing
+                return ReciprocalMiller(indices...)
+            else
+                return ReciprocalMillerBravais(indices...)
             end
         elseif brackets ∈ ("[]", "<>")
-            if length(x) == 3
-                Miller(x...)
-            else  # length(x) == 4
-                MillerBravais(x...)
+            if m[4] === nothing
+                return Miller(indices...)
+            else
+                return MillerBravais(indices...)
             end
         else
             @assert false "this should never happen!"
@@ -61,7 +63,8 @@ function _indices_str(r::Regex, s::AbstractString)
 end
 
 macro m_str(s)
-    r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)?[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
+    r =
+        r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)?[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
     return _indices_str(r, s)
 end
 
