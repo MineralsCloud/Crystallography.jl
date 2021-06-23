@@ -47,6 +47,17 @@ coordinates
 weights
 ```
 
+### Miller and Miller–Bravais indices
+
+```@docs
+Miller
+MillerBravais
+ReciprocalMiller
+ReciprocalMillerBravais
+family
+@m_str
+```
+
 ### Metric tensor
 
 ```@docs
