@@ -159,13 +159,6 @@ Base.convert(::Type{MillerBravais}, m::Miller) =
 Base.convert(::Type{ReciprocalMillerBravais}, m::ReciprocalMiller) =
     ReciprocalMillerBravais(m[1], m[2], -(m[1] + m[2]), m[3])
 
-function Base.show(io::IO, x::Union{Miller,MillerBravais})
-    print(io, '<')
-    print(io, join(x.data, " "))
-    print(io, '>')
-end
-function Base.show(io::IO, x::Union{ReciprocalMiller,ReciprocalMillerBravais})
-    print(io, '{')
-    print(io, join(x.data, " "))
-    print(io, '}')
-end
+Base.show(io::IO, x::Union{Miller,MillerBravais}) = print(io, '<', join(x.data, " "), '>')
+Base.show(io::IO, x::Union{ReciprocalMiller,ReciprocalMillerBravais}) =
+    print(io, '{', join(x.data, " "), '}')

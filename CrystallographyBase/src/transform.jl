@@ -191,8 +191,7 @@ function Base.show(io::IO, x::ChangeOfBasis)
     else
         println(io, string(typeof(x)))
         for row in eachrow(x.tf)
-            print(io, " ")
-            println(io, join(row, " "))
+            println(io, ' ', join(row, " "))
         end
     end
 end
