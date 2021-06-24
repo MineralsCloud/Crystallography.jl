@@ -29,11 +29,11 @@
     end
     @testset "Body centered cubic" begin
         a = 4
-        reci_lattice = inv(Lattice([
+        lattice = Lattice([
             1 -1 1
             1 1 -1
             -1 1 1
-        ]) * a / 2)
+        ]) * a / 2
         @test inv(inv(lattice)) == lattice
         @test inv(lattice).data == inv(lattice.data)
     end
