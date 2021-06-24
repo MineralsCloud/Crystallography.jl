@@ -321,7 +321,7 @@ function Base.show(io::IO, x::AbstractLattice)
     else
         println(io, string(typeof(x)))
         for row in eachrow(x.data)
-            println(io, ' ', join(row, " "))
+            println(io, ' ', join(row, "  "))
         end
     end
 end

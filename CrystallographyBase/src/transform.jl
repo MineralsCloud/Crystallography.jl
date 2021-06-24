@@ -46,7 +46,7 @@ Get the transformation from Cartesian coordinates to fractional coordinates.
 """
 FractionalFromCartesian(lattice::Lattice) = FractionalFromCartesian(inv(lattice.data))
 FractionalFromCartesian(lattice::ReciprocalLattice) =
-    FractionalFromCartesian(inv(transpose(lattice.data)))
+    FractionalFromCartesian(transpose(inv(lattice.data)))
 function FractionalFromCartesian(a, b, c, α, β, γ)
     Ω = cellvolume(a, b, c, α, β, γ)
     b_sinγ = b * sind(γ)
