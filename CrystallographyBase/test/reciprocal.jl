@@ -1,3 +1,44 @@
+@testset "Test inversion `inv`" begin
+    @testset "Base centered orthorhombic" begin
+        a, b, c = 4, 3, 5
+        lattice = Lattice([a, -b, 0] / 2, [a, b, 0] / 2, [0, 0, c])
+        @test inv(inv(lattice)) == lattice
+        @test inv(lattice).data == inv(lattice.data)
+    end
+    @testset "Body centered tetragonal" begin
+        a, c = 4, 6
+        lattice = Lattice([a, a, -c] / 2, [a, -a, c] / 2, [-a, a, c] / 2)
+        @test inv(inv(lattice)) == lattice
+        @test inv(lattice).data == inv(lattice.data)
+    end
+    @testset "Simple hexagonal" begin
+        a, c = 2, 3.2
+        lattice = Lattice([a, 0, 0], [a / 2, sqrt(3) / 2 * a, 0], [0, 0, c])
+        @test inv(inv(lattice)).data == lattice.data
+        @test inv(lattice).data ≈ inv(lattice.data)
+    end
+    @testset "Face centered cubic" begin
+        a = 4
+        lattice = inv(Lattice([
+            1 1 0
+            0 1 1
+            1 0 1
+        ]) * a / 2)
+        @test inv(inv(lattice)) == lattice
+        @test inv(lattice).data == inv(lattice.data)
+    end
+    @testset "Body centered cubic" begin
+        a = 4
+        reci_lattice = inv(Lattice([
+            1 -1 1
+            1 1 -1
+            -1 1 1
+        ]) * a / 2)
+        @test inv(inv(lattice)) == lattice
+        @test inv(lattice).data == inv(lattice.data)
+    end
+end
+
 @testset "Test rutile structure" begin
     lattice = [
         4 0 0
@@ -475,6 +516,24 @@
         [-0.3, -0.1, -0.1],
         [-0.1, -0.1, -0.1],
     ]
+end
+
+@testset "Test simple rutile structure" begin
+    lattice = [[0, 5.4, 5.4], [5.4, 0, 5.4], [5.4, 5.4, 0]]
+    positions = [[0, 0, 0], [0.25, 0.25, 0.25]]
+    types = [1, 1]
+    cell = Cell(lattice, positions, types)
+    # Compared with Quantum ESPRESSO and VASP: https://github.com/spglib/spglib/issues/79#issue-462738630
+    @test coordinates(reciprocal_mesh(cell, [3, 3, 3], [1, 1, 1]; symprec = 1e-5)) == [
+        [0.16666666666666666, 0.16666666666666666, 0.16666666666666666],
+        [0.5, 0.16666666666666666, 0.16666666666666666],
+        [-0.16666666666666666, 0.16666666666666666, 0.16666666666666666],
+        [0.5, 0.5, 0.16666666666666666],
+        [-0.16666666666666666, 0.5, 0.16666666666666666],
+        [0.5, 0.5, 0.5],
+    ]
+    @test weights(reciprocal_mesh(cell, [3, 3, 3], [1, 1, 1], symprec = 1e-5)) ==
+          [96, 288, 288, 288, 288, 48] / 1296
 end
 
 @testset "`spglib` doc example" begin  # See https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
@@ -974,6 +1033,26 @@ end
             [-0.07071067811865477, -0.07071067811865477, -0.07071067811865477],
         ]
     end
+end
+
+# See https://github.com/JuliaMolSim/DFTK.jl/blob/a444606/test/testcases.jl#L48-L92
+@testset "Test Mg structure" begin
+    lattice = [
+        -3.0179389205999998 -3.0179389205999998 0.0000000000000000
+        -5.2272235447000002 5.2272235447000002 0.0000000000000000
+        0.0000000000000000 0.0000000000000000 -9.7736219469000005
+    ]
+    positions = [[2 / 3, 1 / 3, 1 / 4], [1 / 3, 2 / 3, 3 / 4]]
+    types = [1, 1]
+    cell = Cell(lattice, positions, types)
+    @test coordinates(reciprocal_mesh(cell, [3, 3, 3]; symprec = 1e-5)) == [
+        [0, 0, 0],
+        [1 / 3, 0, 0],
+        [1 / 3, 1 / 3, 0],
+        [0, 0, 1 / 3],
+        [1 / 3, 0, 1 / 3],
+        [1 / 3, 1 / 3, 1 / 3],
+    ]
 end
 
 @testset "Test MgB₂ structure" begin

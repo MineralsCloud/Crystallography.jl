@@ -100,52 +100,52 @@ const StandardizedToPrimitive = PrimitiveFromStandardized
 (x::PrimitiveFromStandardized)(lattice::Lattice) = Lattice(lattice.data * x.tf)
 (x::StandardizedFromPrimitive)(lattice::Lattice) = Lattice(lattice.data * inv(x.tf))
 
-StandardizedFromPrimitive(::ACentering) = StandardizedFromPrimitive([
+PrimitiveFromStandardized(::ACentering) = PrimitiveFromStandardized([
     1 0 0
     0 1//2 -1//2
     0 1//2 1//2
 ])
-StandardizedFromPrimitive(::CCentering) = StandardizedFromPrimitive([
+PrimitiveFromStandardized(::CCentering) = PrimitiveFromStandardized([
     1//2 1//2 0
     -1//2 1//2 0
     0 0 1
 ])
-StandardizedFromPrimitive(::RhombohedralCentering) = StandardizedFromPrimitive([
+PrimitiveFromStandardized(::RhombohedralCentering) = PrimitiveFromStandardized([
     2//3 -1//3 -1//3
     1//3 1//3 -2//3
     1//3 1//3 1//3
 ])
-StandardizedFromPrimitive(::BodyCentering) = StandardizedFromPrimitive([
+PrimitiveFromStandardized(::BodyCentering) = PrimitiveFromStandardized([
     -1//2 1//2 1//2
     1//2 -1//2 1//2
     1//2 1//2 -1//2
 ])
-StandardizedFromPrimitive(::FaceCentering) = StandardizedFromPrimitive([
+PrimitiveFromStandardized(::FaceCentering) = PrimitiveFromStandardized([
     0 1//2 1//2
     1//2 0 1//2
     1//2 1//2 0
 ])
-PrimitiveFromStandardized(::ACentering) = PrimitiveFromStandardized([
+StandardizedFromPrimitive(::ACentering) = StandardizedFromPrimitive([
     1 0 0
     0 1 1
     0 -1 1
 ])
-PrimitiveFromStandardized(::CCentering) = PrimitiveFromStandardized([
+StandardizedFromPrimitive(::CCentering) = StandardizedFromPrimitive([
     1 -1 0
     1 1 0
     0 0 1
 ])
-PrimitiveFromStandardized(::RhombohedralCentering) = PrimitiveFromStandardized([
+StandardizedFromPrimitive(::RhombohedralCentering) = StandardizedFromPrimitive([
     1 0 1
     -1 1 1
     0 -1 1
 ])
-PrimitiveFromStandardized(::BodyCentering) = PrimitiveFromStandardized([
+StandardizedFromPrimitive(::BodyCentering) = StandardizedFromPrimitive([
     0 1 1
     1 0 1
     1 1 0
 ])
-PrimitiveFromStandardized(::FaceCentering) = PrimitiveFromStandardized([
+StandardizedFromPrimitive(::FaceCentering) = StandardizedFromPrimitive([
     -1 1 1
     1 -1 1
     1 1 -1
