@@ -26,16 +26,15 @@ This repository is created and maintained by [singularitti](https://github.com/s
 You are very welcome to contribute.
 
 ## Installation
-<p>
+
 `CrystallographyBase` is a &nbsp;
-    <a href="https://julialang.org">
-        <img src="https://julialang.org/favicon.ico" width="16em">
-        Julia Language
-    </a>
-    &nbsp; package. To install `CrystallographyBase`,
-    please <a href="https://docs.julialang.org/en/v1/manual/getting-started/">open
-    Julia's interactive session (known as REPL)</a> and press <kbd>]</kbd> key in the REPL to use the package mode, then type the following command
-</p>
+<a href="https://julialang.org">
+    <img src="https://julialang.org/assets/infra/julia.ico" width="16em">
+    Julia Language
+</a>
+&nbsp; package. To install `CrystallographyBase`,
+please <a href="https://docs.julialang.org/en/v1/manual/getting-started/">open
+Julia's interactive session (known as REPL)</a> and press <kbd>]</kbd> key in the REPL to use the package mode, then type the following command:
 
 For stable release
 
