@@ -1,3 +1,44 @@
+@testset "Test inversion `inv`" begin
+    @testset "Base centered orthorhombic" begin
+        a, b, c = 4, 3, 5
+        lattice = Lattice([a, -b, 0] / 2, [a, b, 0] / 2, [0, 0, c])
+        @test inv(inv(lattice)) == lattice
+        @test inv(lattice).data == inv(lattice.data)
+    end
+    @testset "Body centered tetragonal" begin
+        a, c = 4, 6
+        lattice = Lattice([a, a, -c] / 2, [a, -a, c] / 2, [-a, a, c] / 2)
+        @test inv(inv(lattice)) == lattice
+        @test inv(lattice).data == inv(lattice.data)
+    end
+    @testset "Simple hexagonal" begin
+        a, c = 2, 3.2
+        lattice = Lattice([a, 0, 0], [a / 2, sqrt(3) / 2 * a, 0], [0, 0, c])
+        @test inv(inv(lattice)).data == lattice.data
+        @test inv(lattice).data ≈ inv(lattice.data)
+    end
+    @testset "Face centered cubic" begin
+        a = 4
+        lattice = inv(Lattice([
+            1 1 0
+            0 1 1
+            1 0 1
+        ]) * a / 2)
+        @test inv(inv(lattice)) == lattice
+        @test inv(lattice).data == inv(lattice.data)
+    end
+    @testset "Body centered cubic" begin
+        a = 4
+        reci_lattice = inv(Lattice([
+            1 -1 1
+            1 1 -1
+            -1 1 1
+        ]) * a / 2)
+        @test inv(inv(lattice)) == lattice
+        @test inv(lattice).data == inv(lattice.data)
+    end
+end
+
 @testset "Test rutile structure" begin
     lattice = [
         4 0 0
