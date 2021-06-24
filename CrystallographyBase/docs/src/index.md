@@ -9,6 +9,7 @@ Documentation for [CrystallographyBase](https://github.com/MineralsCloud/Crystal
 ## Package Features
 
 Provides some basic types and methods for crystallography calculations.
+For more features, see [`Crystallography.jl`](https://github.com/MineralsCloud/Crystallography.jl).
 
 See the [Index](@ref main-index) for the complete list of documented functions
 and types.
@@ -18,30 +19,6 @@ with some continuous integration services to test its validity.
 
 This repository is created and maintained by [singularitti](https://github.com/singularitti).
 You are very welcome to contribute.
-
-## Installation
-<p>
-`CrystallographyBase` is a &nbsp;
-    <a href="https://julialang.org">
-        <img src="https://julialang.org/favicon.ico" width="16em">
-        Julia Language
-    </a>
-    &nbsp; package. To install XPS,
-    please <a href="https://docs.julialang.org/en/v1/manual/getting-started/">open
-    Julia's interactive session (known as REPL)</a> and press <kbd>]</kbd> key in the REPL to use the package mode, then type the following command
-</p>
-
-For stable release
-
-```julia
-pkg> add CrystallographyBase
-```
-
-For current master
-
-```julia
-pkg> add CrystallographyBase#master
-```
 
 ## Compatibility
 
