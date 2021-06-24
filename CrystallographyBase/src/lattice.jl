@@ -245,7 +245,7 @@ end
 
 Get the crystal system of a `lattice`.
 """
-crystalsystem(lattice::Lattice) = crystalsystem(cellparameters(lattice))
+crystalsystem(lattice::Lattice) = crystalsystem(cellparameters(lattice)...)
 
 """
     cellparameters(lattice::Lattice)
