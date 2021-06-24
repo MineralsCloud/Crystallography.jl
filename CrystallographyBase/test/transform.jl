@@ -191,6 +191,7 @@ end
             ] / alat * u"angstrom" .|> u"bohr",
         ),
     )
+    # Compared with Quantum ESPRESSO results
     qe_crystal =
         [
             0.0 0.0 0.0
