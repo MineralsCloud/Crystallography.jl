@@ -133,6 +133,6 @@ function Base.show(io::IO, x::ReciprocalPoint)
         Base.show_default(IOContext(io, :limit => true), x)  # From https://github.com/mauro3/Parameters.jl/blob/ecbf8df/src/Parameters.jl#L556
     else
         println(io, string(typeof(x)))
-        print(io, " coord=", x.coord, ", weight=", x.weight)
+        print(io, " coord = ", x.coord, ", weight = ", x.weight)
     end
 end
