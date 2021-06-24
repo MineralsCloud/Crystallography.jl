@@ -114,11 +114,11 @@ end
         @test f2c([1 / 2, 0, 1 / 2]) ≈ [1 / a, -1 / sqrt(3) / a, 1 / c] / 2  # L
         c2f = FractionalFromCartesian(reci_lattice)
         @test c2f([0, 0, 0]) == [0, 0, 0]
-        @test c2f([1 / a, -1 / sqrt(3) / a, 0] / 2) == [1 / 2, 0, 0]
+        @test c2f([1 / a, -1 / sqrt(3) / a, 0] / 2) ≈ [1 / 2, 0, 0]
         @test c2f([0, 0, 1 / c] / 2) == [0, 0, 1 / 2]
         @test c2f([2 / 3 / a, 0, 0]) == [2 / 3, 1 / 3, 0]
         @test c2f([2 / 3 / a, 0, 1 / 2 / c]) == [2 / 3, 1 / 3, 1 / 2]
-        @test c2f([1 / a, -1 / sqrt(3) / a, 1 / c] / 2) == [1 / 2, 0, 1 / 2]
+        @test c2f([1 / a, -1 / sqrt(3) / a, 1 / c] / 2) ≈ [1 / 2, 0, 1 / 2]
         @test c2f ∘ f2c == f2c ∘ c2f == IdentityTransformation()
     end
     # See http://lampx.tugraz.at/~hadley/ss1/bzones/sc.php
