@@ -5,6 +5,14 @@
         0 0 1
     ])
     @test CartesianFromFractional(lattice)([2, 3, 1]) == [1, 3 / 2, 1]
+    # Compared with "SeeK-path" example oC1 (SiTi)
+    @testset "Base centered orthorhombic" begin
+        a, b, c = 3.67939899, 4.15357986, 3.8236792350
+        lattice = Lattice([a, -b, 0] / 2, [a, b, 0] / 2, [0, 0, c])
+        f2c = CartesianFromFractional(lattice)
+        @test f2c([1 / 2, 1 / 2, 1 / 2]) == [1.8396994950, 0, 1.9118396175]  # Si
+        @test f2c([0, 0, 0]) == [0, 0, 0]  # Ti
+    end
 end
 
 # Example from http://ww1.iucr.org/iucr-top/comm/cteach/pamphlets/22/node34.html#SECTION00073300000000000000
