@@ -1,5 +1,5 @@
 using LinearAlgebra: dot, norm, diagm
-using SymPy: symbols
+# using SymPy: symbols
 using Unitful: @u_str
 
 @testset "Test length in a hexagonal lattice" begin
@@ -31,11 +31,11 @@ end
     @test directioncosine(a, g, b)^2 ≈ 9 / 29
 end
 
-@testset "Symbolic calculation" begin
-    a, c = symbols("a, c", positive = true)
-    @test MetricTensor(a, a, c, 90, 90, 120) ==
-          MetricTensor([a^2 -0.5*a^2 0; -0.5*a^2 a^2 0; 0 0 c^2])  # Primitive hexagonal
-end
+# @testset "Symbolic calculation" begin
+#     a, c = symbols("a, c", positive = true)
+#     @test MetricTensor(a, a, c, 90, 90, 120) ==
+#           MetricTensor([a^2 -0.5*a^2 0; -0.5*a^2 a^2 0; 0 0 c^2])  # Primitive hexagonal
+# end
 
 # From https://ssd.phys.strath.ac.uk/wp-content/uploads/Crystallographic_maths.pdf
 @testset "Find angle θ between [100] and [111] directions in GaN" begin
