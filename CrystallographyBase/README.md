@@ -16,9 +16,6 @@ For more features, see [`Crystallography.jl`](https://github.com/MineralsCloud/C
 See [the documentation of the stable version](https://mineralscloud.github.io/CrystallographyBase.jl/stable)
 here.
 
-See the [Index](@ref main-index) for the complete list of documented functions
-and types.
-
 The code is [hosted on GitHub](https://github.com/MineralsCloud/CrystallographyBase.jl),
 with some continuous integration services to test its validity.
 
