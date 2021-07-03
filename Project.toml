@@ -12,6 +12,7 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
 CoordinateTransformations = "0.5, 0.6"
+CrystallographyBase = "0.1"
 Spglib = "0.1, 0.2"
 StaticArrays = "0.8.3, 0.9, 0.10, 0.11, 0.12, 1"
 julia = "1"
