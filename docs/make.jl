@@ -1,10 +1,11 @@
 using Crystallography
+using CrystallographyBase
 using Documenter
 
 DocMeta.setdocmeta!(Crystallography, :DocTestSetup, :(using Crystallography); recursive=true)
 
 makedocs(;
-    modules=[Crystallography],
+    modules=[Crystallography,CrystallographyBase],
     authors="Qi Zhang <singularitti@outlook.com>",
     repo="https://github.com/MineralsCloud/Crystallography.jl/blob/{commit}{path}#{line}",
     sitename="Crystallography.jl",
@@ -15,10 +16,9 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
-        "Manual" => Any["Installation"=>"install.md", "Development"=>"develop.md"],
+        "Manual" => Any["Installation"=>"installation.md", "Development"=>"develop.md"],
         "API by modules" => Any[
-            "`Crystallography` module"=>"Crystallography.md",
-            "`Crystallography.Symmetry` module"=>"Symmetry.md",
+            "`Crystallography` module"=>"api.md",
         ],
     ],
 )

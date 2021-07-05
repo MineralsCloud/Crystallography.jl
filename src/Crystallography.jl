@@ -41,8 +41,8 @@ using CrystallographyBase:
     ReciprocalLattice,
     Miller,
     MillerBravais,
-    RealSpace,
-    ReciprocalSpace,
+    ReciprocalMiller,
+    ReciprocalMillerBravais,
     FractionalFromCartesian,
     CartesianFromFractional,
     FractionalToCartesian,
@@ -62,9 +62,9 @@ using CrystallographyBase:
     reciprocal_mesh,
     coordinates,
     weights,
+    family,
     cellvolume,
-    @m_str,
-    @mb_str
+    @m_str
 
 export CrystalSystem,
     Triclinic,
@@ -107,8 +107,8 @@ export CrystalSystem,
     ReciprocalLattice,
     Miller,
     MillerBravais,
-    RealSpace,
-    ReciprocalSpace,
+    ReciprocalMiller,
+    ReciprocalMillerBravais,
     FractionalFromCartesian,
     CartesianFromFractional,
     FractionalToCartesian,
@@ -128,10 +128,10 @@ export centering,
     reciprocal_mesh,
     coordinates,
     weights,
+    family,
     cellvolume,
-    @m_str,
-    @mb_str
+    @m_str
 
-include("Symmetry.jl")
+# include("Symmetry.jl")
 
 end
