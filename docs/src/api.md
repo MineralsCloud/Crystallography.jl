@@ -1,5 +1,5 @@
 ```@meta
-CurrentModule = Crystallography
+CurrentModule = CrystallographyBase
 ```
 
 # API
