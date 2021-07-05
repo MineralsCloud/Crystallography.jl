@@ -132,6 +132,6 @@ export centering,
     cellvolume,
     @m_str
 
-include("Symmetry.jl")
+# include("Symmetry.jl")
 
 end
