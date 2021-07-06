@@ -13,9 +13,4 @@
 This package:
 
 - Builds `Bravais` lattices, `Cell`s, etc.
-- Finds crystal symmetries
 - Converts coordinates between crystal and Cartesian frames, real and reciprocal spaces
-
-TODO:
-
-- [ ] Add matrices representation of the rigid motion operators
