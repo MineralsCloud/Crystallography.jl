@@ -8,7 +8,7 @@
 [![Build Status](https://api.cirrus-ci.com/github/MineralsCloud/Crystallography.jl.svg)](https://cirrus-ci.com/github/MineralsCloud/Crystallography.jl)
 [![pipeline status](https://gitlab.com/singularitti/Crystallography.jl/badges/master/pipeline.svg)](https://gitlab.com/singularitti/Crystallography.jl/-/pipelines)
 [![Coverage](https://codecov.io/gh/MineralsCloud/Crystallography.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/MineralsCloud/Crystallography.jl)
-[![Coverage](https://coveralls.io/repos/github/MineralsCloud/Crystallography.jl/badge.svg?branch=master)](https://coveralls.io/github/MineralsCloud/Crystallography.jl?branch=master)
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/organization/repository)
 
 This package:
 
