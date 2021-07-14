@@ -5,7 +5,13 @@ using LinearAlgebra: cross
 using Spglib: get_ir_reciprocal_mesh
 
 export ReciprocalPoint,
-    ReciprocalLattice, WignerSeitzCell, reciprocal_mesh, coordinates, weights
+    ReciprocalLattice,
+    WignerSeitzCell,
+    reciprocal_mesh,
+    coordinates,
+    weights,
+    vertices,
+    faces
 
 """
     ReciprocalLattice(mat::SMatrix)
@@ -69,6 +75,12 @@ function WignerSeitzCell(lattice::T) where {T<:AbstractLattice}
     ws = Brillouin.wignerseitz(collect(basis_vectors(lattice)))
     return WignerSeitzCell{length(ws.verts),length(ws.faces),T}(ws.verts, ws.faces, lattice)
 end
+
+vertices(ws::WignerSeitzCell, cartesian = false) =
+    cartesian ? map(CartesianFromFractional(ws.lattice), ws.vertices) : ws.vertices
+
+faces(ws::WignerSeitzCell, cartesian = false) =
+    map(I -> vertices(ws, cartesian)[I], ws.faces)
 
 # See example in https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
 """
