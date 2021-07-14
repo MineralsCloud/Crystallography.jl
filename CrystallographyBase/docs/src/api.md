@@ -38,15 +38,18 @@ supercell
 
 ### Reciprocal space
 
-Note that we take ``2pi`` as ``1``, not the solid-state physics convention.
+Note that we take ``2\pi`` as ``1``, not the solid-state physics convention.
 
 ```@docs
 ReciprocalPoint
 ReciprocalLattice
+WignerSeitzCell
 inv
 reciprocal_mesh
 coordinates
 weights
+vertices
+faces
 ```
 
 ### Miller and Miller–Bravais indices
