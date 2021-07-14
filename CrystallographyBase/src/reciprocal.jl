@@ -160,3 +160,20 @@ function Base.show(io::IO, x::ReciprocalPoint)
         print(io, " coord = ", x.coord, ", weight = ", x.weight)
     end
 end
+# Referenced from https://github.com/thchr/Brillouin.jl/blob/f32a826/src/WignerSeitz.jl#L59-L78
+function Base.show(io::IO, ::MIME"text/plain", x::WignerSeitzCell)
+    if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(x)
+        Base.show_default(IOContext(io, :limit => true), x)  # From https://github.com/mauro3/Parameters.jl/blob/ecbf8df/src/Parameters.jl#L556
+    else
+        summary(io, x)
+        println(io, ":")
+        println(io, "  vertices: ")
+        foreach(v -> println(io, "    ", v), x.vertices)
+        println(io, "  faces: ")
+        foreach(f -> println(io, "    ", f), x.faces)
+        println(io, "  base lattice: ")
+        for row in eachrow(x.lattice.data)
+            println(io, "    ", join(row, "  "))
+        end
+    end
+end
