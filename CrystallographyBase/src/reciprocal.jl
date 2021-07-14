@@ -4,6 +4,8 @@ using Counters: counter
 using LinearAlgebra: cross
 using Spglib: get_ir_reciprocal_mesh
 
+import Brillouin: vertices, faces
+
 export ReciprocalPoint,
     ReciprocalLattice,
     WignerSeitzCell,
