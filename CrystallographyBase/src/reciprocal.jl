@@ -65,11 +65,9 @@ struct WignerSeitzCell{V,F,T<:AbstractLattice}
     faces::SVector{F,Vector{Int}}
     lattice::T
 end
-function WignerSeitzCell(lattice::T, cartesian = false) where {T<:AbstractLattice}
-    ws = wignerseitz(collect(basis_vectors(lattice)))
-    V, F = length(ws.verts), length(ws.faces)
-    verts = cartesian ? map(CartesianFromFractional(lattice), ws.verts) : ws.verts
-    return WignerSeitzCell{V,F,T}(verts, ws.faces, lattice)
+function WignerSeitzCell(lattice::T) where {T<:AbstractLattice}
+    ws = Brillouin.wignerseitz(collect(basis_vectors(lattice)))
+    return WignerSeitzCell{length(ws.verts),length(ws.faces),T}(ws.verts, ws.faces, lattice)
 end
 
 # See example in https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
