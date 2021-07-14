@@ -61,7 +61,7 @@ ReciprocalPoint(x, y, z, w) = ReciprocalPoint(SVector(x, y, z), w)
 @functor ReciprocalPoint (coord,)
 
 struct WignerSeitzCell{V,F,T<:AbstractLattice}
-    verts::SVector{V,SVector{3,Float64}}
+    vertices::SVector{V,SVector{3,Float64}}
     faces::SVector{F,Vector{Int}}
     lattice::T
 end
