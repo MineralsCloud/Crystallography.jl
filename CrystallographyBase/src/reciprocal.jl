@@ -1,9 +1,11 @@
+using Brillouin: wignerseitz
 using Compat: eachslice
 using Counters: counter
 using LinearAlgebra: cross
 using Spglib: get_ir_reciprocal_mesh
 
-export ReciprocalPoint, ReciprocalLattice, reciprocal_mesh, coordinates, weights
+export ReciprocalPoint,
+    ReciprocalLattice, WignerSeitzCell, reciprocal_mesh, coordinates, weights
 
 """
     ReciprocalLattice(mat::SMatrix)
@@ -57,6 +59,18 @@ ReciprocalPoint(coord::AbstractVector{T}, weight) where {T} =
     ReciprocalPoint{T}(SVector{3}(coord), weight)
 ReciprocalPoint(x, y, z, w) = ReciprocalPoint(SVector(x, y, z), w)
 @functor ReciprocalPoint (coord,)
+
+struct WignerSeitzCell{V,F,T<:AbstractLattice}
+    verts::SVector{V,SVector{3,Float64}}
+    faces::SVector{F,Vector{Int}}
+    lattice::T
+end
+function WignerSeitzCell(lattice::T, cartesian = false) where {T<:AbstractLattice}
+    ws = wignerseitz(collect(basis_vectors(lattice)))
+    V, F = length(ws.verts), length(ws.faces)
+    verts = cartesian ? map(CartesianFromFractional(lattice), ws.verts) : ws.verts
+    return WignerSeitzCell{V,F,T}(verts, ws.faces, lattice)
+end
 
 # See example in https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
 """
