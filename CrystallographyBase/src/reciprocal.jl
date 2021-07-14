@@ -4,7 +4,8 @@ using Counters: counter
 using LinearAlgebra: cross
 using Spglib: get_ir_reciprocal_mesh, get_spacegroup_type
 
-export ReciprocalPoint, ReciprocalLattice, KPath, reciprocal_mesh, coordinates, weights
+export ReciprocalPoint,
+    ReciprocalLattice, ReciprocalPath, reciprocal_mesh, coordinates, weights
 
 """
     ReciprocalLattice(mat::SMatrix)
@@ -138,23 +139,23 @@ function Base.show(io::IO, x::ReciprocalPoint)
     end
 end
 
-struct KPath{N}
+struct ReciprocalPath{N}
     special_points::Dict{Symbol,SVector{N,Float64}}
     suggested_paths::Vector{Vector{Symbol}}
     lattice::Lattice
 end
-function KPath(spgnum::Integer, lattice::Lattice)
+function ReciprocalPath(spgnum::Integer, lattice::Lattice)
     kpath = irrfbz_path(spgnum, collect(basis_vectors(lattice)))
-    return KPath(kpath.points, kpath.paths, lattice)
+    return ReciprocalPath(kpath.points, kpath.paths, lattice)
 end
-function KPath(cell::Cell)
+function ReciprocalPath(cell::Cell)
     spg = get_spacegroup_type(cell)
-    return KPath(spg.number, Lattice(cell))
+    return ReciprocalPath(spg.number, Lattice(cell))
 end
 
-coordinates(kpath::KPath, cartesian = false) =
+coordinates(path::ReciprocalPath, cartesian = false) =
     cartesian ?
     Dict(
-        key => CartesianFromFractional(kpath.lattice)(value) for
-        (key, value) in kpath.special_points
-    ) : kpath.special_points
+        key => CartesianFromFractional(path.lattice)(value) for
+        (key, value) in path.special_points
+    ) : path.special_points
