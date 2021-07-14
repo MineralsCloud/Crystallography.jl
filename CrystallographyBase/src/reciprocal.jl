@@ -72,7 +72,7 @@ struct WignerSeitzCell{V,F,T<:AbstractLattice}
     lattice::T
 end
 function WignerSeitzCell(lattice::T) where {T<:AbstractLattice}
-    ws = Brillouin.wignerseitz(collect(basis_vectors(lattice)))
+    ws = wignerseitz(collect(basis_vectors(lattice)))
     return WignerSeitzCell{length(ws.verts),length(ws.faces),T}(ws.verts, ws.faces, lattice)
 end
 
