@@ -1,19 +1,9 @@
-using Brillouin: wignerseitz
 using Compat: eachslice
 using Counters: counter
 using LinearAlgebra: cross
 using Spglib: get_ir_reciprocal_mesh
 
-import Brillouin: vertices, faces
-
-export ReciprocalPoint,
-    ReciprocalLattice,
-    WignerSeitzCell,
-    reciprocal_mesh,
-    coordinates,
-    weights,
-    vertices,
-    faces
+export ReciprocalPoint, ReciprocalLattice, reciprocal_mesh, coordinates, weights
 
 """
     ReciprocalLattice(mat::SMatrix)
@@ -67,41 +57,6 @@ ReciprocalPoint(coord::AbstractVector{T}, weight) where {T} =
     ReciprocalPoint{T}(SVector{3}(coord), weight)
 ReciprocalPoint(x, y, z, w) = ReciprocalPoint(SVector(x, y, z), w)
 @functor ReciprocalPoint (coord,)
-
-struct WignerSeitzCell{V,F,T<:AbstractLattice}
-    vertices::SVector{V,SVector{3,Float64}}
-    faces::SVector{F,Vector{Int}}
-    lattice::T
-end
-"""
-    WignerSeitzCell(lattice::AbstractLattice)
-
-Construct a [Wigner–Seitz cell](https://en.wikipedia.org/wiki/Wigner%E2%80%93Seitz_cell) from an `AbstractLattice`.
-"""
-function WignerSeitzCell(lattice::T) where {T<:AbstractLattice}
-    ws = wignerseitz(collect(basis_vectors(lattice)))
-    return WignerSeitzCell{length(ws.verts),length(ws.faces),T}(ws.verts, ws.faces, lattice)
-end
-
-"""
-    vertices(ws::WignerSeitzCell, cartesian=false)
-
-Get the coordinates of the vertices of a Wigner–Seitz cell.
-
-If `cartesian` is `true`, return the coordinates in the Cartesian coordinate system.
-"""
-vertices(ws::WignerSeitzCell, cartesian = false) =
-    cartesian ? map(CartesianFromFractional(ws.lattice), ws.vertices) : ws.vertices
-
-"""
-    faces(ws::WignerSeitzCell, cartesian=false)
-
-Get the coordinates of the vertices of each face of a Wigner–Seitz cell.
-
-If `cartesian` is `true`, return the coordinates in the Cartesian coordinate system.
-"""
-faces(ws::WignerSeitzCell, cartesian = false) =
-    map(I -> vertices(ws, cartesian)[I], ws.faces)
 
 # See example in https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
 """
@@ -179,22 +134,5 @@ function Base.show(io::IO, x::ReciprocalPoint)
     else
         println(io, string(typeof(x)))
         print(io, " coord = ", x.coord, ", weight = ", x.weight)
-    end
-end
-# Referenced from https://github.com/thchr/Brillouin.jl/blob/f32a826/src/WignerSeitz.jl#L59-L78
-function Base.show(io::IO, ::MIME"text/plain", x::WignerSeitzCell)
-    if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(x)
-        Base.show_default(IOContext(io, :limit => true), x)  # From https://github.com/mauro3/Parameters.jl/blob/ecbf8df/src/Parameters.jl#L556
-    else
-        summary(io, x)
-        println(io, ":")
-        println(io, "  vertices: ")
-        foreach(v -> println(io, "    ", v), x.vertices)
-        println(io, "  faces: ")
-        foreach(f -> println(io, "    ", f), x.faces)
-        println(io, "  base lattice: ")
-        for row in eachrow(x.lattice.data)
-            println(io, "    ", join(row, "  "))
-        end
     end
 end

@@ -9,6 +9,7 @@ import Spglib: basis_vectors
 
 include("lattice.jl")
 include("reciprocal.jl")
+include("wignerseitz.jl")
 include("miller.jl")
 include("metric.jl")
 include("volume.jl")
