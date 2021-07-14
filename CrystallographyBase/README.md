@@ -50,6 +50,7 @@ pkg> add CrystallographyBase#master
 
 - [Julia version: `v1.3.0` to `v1.6.1`](https://julialang.org/downloads/)
 - Dependencies:
+  - [`Brillouin.jl`](https://github.com/thchr/Brillouin.jl) `v0.2.0` and above
   - [`Combinatorics.jl`](https://github.com/JuliaMath/Combinatorics.jl) `v0.7.0` and above
   - [`Compat.jl`](https://github.com/JuliaLang/Compat.jl) `v2.2.0` and above
   - [`CoordinateTransformations.jl`](https://github.com/JuliaGeometry/CoordinateTransformations.jl) `v0.5.1` and above
