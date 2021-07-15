@@ -144,15 +144,26 @@ struct ReciprocalPath{N}
     suggested_paths::Vector{Vector{Symbol}}
     lattice::Lattice
 end
-function ReciprocalPath(spgnum::Integer, lattice::Lattice)
+"""
+    ReciprocalPath(lattice::Lattice, spgnum::Integer)
+    ReciprocalPath(cell::Cell)
+
+Construct a `ReciprocalPath` from a `Lattice` or a `Cell`.
+"""
+function ReciprocalPath(lattice::Lattice, spgnum::Integer)
     kpath = irrfbz_path(spgnum, collect(basis_vectors(lattice)))
     return ReciprocalPath(kpath.points, kpath.paths, lattice)
 end
 function ReciprocalPath(cell::Cell)
     spg = get_spacegroup_type(cell)
-    return ReciprocalPath(spg.number, Lattice(cell))
+    return ReciprocalPath(Lattice(cell), spg.number)
 end
 
+"""
+    coordinates(path::ReciprocalPath, cartesian = false)
+
+If `cartesian` is `true`, return the coordinates in the Cartesian coordinate system.
+"""
 coordinates(path::ReciprocalPath, cartesian = false) =
     cartesian ?
     Dict(
