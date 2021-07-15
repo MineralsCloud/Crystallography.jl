@@ -1421,7 +1421,7 @@ end
 
 @testset "Test `ReciprocalPath`" begin
     lattice = Lattice([0, 1, 1], [1, 0, 1], [1, 1, 0]) / 2
-    path = ReciprocalPath(227, lattice)
+    path = ReciprocalPath(lattice, 227)
     # Compared with https://thchr.github.io/Brillouin.jl/dev/kpaths/
     @test path.special_points == Dict(
         :U => [0.625, 0.25, 0.625],
