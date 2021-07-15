@@ -1,4 +1,4 @@
-using Brillouin
+using Brillouin: wignerseitz
 
 @testset "Test `WignerSeitzCell` against `Brillouin`" begin
     # Data from https://thchr.github.io/Brillouin.jl/dev/wignerseitz/
