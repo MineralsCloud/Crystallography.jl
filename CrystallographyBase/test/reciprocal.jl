@@ -1,3 +1,5 @@
+using Brillouin: irrfbz_path, cartesianize
+
 @testset "Test inversion `inv`" begin
     @testset "Base centered orthorhombic" begin
         a, b, c = 4, 3, 5
@@ -1416,3 +1418,28 @@ end
 #         [0.8571429, 1.484615, 0.7475649, 1.0],
 #     ]
 # end
+
+@testset "Test `ReciprocalPath`" begin
+    lattice = Lattice([0, 1, 1], [1, 0, 1], [1, 1, 0]) / 2
+    path = ReciprocalPath(227, lattice)
+    # Compared with https://thchr.github.io/Brillouin.jl/dev/kpaths/
+    @test path.special_points == Dict(
+        :U => [0.625, 0.25, 0.625],
+        :W => [0.5, 0.25, 0.75],
+        :K => [0.375, 0.375, 0.75],
+        :Γ => [0.0, 0.0, 0.0],
+        :L => [0.5, 0.5, 0.5],
+        :X => [0.5, 0.0, 0.5],
+    )
+    @test path.suggested_paths == [[:Γ, :X, :U], [:K, :Γ, :L, :W, :X]]
+    @test cartesianize(irrfbz_path(227, 2pi * [[1, 0, 0], [0, 1, 0], [0, 0, 1]])).points ==
+          coordinates(path, true) ==
+          Dict(
+              :U => [0.25, 1.0, 0.25],
+              :W => [0.5, 1.0, 0.0],
+              :K => [0.75, 0.75, 0.0],
+              :Γ => [0.0, 0.0, 0.0],
+              :L => [0.5, 0.5, 0.5],
+              :X => [0.0, 1.0, 0.0],
+          )
+end
