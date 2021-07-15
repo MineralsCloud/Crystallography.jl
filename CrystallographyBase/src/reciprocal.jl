@@ -156,6 +156,6 @@ end
 coordinates(path::ReciprocalPath, cartesian = false) =
     cartesian ?
     Dict(
-        key => CartesianFromFractional(path.lattice)(value) for
+        key => CartesianFromFractional(inv(path.lattice))(value) for
         (key, value) in path.special_points
     ) : path.special_points
