@@ -141,6 +141,8 @@ function reciprocal_mesh(
         return crystal_coord
     end
 end
+reciprocal_mesh(cell::Cell, mp::MonkhorstPackGrid; kwargs...) =
+    reciprocal_mesh(cell, mp.mesh, mp.is_shift; kwargs...)
 
 """
     coordinates(arr::AbstractArray{<:ReciprocalPoint})
