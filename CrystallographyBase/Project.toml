@@ -27,7 +27,7 @@ Compat = "2.2, 3"
 Brillouin = "0.2, 0.3, 0.4"
 CoordinateTransformations = "0.5.1, 0.6"
 Counters = "0.3"
-Spglib = "0.2, 0.3"
+Spglib = "0.2, 0.3, 0.4"
 Functors = "0.1, 0.2"
 
 [targets]
