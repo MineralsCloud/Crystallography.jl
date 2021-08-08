@@ -1419,6 +1419,13 @@ end
 #     ]
 # end
 
+@testset "Construct `MonkhorstPackGrid` incorrectly" begin
+    @test_throws DimensionMismatch MonkhorstPackGrid([4, 4, 4, 4], [1, 1, 1])
+    @test_throws AssertionError MonkhorstPackGrid([4, 4, 0], [1, 1, 1])
+    @test_throws DimensionMismatch MonkhorstPackGrid([4, 4, 4], [1, 1, 1, 1])
+    @test_throws InexactError MonkhorstPackGrid([4, 4, 4], [1, 1, 2])
+end
+
 @testset "Test `ReciprocalPath`" begin
     lattice = Lattice([0, 1, 1], [1, 0, 1], [1, 1, 0]) / 2
     path = ReciprocalPath(lattice, 227)
