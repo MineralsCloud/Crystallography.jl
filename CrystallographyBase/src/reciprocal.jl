@@ -1,4 +1,4 @@
-using Brillouin: irrfbz_path
+# using Brillouin: irrfbz_path
 using Compat: eachslice
 using Counters: counter
 using LinearAlgebra: cross
@@ -7,7 +7,7 @@ using Spglib: get_ir_reciprocal_mesh, get_spacegroup_type
 export ReciprocalPoint,
     ReciprocalLattice,
     MonkhorstPackGrid,
-    ReciprocalPath,
+    # ReciprocalPath,
     reciprocal_mesh,
     coordinates,
     weights
@@ -167,34 +167,34 @@ function Base.show(io::IO, x::ReciprocalPoint)
     end
 end
 
-struct ReciprocalPath{N}
-    special_points::Dict{Symbol,SVector{N,Float64}}
-    suggested_paths::Vector{Vector{Symbol}}
-    lattice::Lattice
-end
-"""
-    ReciprocalPath(lattice::Lattice, spgnum::Integer)
-    ReciprocalPath(cell::Cell)
+# struct ReciprocalPath{N}
+#     special_points::Dict{Symbol,SVector{N,Float64}}
+#     suggested_paths::Vector{Vector{Symbol}}
+#     lattice::Lattice
+# end
+# """
+#     ReciprocalPath(lattice::Lattice, spgnum::Integer)
+#     ReciprocalPath(cell::Cell)
 
-Construct a `ReciprocalPath` from a `Lattice` or a `Cell`.
-"""
-function ReciprocalPath(lattice::Lattice, spgnum::Integer)
-    kpath = irrfbz_path(spgnum, collect(basis_vectors(lattice)))
-    return ReciprocalPath(kpath.points, kpath.paths, lattice)
-end
-function ReciprocalPath(cell::Cell)
-    spg = get_spacegroup_type(cell)
-    return ReciprocalPath(Lattice(cell), spg.number)
-end
+# Construct a `ReciprocalPath` from a `Lattice` or a `Cell`.
+# """
+# function ReciprocalPath(lattice::Lattice, spgnum::Integer)
+#     kpath = irrfbz_path(spgnum, collect(basis_vectors(lattice)))
+#     return ReciprocalPath(kpath.points, kpath.paths, lattice)
+# end
+# function ReciprocalPath(cell::Cell)
+#     spg = get_spacegroup_type(cell)
+#     return ReciprocalPath(Lattice(cell), spg.number)
+# end
 
 """
     coordinates(path::ReciprocalPath, cartesian = false)
 
 If `cartesian` is `true`, return the coordinates in the Cartesian coordinate system.
 """
-coordinates(path::ReciprocalPath, cartesian = false) =
-    cartesian ?
-    Dict(
-        key => CartesianFromFractional(inv(path.lattice))(value) for
-        (key, value) in path.special_points
-    ) : path.special_points
+# coordinates(path::ReciprocalPath, cartesian = false) =
+#     cartesian ?
+#     Dict(
+#         key => CartesianFromFractional(inv(path.lattice))(value) for
+#         (key, value) in path.special_points
+#     ) : path.special_points
