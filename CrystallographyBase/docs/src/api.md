@@ -44,8 +44,6 @@ Note that we take ``2\pi`` as ``1``, not the solid-state physics convention.
 ReciprocalPoint
 ReciprocalLattice
 MonkhorstPackGrid
-WignerSeitzCell
-ReciprocalPath
 inv
 reciprocal_mesh
 coordinates
