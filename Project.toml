@@ -1,18 +1,18 @@
 name = "Crystallography"
 uuid = "3bff3928-7a76-11e9-2089-d112443085a5"
 authors = ["Qi Zhang"]
-version = "0.3.1"
+version = "0.3.3-DEV"
 
 [deps]
 CrystallographyBase = "93b1d1cd-a8ea-4aa5-adb1-b2407ea0ba8d"
 
-[compat]
-CrystallographyBase = "0.3, 0.4"
-julia = "1"
-
 [extras]
 SymPy = "24249f21-da20-56a4-8eb1-6a02cf4ae2e6"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+julia = "1"
+CrystallographyBase = "0.3, 0.4"
 
 [targets]
 test = ["Test", "SymPy"]
