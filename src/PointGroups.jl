@@ -8,7 +8,7 @@ using ..Crystallography: Triclinic,
     Trigonal,
     Hexagonal
 
-export pointgroups, hermann_mauguin, international
+export pointgroups, hermann_mauguin, international, schönflies, schoenflies
 
 abstract type PointGroup end
 abstract type CyclicGroup <: PointGroup end
@@ -100,5 +100,8 @@ hermann_mauguin(::O) = "432"
 hermann_mauguin(::Td) = "4̄3m"
 hermann_mauguin(::Oh) = "m3̄m"
 const international = hermann_mauguin
+
+schönflies(g::PointGroup) = isconcretetype(typeof(g)) ? string(nameof(typeof(g))) : throw(ArgumentError("$g is not a specific point group!"))
+const schoenflies = schönflies
 
 end
