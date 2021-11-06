@@ -135,5 +135,6 @@ export centering,
     @m_str
 
 # include("Symmetry.jl")
+include("PointGroups.jl")
 
 end
