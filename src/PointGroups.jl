@@ -8,7 +8,7 @@ using ..Crystallography: Triclinic,
     Trigonal,
     Hexagonal
 
-export pointgroups, hermann_mauguin, international, schönflies, schoenflies
+export pointgroups, hermann_mauguin, international, schönflies, schoenflies, order
 
 abstract type PointGroup end
 abstract type CyclicGroup <: PointGroup end
@@ -103,5 +103,38 @@ const international = hermann_mauguin
 
 schönflies(g::PointGroup) = isconcretetype(typeof(g)) ? string(nameof(typeof(g))) : throw(ArgumentError("$g is not a specific point group!"))
 const schoenflies = schönflies
+
+order(::C1) = 1
+order(::S2) = 2
+order(::C2) = 2
+order(::C1h) = 2
+order(::C3) = 3
+order(::C4) = 4
+order(::S4) = 4
+order(::C2h) = 4
+order(::D2) = 4
+order(::C2v) = 4
+order(::S6) = 6
+order(::C6) = 6
+order(::C3h) = 6
+order(::D3) = 6
+order(::C3v) = 6
+order(::D2h) = 8
+order(::C4h) = 8
+order(::D4) = 8
+order(::C4v) = 8
+order(::D2d) = 8
+order(::C6h) = 12
+order(::T) = 12
+order(::D3d) = 12
+order(::D6) = 12
+order(::C6v) = 12
+order(::D3h) = 12
+order(::D4h) = 16
+order(::D6h) = 24
+order(::Th) = 24
+order(::O) = 24
+order(::Td) = 24
+order(::Oh) = 48
 
 end
