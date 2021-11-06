@@ -1,5 +1,15 @@
 module PointGroups
 
+using ..Crystallography: Triclinic,
+    Monoclinic,
+    Orthorhombic,
+    Tetragonal,
+    Cubic,
+    Trigonal,
+    Hexagonal
+
+export pointgroups
+
 abstract type PointGroup end
 abstract type CyclicGroup <: PointGroup end
 struct C1 <: CyclicGroup end
@@ -49,6 +59,12 @@ const D1d = C2h
 const V2 = D2d
 const Vh = D2h
 
-
+pointgroups(::Triclinic) = (C1(), S2())
+pointgroups(::Monoclinic) = (C2(), C1h(), C2h())
+pointgroups(::Orthorhombic) = (D2(), C2v(), D2h())
+pointgroups(::Tetragonal) = (C4(), S4(), C4h(), D4(), C4v(), D2d(), D4h())
+pointgroups(::Trigonal) = (C3(), S6(), D3(), C3v(), D3d())
+pointgroups(::Hexagonal) = (C6(), C3h(), C6h(), D6(), C6v(), D3h(), D6h())
+pointgroups(::Cubic) = (T(), Th(), O(), Td(), Oh())
 
 end
