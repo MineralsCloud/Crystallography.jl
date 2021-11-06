@@ -8,7 +8,7 @@ using ..Crystallography: Triclinic,
     Trigonal,
     Hexagonal
 
-export pointgroups, hermann_mauguin, international, schönflies, schoenflies, order
+export pointgroups, hermann_mauguin, international, schönflies, schoenflies, order, laueclasses
 
 abstract type PointGroup end
 abstract type CyclicGroup <: PointGroup end
@@ -58,6 +58,16 @@ const D1h = C2v
 const D1d = C2h
 const V2 = D2d
 const Vh = D2h
+
+struct LaueClass{T<:PointGroup} end
+
+laueclasses(::Triclinic) = (LaueClass{Ci}(),)
+laueclasses(::Monoclinic) = (LaueClass{C2h}(),)
+laueclasses(::Orthorhombic) = (LaueClass{D2h}(),)
+laueclasses(::Tetragonal) = (LaueClass{C4h}(), LaueClass{D4h}())
+laueclasses(::Trigonal) = (LaueClass{C3i}(), LaueClass{D3d}())
+laueclasses(::Hexagonal) = (LaueClass{C6h}(), LaueClass{D6h}())
+laueclasses(::Cubic) = (LaueClass{Th}(), LaueClass{Oh}())
 
 pointgroups(::Triclinic) = (C1(), S2())
 pointgroups(::Monoclinic) = (C2(), C1h(), C2h())
