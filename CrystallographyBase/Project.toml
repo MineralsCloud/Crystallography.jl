@@ -16,6 +16,7 @@ Functors = "d9f16b24-f501-4c13-a1f2-28368ffc5196"
 [extras]
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 UnitfulAtomic = "a7773ee8-282e-5fa2-be4e-bd808c38a91a"
+Brillouin = "23470ee3-d0df-4052-8b1a-8cbd6363e7f0"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
@@ -29,4 +30,4 @@ Spglib = "0.2, 0.3, 0.4, 0.5"
 Functors = "0.1, 0.2"
 
 [targets]
-test = ["Test", "Unitful", "UnitfulAtomic"]
+test = ["Test", "Unitful", "UnitfulAtomic", "Brillouin"]
