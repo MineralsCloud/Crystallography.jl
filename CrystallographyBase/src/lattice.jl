@@ -193,8 +193,8 @@ function Lattice(a, b, c, α, β, γ)
     Ω = cellvolume(a, b, c, α, β, γ)
     sinγ, cosγ, cosα, cosβ = sind(γ), cosd(γ), cosd(α), cosd(β)
     return Lattice(
-        [a, 0, 0],
-        [b * cosγ, b * sinγ, 0],
+        [a, zero(a), zero(a)],
+        [b * cosγ, b * sinγ, zero(b)],
         [c * cosβ, c * (cosα - cosβ * cosγ) / sinγ, Ω / (a * b * sinγ)],
     )
 end
