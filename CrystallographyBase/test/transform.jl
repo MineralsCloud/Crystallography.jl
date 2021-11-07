@@ -1,5 +1,4 @@
 using CoordinateTransformations: IdentityTransformation
-using UnitfulAtomic
 
 @testset "Fractional coordinates to Cartesian coordinates" begin
     lattice = Lattice([

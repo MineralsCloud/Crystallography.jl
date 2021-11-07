@@ -1,6 +1,5 @@
 using LinearAlgebra: dot, norm, diagm
 # using SymPy: symbols
-using Unitful: @u_str
 
 @testset "Test length in a hexagonal lattice" begin
     g = MetricTensor(1, 1, 2, 90, 90, 120)  # Primitive hexagonal
