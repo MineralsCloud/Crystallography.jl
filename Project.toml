@@ -9,6 +9,7 @@ MLStyle = "d8e11817-5142-5d16-987a-aa16d5891078"
 
 [compat]
 CrystallographyBase = "0.3, 0.4"
+MLStyle = "0.2, 0.3, 0.4"
 julia = "1"
 
 [extras]
