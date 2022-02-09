@@ -10,6 +10,7 @@ using ..Crystallography: Triclinic,
     Trigonal,
     Hexagonal
 
+export PointGroup
 export pointgroups, hermann_mauguin, international, schönflies, schoenflies, orderof, laueclasses
 
 abstract type PointGroup end
