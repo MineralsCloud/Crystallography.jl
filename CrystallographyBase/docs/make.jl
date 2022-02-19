@@ -5,7 +5,7 @@ DocMeta.setdocmeta!(CrystallographyBase, :DocTestSetup, :(using CrystallographyB
 
 makedocs(;
     modules=[CrystallographyBase],
-    authors="Qi Zhang <singularitti@outlook.com>",
+    authors="singularitti <singularitti@outlook.com>",
     repo="https://github.com/MineralsCloud/CrystallographyBase.jl/blob/{commit}{path}#{line}",
     sitename="CrystallographyBase.jl",
     format=Documenter.HTML(;
