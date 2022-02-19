@@ -1,5 +1,6 @@
 using LinearAlgebra: Diagonal
-using Spglib: Cell
+
+import Spglib: Cell
 
 export CrystalSystem,
     Triclinic,
@@ -199,6 +200,9 @@ function Lattice(a, b, c, α, β, γ)
     )
 end
 @functor Lattice
+
+Cell(lattice::Lattice, positions, types, magmoms = zeros(length(types))) =
+    Cell(lattice.data, positions, types, magmoms)
 
 """
     basis_vectors(lattice::Lattice)
