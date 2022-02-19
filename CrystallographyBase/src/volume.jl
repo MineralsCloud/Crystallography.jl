@@ -29,3 +29,5 @@ function density(lattice::Lattice, atoms)
     return mass / volume
 end
 density(cell::Cell) = density(cell.lattice, cell.types)
+
+function atomicmass end
