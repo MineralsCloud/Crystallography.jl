@@ -28,6 +28,6 @@ function density(lattice::Lattice, atoms)
     volume = cellvolume(lattice)
     return mass / volume
 end
-density(cell::Cell) = density(cell.lattice, cell.types)
+density(cell::Cell) = density(Lattice(cell.lattice), cell.types)
 
 function atomicmass end
