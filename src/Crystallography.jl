@@ -65,7 +65,7 @@ using CrystallographyBase:
     weights,
     family,
     cellvolume,
-    density,
+    crystaldensity,
     @m_str
 
 export CrystalSystem,
@@ -133,7 +133,7 @@ export centering,
     weights,
     family,
     cellvolume,
-    density,
+    crystaldensity,
     @m_str
 
 # include("Symmetry.jl")
