@@ -1,3 +1,5 @@
+using PeriodicTable: Element, elements
+
 export cellvolume, density
 
 """
@@ -30,4 +32,5 @@ function density(lattice::Lattice, atoms)
 end
 density(cell::Cell) = density(Lattice(cell.lattice), cell.types)
 
-function atomicmass end
+atomicmass(element::Element) = element.atomic_mass
+atomicmass(i::Union{AbstractString,Integer,Symbol}) = elements[i].atomic_mass
