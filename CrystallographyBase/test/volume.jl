@@ -17,6 +17,8 @@ using Unitful: uconvert
         types = elements[[22, 22, 8, 8, 8, 8]]
         cell = Cell(lattice, positions, types)
         @test cellvolume(cell) ≈ 64.29197531534862u"angstrom^3"
+        @test uconvert(u"g/cm^3", crystaldensity(lattice, types)) ≈
+              4.125526333805304u"g/cm^3"
         @test uconvert(u"g/cm^3", crystaldensity(cell)) ≈ 4.125526333805304u"g/cm^3"
     end
     @testset "Test `AbstractString`s" begin
