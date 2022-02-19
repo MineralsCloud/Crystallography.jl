@@ -1,4 +1,6 @@
-export cellvolume
+using PeriodicTable: Element, elements
+
+export cellvolume, density
 
 """
     cellvolume(a, b, c, α, β, γ)
@@ -21,3 +23,14 @@ cellvolume(cell::Cell) = cellvolume(cell.lattice)
 Calculates the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
+
+density(volume::Number, mass::Number) = mass / volume
+function density(lattice::Lattice, atoms)
+    mass = sum(atomicmass, atoms)
+    volume = cellvolume(lattice)
+    return mass / volume
+end
+density(cell::Cell) = density(Lattice(cell.lattice), cell.types)
+
+atomicmass(element::Element) = element.atomic_mass
+atomicmass(i::Union{AbstractString,Integer,Symbol}) = elements[i].atomic_mass
