@@ -1,11 +1,11 @@
 using PeriodicTable: Element, elements
 
-export cellvolume, density
+export cellvolume, crystaldensity
 
 """
     cellvolume(a, b, c, α, β, γ)
 
-Calculates the cell volume from 6 cell parameters.
+Calculate the cell volume from 6 cell parameters.
 """
 cellvolume(a, b, c, α, β, γ) =
     a * b * c * sqrt(sind(α)^2 - cosd(β)^2 - cosd(γ)^2 + 2 * cosd(α) * cosd(β) * cosd(γ))
@@ -13,24 +13,35 @@ cellvolume(a, b, c, α, β, γ) =
     cellvolume(l::Lattice)
     cellvolume(c::Cell)
 
-Calculates the cell volume from a `Lattice` or a `Cell`.
+Calculate the cell volume from a `Lattice` or a `Cell`.
 """
 cellvolume(lattice::AbstractLattice) = abs(det(lattice.data))
 cellvolume(cell::Cell) = abs(det(cell.lattice))
 """
     cellvolume(g::MetricTensor)
 
-Calculates the cell volume from a `MetricTensor`.
+Calculate the cell volume from a `MetricTensor`.
 """
 cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
 
-density(volume::Number, mass::Number) = mass / volume
-function density(lattice::Lattice, atoms)
+"""
+    crystaldensity(volume::Number, mass::Number)
+    crystaldensity(lattice::Lattice, atoms)
+    crystaldensity(cell::Cell)
+
+Calculate the density of a crystal structure.
+
+Here, `atoms` is an iterable of atomic numbers, element names, symbols, or `PeriodicTable.Element`s.
+You can extend the `atomicmass` method to work with custom types.
+"""
+crystaldensity(volume::Number, mass::Number) = mass / volume
+function crystaldensity(lattice::Lattice, atoms)
     mass = sum(atomicmass, atoms)
     volume = cellvolume(lattice)
     return mass / volume
 end
-density(cell::Cell) = density(Lattice(cell.lattice), cell.types)
+crystaldensity(cell::Cell) = crystaldensity(Lattice(cell.lattice), cell.types)
+const density = crystaldensity  # For compatibility reason
 
 atomicmass(element::Element) = element.atomic_mass
 atomicmass(i::Union{AbstractString,Integer,Symbol}) = elements[i].atomic_mass

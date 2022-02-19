@@ -86,4 +86,5 @@ StandardizedFromPrimitive
 
 ```@docs
 cellvolume
+crystaldensity
 ```
