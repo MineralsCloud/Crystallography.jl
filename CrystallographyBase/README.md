@@ -4,12 +4,11 @@
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://MineralsCloud.github.io/CrystallographyBase.jl/dev)
 [![Build Status](https://github.com/MineralsCloud/CrystallographyBase.jl/workflows/CI/badge.svg)](https://github.com/MineralsCloud/CrystallographyBase.jl/actions)
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/MineralsCloud/CrystallographyBase.jl?svg=true)](https://ci.appveyor.com/project/singularitti/CrystallographyBase-jl)
-[![Build Status](https://cloud.drone.io/api/badges/MineralsCloud/CrystallographyBase.jl/status.svg)](https://cloud.drone.io/MineralsCloud/CrystallographyBase.jl)
 [![Build Status](https://api.cirrus-ci.com/github/MineralsCloud/CrystallographyBase.jl.svg)](https://cirrus-ci.com/github/MineralsCloud/CrystallographyBase.jl)
 [![pipeline status](https://gitlab.com/singularitti/CrystallographyBase.jl/badges/master/pipeline.svg)](https://gitlab.com/singularitti/CrystallographyBase.jl/-/pipelines)
 [![Coverage](https://codecov.io/gh/MineralsCloud/CrystallographyBase.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/MineralsCloud/CrystallographyBase.jl)
 [![PkgEval](https://JuliaCI.github.io/NanosoldierReports/pkgeval_badges/C/CrystallographyBase.svg)](https://JuliaCI.github.io/NanosoldierReports/pkgeval_badges/report.html)
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/organization/repository)
+[![GitHub license](https://img.shields.io/github/license/MineralsCloud/CrystallographyBase.jl)](https://github.com/MineralsCloud/CrystallographyBase.jl/blob/master/LICENSE)
 
 ## Package Features
 
