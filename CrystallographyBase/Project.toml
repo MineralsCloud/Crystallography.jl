@@ -16,7 +16,7 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
 Combinatorics = "0.7, 1"
-Compat = "2.2, 3"
+Compat = "2.2, 3, 4"
 CoordinateTransformations = "0.5.1, 0.6"
 Counters = "0.3"
 Functors = "0.1, 0.2"
