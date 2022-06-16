@@ -273,6 +273,9 @@ end
 Create a supercell from `lattice`.
 """
 function supercell(lattice::Lattice, scaling_factors::AbstractMatrix{<:Integer})
+    if size(scaling_factors) != (3, 3)
+        throw(ArgumentError("`scaling_factors` must be a 3×3 matrix!"))
+    end
     @assert det(scaling_factors) >= 1
     return Lattice(lattice.data * scaling_factors)
 end
