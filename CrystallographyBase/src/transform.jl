@@ -1,5 +1,4 @@
 using CoordinateTransformations: IdentityTransformation, Transformation
-using LinearAlgebra: I
 
 export FractionalFromCartesian,
     CartesianFromFractional,

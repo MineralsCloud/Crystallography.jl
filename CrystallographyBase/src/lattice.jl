@@ -1,4 +1,4 @@
-using LinearAlgebra: Diagonal
+using LinearAlgebra: Diagonal, I
 
 import Spglib: Cell
 
@@ -266,25 +266,20 @@ end
 
 # See https://en.wikipedia.org/wiki/Supercell_(crystal)
 """
-    supercell(lattice::Lattice, expansion::AbstractMatrix{<:Integer})
+    supercell(lattice::Lattice, scaling_factors::AbstractMatrix{<:Integer})
+    supercell(lattice::Lattice, scaling_factors::AbstractVector{<:Integer})
+    supercell(lattice::Lattice, scaling_factor::Integer)
 
-Allow the supercell to be a tilted extension of `cell`.
+Create a supercell from `lattice`.
 """
-function supercell(lattice::Lattice, expansion::AbstractMatrix)
-    if any(!isinteger(x) for x in expansion)
-        throw(ArgumentError("`expansion` must be an integer matrix!"))
-    end
-    @assert det(expansion) >= 1
-    return Lattice(lattice.data * expansion)
+function supercell(lattice::Lattice, scaling_factors::AbstractMatrix{<:Integer})
+    @assert det(scaling_factors) >= 1
+    return Lattice(lattice.data * scaling_factors)
 end
-"""
-    supercell(lattice::Lattice, expansion::AbstractVector{<:Integer})
-
-Return a supercell based on `cell` and expansion coefficients.
-"""
-supercell(lattice::Lattice, expansion::AbstractVector) =
-    supercell(lattice, Diagonal(expansion))
-# function supercell(cell::Cell, expansion) end
+supercell(lattice::Lattice, scaling_factors::AbstractVector{<:Integer}) =
+    supercell(lattice, Diagonal(scaling_factors))
+supercell(lattice::Lattice, scaling_factor::Integer) =
+    supercell(lattice, scaling_factor * I)
 
 Base.iterate(lattice::AbstractLattice) = iterate(lattice.data)
 Base.iterate(lattice::AbstractLattice, state) = iterate(lattice.data, state)
