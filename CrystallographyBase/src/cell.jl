@@ -4,21 +4,25 @@ using StructHelpers: @batteries
 export Cell
 
 struct Cell{L,P,T}
-    lattice::MMatrix{3,3,L,9}
+    lattice::Lattice{L}
     positions::Vector{MVector{3,P}}
-    types::Vector{T}
+    atoms::Vector{T}
 end
-function Cell(lattice, positions, types)
-    if !(lattice isa AbstractMatrix)
-        lattice = reduce(hcat, lattice)  # Use `reduce` can make it type stable
+function Cell(lattice, positions, atoms)
+    if !(lattice isa Lattice)
+        lattice = Lattice(lattice)
+        L = eltype(lattice)
     end
-    P = eltype(Base.promote_typeof(positions...))
-    positions = collect(map(MVector{3,P}, positions))
-    L, T = eltype(lattice), eltype(types)
-    return Cell{L,P,T}(lattice, positions, types)
+    if positions isa AbstractVector
+        P = eltype(Base.promote_typeof(positions...))
+        positions = collect(map(MVector{3,P}, positions))
+    else
+        throw(ArgumentError("`positions` must be a `Vector` of `Vector`s!"))
+    end
+    T = eltype(atoms)
+    return Cell{L,P,T}(lattice, positions, atoms)
 end
-Cell(lattice::Lattice, positions, types, magmoms = zeros(length(types))) =
-    Cell(lattice.data, positions, types, magmoms)
+
 @batteries Cell eq = true hash = true
 
 """
