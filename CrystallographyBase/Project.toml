@@ -11,6 +11,7 @@ Functors = "d9f16b24-f501-4c13-a1f2-28368ffc5196"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 PeriodicTable = "7b2266bf-644c-5ea3-82d8-af4bbd25a884"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+StructHelpers = "4093c41a-2008-41fd-82b8-e3f9d02b504f"
 
 [compat]
 Combinatorics = "0.7, 1"
