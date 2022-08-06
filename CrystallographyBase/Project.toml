@@ -10,8 +10,8 @@ Counters = "5a653867-b65e-5b16-a095-b1e26d522bbf"
 Functors = "d9f16b24-f501-4c13-a1f2-28368ffc5196"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 PeriodicTable = "7b2266bf-644c-5ea3-82d8-af4bbd25a884"
-Spglib = "f761d5c5-86db-4880-b97f-9680a7cccfb5"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+StructHelpers = "4093c41a-2008-41fd-82b8-e3f9d02b504f"
 
 [compat]
 Combinatorics = "0.7, 1"
@@ -19,7 +19,6 @@ CoordinateTransformations = "0.5.1, 0.6"
 Counters = "0.3"
 Functors = "0.1, 0.2, 0.3"
 PeriodicTable = "0.1, 1"
-Spglib = "0.2, 0.3, 0.4, 0.5, 0.6"
 StaticArrays = "0.8.3, 0.9, 0.10, 0.11, 0.12, 1"
 julia = "1.3"
 

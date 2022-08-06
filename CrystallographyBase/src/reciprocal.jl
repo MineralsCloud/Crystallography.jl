@@ -1,13 +1,11 @@
 # using Brillouin: irrfbz_path
 using Counters: counter
 using LinearAlgebra: cross
-using Spglib: get_ir_reciprocal_mesh, get_spacegroup_type
 
 export ReciprocalPoint,
     ReciprocalLattice,
     MonkhorstPackGrid,
     # ReciprocalPath,
-    reciprocal_mesh,
     coordinates,
     weights
 
@@ -84,64 +82,6 @@ struct MonkhorstPackGrid
         return new(mesh, is_shift)
     end
 end
-
-# See example in https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
-"""
-    reciprocal_mesh(cell::Cell, mesh, is_shift; kwargs...)
-
-List the `ReciprocalPoint`s from the mesh of the reciprocal space of a `Cell`.
-
-# Arguments
-- `cell::Cell`: the cell.
-- `mesh`: a vector of three integers which specify the mesh numbers along reciprocal primitive axis.
-- `is_shift=falses(3)`: a vector of three elements specifying whether the mesh is shifted along the axis in half of adjacent mesh points irrespective of the mesh numbers. The allowed values are `0`, `1`, `true`, and `false`.
-- `is_time_reversal=true`: whether to impose the time reversal symmetry on the mesh.
-- `symprec=1e-5`: distance tolerance in Cartesian coordinates to find crystal symmetry.
-- `cartesian=false`: whether to return the reciprocal points in Cartesian coordinates.
-- `ir_only=true`: whether to return the reciprocal points only in the irreducible Brillouin zone.
-"""
-function reciprocal_mesh(
-    cell::Cell,
-    mesh,
-    is_shift = falses(3);
-    is_time_reversal = true,
-    symprec = 1e-5,
-    cartesian = false,
-    ir_only = true,
-)
-    _, mapping, grid = get_ir_reciprocal_mesh(
-        cell,
-        mesh,
-        is_shift;
-        is_time_reversal = is_time_reversal,
-        symprec = symprec,
-    )
-    shift = is_shift ./ 2  # true / 2 = 0.5, false / 2 = 0
-    mapping = convert(Vector{Int}, mapping)
-    weights = counter(mapping)
-    total_number = length(mapping)  # Number of all k-points, not only the irreducible ones
-    crystal_coord = if ir_only
-        map(unique(mapping)) do index
-            x, y, z = (grid[:, index] .+ shift) ./ mesh
-            weight = weights[index] / total_number
-            ReciprocalPoint(x, y, z, weight)
-        end
-    else
-        map(eachslice(grid; dims = 2)) do point
-            x, y, z = (point .+ shift) ./ mesh
-            weight = 1 / total_number
-            ReciprocalPoint(x, y, z, weight)
-        end
-    end
-    if cartesian
-        t = CartesianFromFractional(inv(Lattice(cell)))
-        return map(t, crystal_coord)
-    else
-        return crystal_coord
-    end
-end
-reciprocal_mesh(cell::Cell, mp::MonkhorstPackGrid; kwargs...) =
-    reciprocal_mesh(cell, mp.mesh, mp.is_shift; kwargs...)
 
 """
     coordinates(arr::AbstractArray{<:ReciprocalPoint})
