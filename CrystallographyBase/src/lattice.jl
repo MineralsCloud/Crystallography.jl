@@ -1,7 +1,5 @@
 using LinearAlgebra: Diagonal, I
 
-import Spglib: Cell
-
 export CrystalSystem,
     Triclinic,
     Monoclinic,
@@ -36,7 +34,6 @@ export CrystalSystem,
     FaceCenteredCubic,
     PrimitiveHexagonal,
     RCenteredHexagonal,
-    Cell,
     Lattice
 export centering, crystalsystem, basis_vectors, cellparameters
 
@@ -175,12 +172,6 @@ Construct a `Lattice` from three basis vectors.
 """
 Lattice(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector) = Lattice(hcat(𝐚, 𝐛, 𝐜))
 """
-    Lattice(cell::Cell)
-
-Get the lattice of a `Cell`.
-"""
-Lattice(cell::Cell) = Lattice(cell.lattice)
-"""
     Lattice(a, b, c, α, β, γ)
 
 Construct a `Lattice` from the six cell parameters.
@@ -200,9 +191,6 @@ function Lattice(a, b, c, α, β, γ)
     )
 end
 @functor Lattice
-
-Cell(lattice::Lattice, positions, types, magmoms = zeros(length(types))) =
-    Cell(lattice.data, positions, types, magmoms)
 
 """
     basis_vectors(lattice::Lattice)
