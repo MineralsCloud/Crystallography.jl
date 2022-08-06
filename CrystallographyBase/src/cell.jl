@@ -1,7 +1,7 @@
 using StaticArrays: MMatrix, MVector
 using StructHelpers: @batteries
 
-export Cell
+export Cell, natoms
 
 struct Cell{L,P,T}
     lattice::Lattice{L}
@@ -24,6 +24,8 @@ function Cell(lattice, positions, atoms)
 end
 
 @batteries Cell eq = true hash = true
+
+natoms(cell::Cell) = length(cell.atoms)
 
 """
     Lattice(cell::Cell)
