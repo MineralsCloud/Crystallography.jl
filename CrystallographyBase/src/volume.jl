@@ -40,7 +40,7 @@ function crystaldensity(lattice::Lattice, atoms)
     volume = cellvolume(lattice)
     return mass / volume
 end
-crystaldensity(cell::Cell) = crystaldensity(Lattice(cell.lattice), cell.types)
+crystaldensity(cell::Cell) = crystaldensity(Lattice(cell.lattice), cell.atoms)
 const density = crystaldensity  # For compatibility reason
 
 atomicmass(element::Element) = element.atomic_mass
