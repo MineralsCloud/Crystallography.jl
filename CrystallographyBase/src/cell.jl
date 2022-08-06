@@ -35,7 +35,8 @@ Get the lattice of a `Cell`.
 Lattice(cell::Cell) = cell.lattice
 
 """
-basis_vectors(cell::Cell)
+    basis_vectors(cell::Cell)
+
 Return the three basis vectors from `cell`.
 """
 function basis_vectors(cell::Cell)
