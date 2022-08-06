@@ -30,7 +30,7 @@ end
 
 Get the lattice of a `Cell`.
 """
-Lattice(cell::Cell) = Lattice(cell.lattice)
+Lattice(cell::Cell) = cell.lattice
 
 """
 basis_vectors(cell::Cell)
