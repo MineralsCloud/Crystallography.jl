@@ -5,7 +5,6 @@ version = "0.5.2"
 
 [deps]
 Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
-Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
 CoordinateTransformations = "150eb455-5306-5404-9cee-2592286d6298"
 Counters = "5a653867-b65e-5b16-a095-b1e26d522bbf"
 Functors = "d9f16b24-f501-4c13-a1f2-28368ffc5196"
@@ -16,7 +15,6 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
 Combinatorics = "0.7, 1"
-Compat = "2.2, 3, 4"
 CoordinateTransformations = "0.5.1, 0.6"
 Counters = "0.3"
 Functors = "0.1, 0.2, 0.3"
