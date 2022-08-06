@@ -1,7 +1,7 @@
 using StaticArrays: MMatrix, MVector
 using StructHelpers: @batteries
 
-export Cell, natoms
+export Cell, natoms, eachatom
 
 struct Cell{L,P,T}
     lattice::Lattice{L}
@@ -43,6 +43,29 @@ function basis_vectors(cell::Cell)
     lattice = cell.lattice
     return lattice[:, 1], lattice[:, 2], lattice[:, 3]
 end
+
+struct EachAtom{A,B}
+    atoms::Vector{A}
+    positions::Vector{B}
+end
+EachAtom(cell::Cell) = EachAtom(cell.atoms, cell.positions)
+
+eachatom(cell::Cell) = EachAtom(cell)
+
+# Similar to https://github.com/JuliaCollections/IterTools.jl/blob/0ecaa88/src/IterTools.jl#L1028-L1032
+function Base.iterate(itr::EachAtom, state = 1)
+    if state > length(itr)
+        return nothing
+    else
+        return (itr.atoms[state], itr.positions[state]), state + 1
+    end
+end
+
+Base.eltype(::EachAtom{A,B}) where {A,B} = Tuple{A,B}
+
+Base.length(itr::EachAtom) = length(itr.atoms)
+
+Base.IteratorSize(::Type{<:EachAtom}) = Base.HasLength()
 
 function Base.show(io::IO, cell::Cell)
     if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(cell)
