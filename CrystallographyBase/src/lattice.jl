@@ -2,7 +2,7 @@ using EnumX: @enumx
 using LinearAlgebra: Diagonal, I
 
 export CrystalSystem, LatticeSystem, Bravais, Lattice
-export latticesystem, basis_vectors, cellparameters, angletol, lengthtol
+export latticesystem, basis_vectors, cellparameters
 
 @enumx LatticeSystem begin
     Triclinic = 1
@@ -86,17 +86,6 @@ function Lattice(a, b, c, α, β, γ)
 end
 @functor Lattice
 
-# See https://github.com/korsbo/Latexify.jl/blob/5859690/src/Latexify.jl#L19-L27
-const ANGLE_TOLERANCE = 1e-5
-function angletol(v)
-    global ANGLE_TOLERANCE = v
-end
-
-const LENGTH_TOLERANCE = 1e-5
-function lengthtol(v)
-    global LENGTH_TOLERANCE = v
-end
-
 """
     basis_vectors(lattice::Lattice)
 
@@ -133,10 +122,20 @@ end
 Guess the crystal system from the six cell parameters.
 """
 # See https://github.com/LaurentRDC/crystals/blob/2d3a570/crystals/lattice.py#L396-L475
-function latticesystem(a, b, c, α, β, γ)
+function latticesystem(a, b, c, α, β, γ; angletol = 1e-5, lengthtol = 1e-5)
     lengths, angles = Base.vect(a, b, c), Base.vect(α, β, γ)
+    ≊(θ, φ) = isapprox(θ, φ; atol = angletol)
+    ≅(x, y) = isapprox(x, y; atol = lengthtol)
     unilength = all(x ≅ a for x in lengths)
     uniangle = all(θ ≊ α for θ in angles)
+    function bilengths(vec)  # If and only if two lengths are equal.
+        for x in vec
+            if sum(isapprox(x, y; atol = lengthtol) for y in vec) == 2
+                return true
+            end
+        end
+        return false
+    end
     # Checking for monoclinic system is generalized
     # to the case where a, b, and c can be cycled,
     # i.e., a != c && β != 90 && α == γ == 90
@@ -174,17 +173,7 @@ Get the crystal system of a `lattice`.
 latticesystem(lattice::Lattice; kwargs...) =
     latticesystem(cellparameters(lattice)...; kwargs...)
 # Auxiliary functions
-≊(θ, φ) = isapprox(θ, φ; atol = ANGLE_TOLERANCE)
-≅(x, y) = isapprox(x, y; atol = LENGTH_TOLERANCE)
 cyclic_perm(vec) = (circshift(vec, i) for i in 1:length(vec))  # See https://stackoverflow.com/a/43035441
-function bilengths(vec)  # If and only if two lengths are equal.
-    for x in vec
-        if sum(isapprox(x, y; atol = LENGTH_TOLERANCE) for y in vec) == 2
-            return true
-        end
-    end
-    return false
-end
 
 """
     cellparameters(lattice::Lattice)
