@@ -1,154 +1,47 @@
+using EnumX: @enumx
 using LinearAlgebra: Diagonal, I
 
-export CrystalSystem,
-    Triclinic,
-    Monoclinic,
-    Orthorhombic,
-    Tetragonal,
-    Cubic,
-    Trigonal,
-    Hexagonal,
-    Centering,
-    BaseCentering,
-    Primitive,
-    BodyCentering,
-    FaceCentering,
-    RhombohedralCentering,
-    BaseCentering,
-    Bravais,
-    PrimitiveTriclinic,
-    PrimitiveMonoclinic,
-    ACenteredMonoclinic,
-    BCenteredMonoclinic,
-    CCenteredMonoclinic,
-    PrimitiveOrthorhombic,
-    ACenteredOrthorhombic,
-    BCenteredOrthorhombic,
-    CCenteredOrthorhombic,
-    BodyCenteredOrthorhombic,
-    FaceCenteredOrthorhombic,
-    PrimitiveTetragonal,
-    BodyCenteredTetragonal,
-    PrimitiveCubic,
-    BodyCenteredCubic,
-    FaceCenteredCubic,
-    PrimitiveHexagonal,
-    RCenteredHexagonal,
-    Lattice
-export centering, crystalsystem, basis_vectors, cellparameters
+export CrystalSystem, LatticeSystem, Bravais, Lattice
+export latticesystem, basis_vectors, cellparameters
 
-"Represent one of the seven crystal systems."
-abstract type CrystalSystem end
-"""
-    Triclinic()
-
-Represent the triclinic system.
-"""
-struct Triclinic <: CrystalSystem end
-"""
-    Monoclinic()
-
-Represent the monoclinic system.
-"""
-struct Monoclinic <: CrystalSystem end
-"""
-    Orthorhombic()
-
-Represent the orthorhombic system.
-"""
-struct Orthorhombic <: CrystalSystem end
-"""
-    Tetragonal()
-
-Represent the tetragonal system.
-"""
-struct Tetragonal <: CrystalSystem end
-"""
-    Cubic()
-
-Represent the cubic system.
-"""
-struct Cubic <: CrystalSystem end
-"""
-    Trigonal()
-
-Represent the trigonal system.
-"""
-struct Trigonal <: CrystalSystem end
-"""
-    Hexagonal()
-
-Represent the hexagonal system.
-"""
-struct Hexagonal <: CrystalSystem end
-
-"Represent the centering types."
-abstract type Centering end
-"""
-    Primitive()
-
-Represent no centering.
-"""
-struct Primitive <: Centering end
-"""
-    BodyCentering()
-
-Represent the body-centering.
-"""
-struct BodyCentering <: Centering end
-"""
-    FaceCentering()
-
-Represent the face-centering.
-"""
-struct FaceCentering <: Centering end
-"""
-    RhombohedralCentering()
-
-Represent the rhombohedral-centering of the hexagonal system.
-"""
-struct RhombohedralCentering <: Centering end
-"""
-    BaseCentering{:A}()
-    BaseCentering{:B}()
-    BaseCentering{:C}()
-
-Represent the base-centering.
-"""
-struct BaseCentering{T} <: Centering end
-const ACentering = BaseCentering{:A}
-const BCentering = BaseCentering{:B}
-const CCentering = BaseCentering{:C}
-
-"""
-    Bravais(a::CrystalSystem, b::Centering, obverse::Bool=true)
-
-Represent a Bravais lattice type.
-"""
-struct Bravais{A<:CrystalSystem,B<:Centering}
-    obverse::Bool
+@enumx LatticeSystem begin
+    Triclinic = 1
+    Monoclinic = 2
+    Orthorhombic = 3
+    Tetragonal = 4
+    Rhombohedral = 5
+    Hexagonal = 6
+    Cubic = 7
 end
-Bravais(a::CrystalSystem, b::Centering, obverse::Bool = true) =
-    Bravais{typeof(a),typeof(b)}(obverse)
 
-const PrimitiveTriclinic = Bravais{Triclinic,Primitive}
-const PrimitiveMonoclinic = Bravais{Monoclinic,Primitive}
-const ACenteredMonoclinic = Bravais{Monoclinic,ACentering}
-const BCenteredMonoclinic = Bravais{Monoclinic,BCentering}
-const CCenteredMonoclinic = Bravais{Monoclinic,CCentering}
-const PrimitiveOrthorhombic = Bravais{Orthorhombic,Primitive}
-const ACenteredOrthorhombic = Bravais{Orthorhombic,ACentering}
-const BCenteredOrthorhombic = Bravais{Orthorhombic,BCentering}
-const CCenteredOrthorhombic = Bravais{Orthorhombic,CCentering}
-const BodyCenteredOrthorhombic = Bravais{Orthorhombic,BodyCentering}
-const FaceCenteredOrthorhombic = Bravais{Orthorhombic,FaceCentering}
-const PrimitiveTetragonal = Bravais{Tetragonal,Primitive}
-const BodyCenteredTetragonal = Bravais{Tetragonal,BodyCentering}
-const PrimitiveCubic = Bravais{Cubic,Primitive}
-const BodyCenteredCubic = Bravais{Cubic,BodyCentering}
-const FaceCenteredCubic = Bravais{Cubic,FaceCentering}
-const PrimitiveHexagonal = Bravais{Hexagonal,Primitive}
-const RCenteredHexagonal = Bravais{Hexagonal,RhombohedralCentering}
+@enumx CrystalSystem begin
+    Triclinic = 1
+    Monoclinic = 2
+    Orthorhombic = 3
+    Tetragonal = 4
+    Trigonal = 5
+    Hexagonal = 6
+    Cubic = 7
+end
+
+@enumx BravaisArithmeticClass begin
+    PrimitiveTriclinic = 1
+    PrimitiveMonoclinic = 2
+    BaseCenteredMonoclinic = 3
+    PrimitiveOrthorhombic = 4
+    BaseCenteredOrthorhombic = 5
+    BodyCenteredOrthorhombic = 6
+    FaceCenteredOrthorhombic = 7
+    PrimitiveTetragonal = 8
+    BodyCenteredTetragonal = 9
+    PrimitiveHexagonal = 10
+    PrimitiveRhombohedral = 11
+    RCentredHexagonal = PrimitiveRhombohedral
+    PrimitiveCubic = 12
+    BodyCenteredCubic = 13
+    FaceCenteredCubic = 14
+end
+const Bravais = BravaisArithmeticClass
 
 "Represent the real lattices and the reciprocal lattices."
 abstract type AbstractLattice{T} end
@@ -201,44 +94,90 @@ Get the three basis vectors from a `lattice`.
 basis_vectors(lattice::Lattice) = lattice[:, 1], lattice[:, 2], lattice[:, 3]
 
 """
-    centering(bravais::Bravais)
+    latticesystem(bravais::Bravais)
 
-Get the centering type of a Bravais type.
+Get the lattice system of a Bravais lattice.
 """
-centering(::Bravais{A,B}) where {A,B} = B()
-
-"""
-    crystalsystem(bravais::Bravais)
-
-Get the crystal system of a Bravais type.
-"""
-crystalsystem(::Bravais{A,B}) where {A,B} = A()
-"""
-    crystalsystem(a, b, c, α, β, γ)
-
-Guess the crystal system from the six cell parameters.
-"""
-function crystalsystem(a, b, c, α, β, γ)
-    if a == b == c
-        if α == β == γ
-            α == 90 ? Cubic() : Trigonal()
-        else
-            α == β == 90 && γ == 120 ? Hexagonal() : Triclinic()
-        end
-    else
-        if α == β == γ == 90
-            a == b || a == c || b == c ? Tetragonal() : Orthorhombic()
-        else
-            α == β == 90 || β == γ == 90 || α == γ == 90 ? Monoclinic() : Triclinic()
-        end
+function latticesystem(bravais::Bravais.T)
+    index = Int(bravais)
+    if index == 1
+        return LatticeSystem.Triclinic
+    elseif 2 <= index <= 3
+        return LatticeSystem.Monoclinic
+    elseif 4 <= index <= 7
+        return LatticeSystem.Orthorhombic
+    elseif 8 <= index <= 9
+        return LatticeSystem.Tetragonal
+    elseif index == 10
+        return LatticeSystem.Hexagonal
+    elseif index == 11
+        return LatticeSystem.Rhombohedral
+    else  # 12 <= index <= 14
+        return LatticeSystem.Cubic
     end
 end
 """
-    crystalsystem(lattice::Lattice)
+    latticesystem(a, b, c, α, β, γ; kwargs...)
 
-Get the crystal system of a `lattice`.
+Guess the lattice system from the six lattice constants.
+
+# Arguments
+- `angletol=1e-5`: the absolute tolerance of angles (`α`, `β`, `γ`).
+- `lengthtol=1e-5`: the absolute tolerance of edges (`a`, `b`, `c`).
 """
-crystalsystem(lattice::Lattice) = crystalsystem(cellparameters(lattice)...)
+# See https://github.com/LaurentRDC/crystals/blob/2d3a570/crystals/lattice.py#L396-L475
+function latticesystem(a, b, c, α, β, γ; angletol = 1e-5, lengthtol = 1e-5)
+    lengths, angles = Base.vect(a, b, c), Base.vect(α, β, γ)
+    ≊(θ, φ) = isapprox(θ, φ; atol = angletol)
+    ≅(x, y) = isapprox(x, y; atol = lengthtol)
+    unilength = all(x ≅ a for x in lengths)
+    uniangle = all(θ ≊ α for θ in angles)
+    function bilengths(vec)  # If and only if two lengths are equal.
+        for x in vec
+            if sum(isapprox(x, y; atol = lengthtol) for y in vec) == 2
+                return true
+            end
+        end
+        return false
+    end
+    # Checking for monoclinic system is generalized
+    # to the case where a, b, and c can be cycled,
+    # i.e., a != c && β != 90 && α == γ == 90
+    #   || b != c && α != 90 && β == γ == 90
+    #   || a != b && γ != 90 && α == β != 90
+    for (lengths′, angles′) in zip(cyclic_perm(lengths), cyclic_perm(angles))
+        (a′, _, c′), (α′, β′, γ′) = lengths′, angles′
+        if !(a′ ≅ c′) && α′ ≊ 90 && γ′ ≊ 90 && !(β′ ≊ 90)
+            return LatticeSystem.Monoclinic
+        end
+    end
+    if unilength && uniangle
+        return α ≊ 90 ? LatticeSystem.Cubic : LatticeSystem.Rhombohedral
+    end
+    if unilength && !uniangle  # Technically, a hexagonal system could have all 3 lengths equal.
+        if any(θ ≊ 120 for θ in angles) && sum(θ ≊ 90 for θ in angles) == 2
+            return LatticeSystem.Hexagonal
+        end
+    end
+    if bilengths(lengths)  # At this point, two lengths are equal at most.
+        if uniangle && α ≊ 90
+            return LatticeSystem.Tetragonal
+        elseif any(θ ≊ 120 for θ in angles) && sum(θ ≊ 90 for θ in angles) == 2
+            return LatticeSystem.Hexagonal
+        end
+    else  # At this point, all lengths are not equal.
+        return uniangle && α ≊ 90 ? LatticeSystem.Orthorhombic : LatticeSystem.Triclinic
+    end
+end
+"""
+    latticesystem(lattice::Lattice; angletol=1e-5, lengthtol=1e-5)
+
+Get the lattice system of a `Lattice`.
+"""
+latticesystem(lattice::Lattice; kwargs...) =
+    latticesystem(cellparameters(lattice)...; kwargs...)
+# Auxiliary functions
+cyclic_perm(vec) = (circshift(vec, i) for i in 1:length(vec))  # See https://stackoverflow.com/a/43035441
 
 """
     cellparameters(lattice::Lattice)
