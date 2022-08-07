@@ -10,7 +10,7 @@
             0u"bohr" 0u"nm" (3//1)*u"angstrom"
         ],
     )
-    @test latticesystem(lattice) == LatticeSystem.Orthorhombic
+    @test latticesystem(lattice; lengthtol = 1e-5u"bohr") == LatticeSystem.Orthorhombic
 end
 
 # See https://github.com/LaurentRDC/crystals/blob/7c544fe/crystals/tests/test_lattice.py#L156-L209
