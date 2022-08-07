@@ -96,7 +96,7 @@ basis_vectors(lattice::Lattice) = lattice[:, 1], lattice[:, 2], lattice[:, 3]
 """
     latticesystem(bravais::Bravais)
 
-Get the crystal system of a Bravais type.
+Get the lattice system of a Bravais lattice.
 """
 function latticesystem(bravais::Bravais.T)
     index = Int(bravais)
@@ -117,9 +117,13 @@ function latticesystem(bravais::Bravais.T)
     end
 end
 """
-    latticesystem(a, b, c, α, β, γ)
+    latticesystem(a, b, c, α, β, γ; kwargs...)
 
-Guess the crystal system from the six cell parameters.
+Guess the lattice system from the six lattice constants.
+
+# Arguments
+- `angletol=1e-5`: the absolute tolerance of angles (`α`, `β`, `γ`).
+- `lengthtol=1e-5`: the absolute tolerance of edges (`a`, `b`, `c`).
 """
 # See https://github.com/LaurentRDC/crystals/blob/2d3a570/crystals/lattice.py#L396-L475
 function latticesystem(a, b, c, α, β, γ; angletol = 1e-5, lengthtol = 1e-5)
@@ -166,9 +170,9 @@ function latticesystem(a, b, c, α, β, γ; angletol = 1e-5, lengthtol = 1e-5)
     end
 end
 """
-    crystalsystem(lattice::Lattice)
+    latticesystem(lattice::Lattice; angletol=1e-5, lengthtol=1e-5)
 
-Get the crystal system of a `lattice`.
+Get the lattice system of a `Lattice`.
 """
 latticesystem(lattice::Lattice; kwargs...) =
     latticesystem(cellparameters(lattice)...; kwargs...)
