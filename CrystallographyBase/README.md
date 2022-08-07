@@ -27,7 +27,7 @@ For more features, see [`Crystallography.jl`](https://github.com/MineralsCloud/C
 The code is [hosted on GitHub](https://github.com/MineralsCloud/CrystallographyBase.jl),
 with some continuous integration services to test its validity.
 
-This repository is created and maintained by [singularitti](https://github.com/singularitti).
+This repository is created and maintained by [@singularitti](https://github.com/singularitti).
 You are very welcome to contribute.
 
 ## Installation
