@@ -2,7 +2,7 @@ using EnumX: @enumx
 using LinearAlgebra: Diagonal, I
 
 export CrystalSystem, LatticeSystem, Bravais, Lattice
-export basis_vectors, latticesystem, latticeconstants
+export basis_vectors, latticesystem, latticeconstants, periodicity, supercell
 
 "Represent the 7 lattice systems."
 @enumx LatticeSystem begin
@@ -215,6 +215,17 @@ function latticeconstants(lattice::Lattice)
         acosd(dot(𝐚, 𝐛) / (a * b)), acosd(dot(𝐚, 𝐜) / (a * c)), acosd(dot(𝐛, 𝐜) / (b * c))
     return a, b, c, α, β, γ
 end
+
+# See https://github.com/LaurentRDC/crystals/blob/2d3a570/crystals/lattice.py#L161-L176
+# Add the absolute value of the component of every lattice vector
+# along the three euclidian vectors, which is effectively the sum of
+# absolutes of columns
+"""
+    periodicity(lattice::Lattice)
+
+Get crystal periodicity in x, y, and z direction from the `Lattice`.
+"""
+periodicity(lattice::Lattice) = Tuple(sum(abs, lattice.data; dims = 2))
 
 # See https://en.wikipedia.org/wiki/Supercell_(crystal)
 """
