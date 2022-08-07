@@ -13,35 +13,24 @@ using LinearAlgebra: Diagonal, I
     Cubic = 7
 end
 
-"""
-    Bravais(a::CrystalSystem, b::Centering, obverse::Bool=true)
-
-Represent a Bravais lattice type.
-"""
-struct Bravais{A<:CrystalSystem,B<:Centering}
-    obverse::Bool
+@enumx BravaisArithmeticClass begin
+    PrimitiveTriclinic = 1
+    PrimitiveMonoclinic = 2
+    BaseCenteredMonoclinic = 3
+    PrimitiveOrthorhombic = 4
+    BaseCenteredOrthorhombic = 5
+    BodyCenteredOrthorhombic = 6
+    FaceCenteredOrthorhombic = 7
+    PrimitiveTetragonal = 8
+    BodyCenteredTetragonal = 9
+    PrimitiveHexagonal = 10
+    PrimitiveRhombohedral = 11
+    RCentredHexagonal = PrimitiveRhombohedral
+    PrimitiveCubic = 12
+    BodyCenteredCubic = 13
+    FaceCenteredCubic = 14
 end
-Bravais(a::CrystalSystem, b::Centering, obverse::Bool = true) =
-    Bravais{typeof(a),typeof(b)}(obverse)
-
-const PrimitiveTriclinic = Bravais{Triclinic,Primitive}
-const PrimitiveMonoclinic = Bravais{Monoclinic,Primitive}
-const ACenteredMonoclinic = Bravais{Monoclinic,ACentering}
-const BCenteredMonoclinic = Bravais{Monoclinic,BCentering}
-const CCenteredMonoclinic = Bravais{Monoclinic,CCentering}
-const PrimitiveOrthorhombic = Bravais{Orthorhombic,Primitive}
-const ACenteredOrthorhombic = Bravais{Orthorhombic,ACentering}
-const BCenteredOrthorhombic = Bravais{Orthorhombic,BCentering}
-const CCenteredOrthorhombic = Bravais{Orthorhombic,CCentering}
-const BodyCenteredOrthorhombic = Bravais{Orthorhombic,BodyCentering}
-const FaceCenteredOrthorhombic = Bravais{Orthorhombic,FaceCentering}
-const PrimitiveTetragonal = Bravais{Tetragonal,Primitive}
-const BodyCenteredTetragonal = Bravais{Tetragonal,BodyCentering}
-const PrimitiveCubic = Bravais{Cubic,Primitive}
-const BodyCenteredCubic = Bravais{Cubic,BodyCentering}
-const FaceCenteredCubic = Bravais{Cubic,FaceCentering}
-const PrimitiveHexagonal = Bravais{Hexagonal,Primitive}
-const RCenteredHexagonal = Bravais{Hexagonal,RhombohedralCentering}
+const Bravais = BravaisArithmeticClass
 
 "Represent the real lattices and the reciprocal lattices."
 abstract type AbstractLattice{T} end
