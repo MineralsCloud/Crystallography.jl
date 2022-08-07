@@ -45,11 +45,9 @@ ReciprocalPoint
 ReciprocalLattice
 MonkhorstPackGrid
 inv
-reciprocal_mesh
+reciprocal
 coordinates
 weights
-vertices
-faces
 ```
 
 ### Miller and Miller–Bravais indices
