@@ -262,5 +262,6 @@ function Base.show(io::IO, x::AbstractLattice)
         for row in eachrow(x.data)
             println(io, ' ', join(row, "  "))
         end
+        println(io, " (a, b, c, α, β, γ) = ", latticeconstants(x))
     end
 end
