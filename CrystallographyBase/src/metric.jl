@@ -43,14 +43,14 @@ end
 
 Construct a `Lattice` from a `MetricTensor`.
 """
-Lattice(g::MetricTensor) = Lattice(cellparameters(g))
+Lattice(g::MetricTensor) = Lattice(latticeconstants(g))
 
 """
-    cellparameters(g::MetricTensor)
+    latticeconstants(g::MetricTensor)
 
-Get the six cell parameters from a `MetricTensor`.
+Get the six lattice constants from a `MetricTensor`.
 """
-function cellparameters(g::MetricTensor)
+function latticeconstants(g::MetricTensor)
     a², b², c², ab, ac, bc = g[1, 1], g[2, 2], g[3, 3], g[1, 2], g[1, 3], g[2, 3]
     a, b, c = map(sqrt, (a², b², c²))
     γ, β, α = acosd(ab / (a * b)), acosd(ac / (a * c)), acosd(bc / (b * c))

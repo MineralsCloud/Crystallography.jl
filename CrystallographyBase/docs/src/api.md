@@ -32,7 +32,7 @@ Lattice
 centering
 crystalsystem
 basis_vectors
-cellparameters
+latticeconstants
 supercell
 ```
 

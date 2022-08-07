@@ -2,7 +2,7 @@ using EnumX: @enumx
 using LinearAlgebra: Diagonal, I
 
 export CrystalSystem, LatticeSystem, Bravais, Lattice
-export latticesystem, basis_vectors, cellparameters
+export basis_vectors, latticesystem, latticeconstants
 
 @enumx LatticeSystem begin
     Triclinic = 1
@@ -175,16 +175,16 @@ end
 Get the lattice system of a `Lattice`.
 """
 latticesystem(lattice::Lattice; kwargs...) =
-    latticesystem(cellparameters(lattice)...; kwargs...)
+    latticesystem(latticeconstants(lattice)...; kwargs...)
 # Auxiliary functions
 cyclic_perm(vec) = (circshift(vec, i) for i in 1:length(vec))  # See https://stackoverflow.com/a/43035441
 
 """
-    cellparameters(lattice::Lattice)
+    latticeconstants(lattice::Lattice)
 
-Get the six cell parameters from a `lattice`.
+Get the six lattice constants from a `lattice`.
 """
-function cellparameters(lattice::Lattice)
+function latticeconstants(lattice::Lattice)
     𝐚, 𝐛, 𝐜 = basis_vectors(lattice)
     a, b, c = norm(𝐚), norm(𝐛), norm(𝐜)
     γ, β, α =
