@@ -2,43 +2,7 @@ using EnumX: @enumx
 using LinearAlgebra: Diagonal, I
 
 
-"Represent the centering types."
-abstract type Centering end
-"""
-    Primitive()
 
-Represent no centering.
-"""
-struct Primitive <: Centering end
-"""
-    BodyCentering()
-
-Represent the body-centering.
-"""
-struct BodyCentering <: Centering end
-"""
-    FaceCentering()
-
-Represent the face-centering.
-"""
-struct FaceCentering <: Centering end
-"""
-    RhombohedralCentering()
-
-Represent the rhombohedral-centering of the hexagonal system.
-"""
-struct RhombohedralCentering <: Centering end
-"""
-    BaseCentering{:A}()
-    BaseCentering{:B}()
-    BaseCentering{:C}()
-
-Represent the base-centering.
-"""
-struct BaseCentering{T} <: Centering end
-const ACentering = BaseCentering{:A}
-const BCentering = BaseCentering{:B}
-const CCentering = BaseCentering{:C}
 @enumx CrystalSystem begin
     Triclinic = 1
     Monoclinic = 2
