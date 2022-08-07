@@ -33,16 +33,6 @@ Get the lattice of a `Cell`.
 """
 Lattice(cell::Cell) = cell.lattice
 
-"""
-    basis_vectors(cell::Cell)
-
-Return the three basis vectors from `cell`.
-"""
-function basis_vectors(cell::Cell)
-    lattice = cell.lattice
-    return lattice[:, 1], lattice[:, 2], lattice[:, 3]
-end
-
 struct EachAtom{A,B}
     atoms::Vector{A}
     positions::Vector{B}
