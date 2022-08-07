@@ -38,7 +38,7 @@ end
     # See http://lampx.tugraz.at/~hadley/ss1/bzones/orthorhombic.php
     @testset "Simple orthorhombic Brillouin zone" begin
         a, b, c = 2, 3, 5
-        reci_lattice = inv(Lattice(a, b, c, 90, 90, 90))
+        reci_lattice = reciprocal(Lattice(a, b, c, 90, 90, 90))
         f2c = CartesianFromFractional(reci_lattice)
         @test f2c([1 / 2, 0, 0]) == [1 / a, 0, 0] / 2
         @test f2c([0, 1 / 2, 0]) == [0, 1 / b, 0] / 2
@@ -57,7 +57,7 @@ end
     # The results on http://lampx.tugraz.at/~hadley/ss1/bzones/orthorhombic_bc.php are wrong by a factor of 2.
     @testset "Base centered orthorhombic Brillouin zone" begin
         a, b, c = 3.67939899, 4.15357986, 3.8236792350
-        reci_lattice = inv(Lattice([a, -b, 0] / 2, [a, b, 0] / 2, [0, 0, c]))
+        reci_lattice = reciprocal(Lattice([a, -b, 0] / 2, [a, b, 0] / 2, [0, 0, c]))
         f2c = CartesianFromFractional(reci_lattice)
         @test f2c([-1 / 2, 1 / 2, 0]) ≈ [0, 1 / b, 0] ≈ [0, 1.5127156619, 0] / 2pi  # Y'
         @test f2c([0, 0, 1 / 2]) ≈ [0, 0, 1 / 2 / c] ≈ [0, 0, 0.8216151148] / 2pi  # Z
@@ -85,7 +85,7 @@ end
     # See http://lampx.tugraz.at/~hadley/ss1/bzones/tetbc.php
     @testset "Body centered tetragonal Brillouin zone" begin
         a, c = 4, 6
-        reci_lattice = inv(Lattice([a, a, -c] / 2, [a, -a, c] / 2, [-a, a, c] / 2))
+        reci_lattice = reciprocal(Lattice([a, a, -c] / 2, [a, -a, c] / 2, [-a, a, c] / 2))
         f2c = CartesianFromFractional(reci_lattice)
         @test f2c([0, 0, 0]) == [0, 0, 0]
         @test f2c([1 / 2, 0, 0]) == [1 / a, 1 / a, 0] / 2
@@ -103,7 +103,7 @@ end
     # See http://lampx.tugraz.at/~hadley/ss1/bzones/hexagonal.php
     @testset "Simple hexagonal Brillouin zone" begin
         a, c = 2, 3.2
-        reci_lattice = inv(Lattice([a, 0, 0], [a / 2, sqrt(3) / 2 * a, 0], [0, 0, c]))
+        reci_lattice = reciprocal(Lattice([a, 0, 0], [a / 2, sqrt(3) / 2 * a, 0], [0, 0, c]))
         f2c = CartesianFromFractional(reci_lattice)
         @test f2c([0, 0, 0]) == [0, 0, 0]  # Γ
         @test f2c([1 / 2, 0, 0]) ≈ [1 / a, -1 / sqrt(3) / a, 0] / 2  # M
@@ -123,7 +123,7 @@ end
     # See http://lampx.tugraz.at/~hadley/ss1/bzones/sc.php
     @testset "Simple cubic Brillouin zone" begin
         a = 4
-        reci_lattice = inv(Lattice(a, a, a, 90, 90, 90))
+        reci_lattice = reciprocal(Lattice(a, a, a, 90, 90, 90))
         f2c = CartesianFromFractional(reci_lattice)
         @test f2c([0, 0, 0]) == [0, 0, 0]
         @test f2c([1 / 2, 1 / 2, 0]) == [1 / a, 1 / a, 0] / 2
@@ -137,7 +137,7 @@ end
     # See http://lampx.tugraz.at/~hadley/ss1/bzones/fcc.php
     @testset "Face centered cubic Brillouin zone" begin
         a = 4
-        reci_lattice = inv(Lattice([
+        reci_lattice = reciprocal(Lattice([
             1 1 0
             0 1 1
             1 0 1
@@ -161,7 +161,7 @@ end
     # See http://lampx.tugraz.at/~hadley/ss1/bzones/bcc.php
     @testset "Body centered cubic Brillouin zone" begin
         a = 4
-        reci_lattice = inv(Lattice([
+        reci_lattice = reciprocal(Lattice([
             1 -1 1
             1 1 -1
             -1 1 1
@@ -182,7 +182,7 @@ end
 
 @testset "Test coordinate transformation with units" begin
     alat = 8.8097
-    reci_lattice = inv(
+    reci_lattice = reciprocal(
         Lattice(
             [
                 -2.739741805 2.739741805 2.739741805
