@@ -86,6 +86,17 @@ function Lattice(a, b, c, α, β, γ)
 end
 @functor Lattice
 
+# See https://github.com/korsbo/Latexify.jl/blob/5859690/src/Latexify.jl#L19-L27
+const ANGLE_TOLERANCE = 1e-5
+function angle_tolerance(v)
+    global ANGLE_TOLERANCE = v
+end
+
+const LENGTH_TOLERANCE = 1e-5
+function length_tolerance(v)
+    global LENGTH_TOLERANCE = v
+end
+
 """
     basis_vectors(lattice::Lattice)
 
@@ -94,30 +105,65 @@ Get the three basis vectors from a `lattice`.
 basis_vectors(lattice::Lattice) = lattice[:, 1], lattice[:, 2], lattice[:, 3]
 
 """
-"""
-    crystalsystem(bravais::Bravais)
+    latticesystem(bravais::Bravais)
 
 Get the crystal system of a Bravais type.
 """
-crystalsystem(::Bravais{A,B}) where {A,B} = A()
+function latticesystem(bravais::Bravais.T)
+    index = Int(bravais)
+    if index == 1
+        return LatticeSystem.Triclinic
+    elseif 2 <= index <= 3
+        return LatticeSystem.Monoclinic
+    elseif 4 <= index <= 7
+        return LatticeSystem.Orthorhombic
+    elseif 8 <= index <= 9
+        return LatticeSystem.Tetragonal
+    elseif index == 10
+        return LatticeSystem.Hexagonal
+    elseif index == 11
+        return LatticeSystem.Rhombohedral
+    else  # 12 <= index <= 14
+        return LatticeSystem.Cubic
+    end
+end
 """
-    crystalsystem(a, b, c, α, β, γ)
+    latticesystem(a, b, c, α, β, γ)
 
 Guess the crystal system from the six cell parameters.
 """
-function crystalsystem(a, b, c, α, β, γ)
-    if a == b == c
-        if α == β == γ
-            α == 90 ? Cubic() : Trigonal()
-        else
-            α == β == 90 && γ == 120 ? Hexagonal() : Triclinic()
+# See https://github.com/LaurentRDC/crystals/blob/2d3a570/crystals/lattice.py#L396-L475
+function latticesystem(a, b, c, α, β, γ)
+    lengths, angles = (a, b, c), (α, β, γ)
+    unilength = all(x ≅ a for x in lengths)
+    uniangle = all(θ ≊ α for θ in angles)
+    # Checking for monoclinic system is generalized
+    # to the case where a, b, and c can be cycled,
+    # i.e., a != c && β != 90 && α == γ == 90
+    #   || b != c && α != 90 && β == γ == 90
+    #   || a != b && γ != 90 && α == β != 90
+    for (lengths′, angles′) in zip(Iterators.cycle(lengths), Iterators.cycle(angles))
+        (a′, _, c′), (α′, β′, γ′) = lengths′, angles′
+        if !(a′ ≅ c′) && α′ ≊ 90 && γ′ ≊ 90 && !(β′ ≊ 90)
+            return LatticeSystem.Monoclinic
         end
-    else
-        if α == β == γ == 90
-            a == b || a == c || b == c ? Tetragonal() : Orthorhombic()
-        else
-            α == β == 90 || β == γ == 90 || α == γ == 90 ? Monoclinic() : Triclinic()
+    end
+    if unilength && uniangle
+        return α ≊ 90 ? LatticeSystem.Cubic : LatticeSystem.Rhombohedral
+    end
+    if unilength && !uniangle  # Technically, a hexagonal system could have all 3 lengths equal.
+        if any(θ ≊ 120 for θ in angles) && sum(θ ≊ 90 for θ in angles) == 2
+            return LatticeSystem.Hexagonal
         end
+    end
+    if bilengths(lengths)  # At this point, two lengths are equal at most.
+        if uniangle && α ≊ 90
+            return LatticeSystem.Tetragonal
+        elseif any(θ ≊ 120 for θ in angles) && sum(θ ≊ 90 for θ in angles) == 2
+            return LatticeSystem.Hexagonal
+        end
+    else  # At this point, all lengths are not equal.
+        return uniangle && α ≊ 90 ? LatticeSystem.Orthorhombic : LatticeSystem.Triclinic
     end
 end
 """
@@ -125,7 +171,19 @@ end
 
 Get the crystal system of a `lattice`.
 """
-crystalsystem(lattice::Lattice) = crystalsystem(cellparameters(lattice)...)
+latticesystem(lattice::Lattice; kwargs...) =
+    latticesystem(cellparameters(lattice)...; kwargs...)
+# Auxiliary functions
+≊(θ, φ) = isapprox(θ, φ; rtol = ANGLE_TOLERANCE)
+≅(x, y) = isapprox(x, y; rtol = LENGTH_TOLERANCE)
+function bilengths(iterable)  # If and only if two lengths are equal.
+    for i in iterable
+        if sum(isapprox(i, j, rtol = LENGTH_TOLERANCE) for j in iterable) == 2
+            return true
+        end
+    end
+    return false
+end
 
 """
     cellparameters(lattice::Lattice)
