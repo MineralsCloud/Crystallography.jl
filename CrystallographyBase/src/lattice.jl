@@ -219,11 +219,11 @@ end
 # See https://github.com/LaurentRDC/crystals/blob/2d3a570/crystals/lattice.py#L161-L176
 # Add the absolute value of the component of every lattice vector
 # along the three euclidian vectors, which is effectively the sum of
-# absolutes of columns
+# absolutes of rows.
 """
     periodicity(lattice::Lattice)
 
-Get crystal periodicity in x, y, and z direction from the `Lattice`.
+Get crystal periodicity in ``x``, ``y``, and ``z`` direction from the `Lattice`.
 """
 periodicity(lattice::Lattice) = Tuple(sum(abs, lattice.data; dims = 2))
 
