@@ -2,7 +2,7 @@ using EnumX: @enumx
 using LinearAlgebra: Diagonal, I
 
 export CrystalSystem, LatticeSystem, Bravais, Lattice
-export latticesystem, basis_vectors, cellparameters
+export latticesystem, basis_vectors, cellparameters, angletol, lengthtol
 
 @enumx LatticeSystem begin
     Triclinic = 1
@@ -88,12 +88,12 @@ end
 
 # See https://github.com/korsbo/Latexify.jl/blob/5859690/src/Latexify.jl#L19-L27
 const ANGLE_TOLERANCE = 1e-5
-function angle_tolerance(v)
+function angletol(v)
     global ANGLE_TOLERANCE = v
 end
 
 const LENGTH_TOLERANCE = 1e-5
-function length_tolerance(v)
+function lengthtol(v)
     global LENGTH_TOLERANCE = v
 end
 
