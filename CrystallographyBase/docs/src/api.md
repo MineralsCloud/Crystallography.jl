@@ -13,25 +13,11 @@ Depth = 3
 
 ```@docs
 CrystalSystem
-Triclinic
-Monoclinic
-Orthorhombic
-Tetragonal
-Cubic
-Trigonal
-Hexagonal
-Centering
-BaseCentering
-Primitive
-BodyCentering
-FaceCentering
-RhombohedralCentering
-BaseCentering
+LatticeSystem
 Bravais
 Lattice
-centering
-crystalsystem
 basis_vectors
+latticesystem
 latticeconstants
 supercell
 ```
@@ -44,7 +30,6 @@ Note that we take ``2\pi`` as ``1``, not the solid-state physics convention.
 ReciprocalPoint
 ReciprocalLattice
 MonkhorstPackGrid
-inv
 reciprocal
 coordinates
 weights

@@ -1,21 +1,28 @@
 # CrystallographyBase
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://MineralsCloud.github.io/CrystallographyBase.jl/stable)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://MineralsCloud.github.io/CrystallographyBase.jl/dev)
-[![Build Status](https://github.com/MineralsCloud/CrystallographyBase.jl/workflows/CI/badge.svg)](https://github.com/MineralsCloud/CrystallographyBase.jl/actions)
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/MineralsCloud/CrystallographyBase.jl?svg=true)](https://ci.appveyor.com/project/singularitti/CrystallographyBase-jl)
-[![Build Status](https://api.cirrus-ci.com/github/MineralsCloud/CrystallographyBase.jl.svg)](https://cirrus-ci.com/github/MineralsCloud/CrystallographyBase.jl)
-[![pipeline status](https://gitlab.com/singularitti/CrystallographyBase.jl/badges/master/pipeline.svg)](https://gitlab.com/singularitti/CrystallographyBase.jl/-/pipelines)
-[![Coverage](https://codecov.io/gh/MineralsCloud/CrystallographyBase.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/MineralsCloud/CrystallographyBase.jl)
-[![PkgEval](https://JuliaCI.github.io/NanosoldierReports/pkgeval_badges/C/CrystallographyBase.svg)](https://JuliaCI.github.io/NanosoldierReports/pkgeval_badges/report.html)
-[![GitHub license](https://img.shields.io/github/license/MineralsCloud/CrystallographyBase.jl)](https://github.com/MineralsCloud/CrystallographyBase.jl/blob/master/LICENSE)
+|                                 **Documentation**                                  |                                                                                                 **Build Status**                                                                                                 |                  **LICENSE**                  |
+| :--------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------: |
+| [![Stable][docs-stable-img]][docs-stable-url] [![Dev][docs-dev-img]][docs-dev-url] | [![Build Status][gha-img]][gha-url] [![Build Status][appveyor-img]][appveyor-url] [![Build Status][cirrus-img]][cirrus-url] [![pipeline status][gitlab-img]][gitlab-url] [![Coverage][codecov-img]][codecov-url] | [![GitHub license][license-img]][license-url] |
 
-## Package Features
+[docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
+[docs-stable-url]: https://MineralsCloud.github.io/CrystallographyBase.jl/stable
+[docs-dev-img]: https://img.shields.io/badge/docs-dev-blue.svg
+[docs-dev-url]: https://MineralsCloud.github.io/CrystallographyBase.jl/dev
+[gha-img]: https://github.com/MineralsCloud/CrystallographyBase.jl/workflows/CI/badge.svg
+[gha-url]: https://github.com/MineralsCloud/CrystallographyBase.jl/actions
+[appveyor-img]: https://ci.appveyor.com/api/projects/status/github/MineralsCloud/CrystallographyBase.jl?svg=true
+[appveyor-url]: https://ci.appveyor.com/project/MineralsCloud/CrystallographyBase-jl
+[cirrus-img]: https://api.cirrus-ci.com/github/MineralsCloud/CrystallographyBase.jl.svg
+[cirrus-url]: https://cirrus-ci.com/github/MineralsCloud/CrystallographyBase.jl
+[gitlab-img]: https://gitlab.com/singularitti/CrystallographyBase.jl/badges/master/pipeline.svg
+[gitlab-url]: https://gitlab.com/singularitti/CrystallographyBase.jl/-/pipelines
+[codecov-img]: https://codecov.io/gh/MineralsCloud/CrystallographyBase.jl/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/MineralsCloud/CrystallographyBase.jl
+[license-img]: https://img.shields.io/github/license/MineralsCloud/CrystallographyBase.jl
+[license-url]: https://github.com/MineralsCloud/CrystallographyBase.jl/blob/master/LICENSE
 
-Provides some basic types and methods for crystallography calculations.
+This package provides some basic types and methods for crystallography calculations.
 For more features, see [`Crystallography.jl`](https://github.com/MineralsCloud/Crystallography.jl).
-See [the documentation of the stable version](https://mineralscloud.github.io/CrystallographyBase.jl/stable)
-here.
 
 The code is [hosted on GitHub](https://github.com/MineralsCloud/CrystallographyBase.jl),
 with some continuous integration services to test its validity.
@@ -25,36 +32,51 @@ You are very welcome to contribute.
 
 ## Installation
 
-`CrystallographyBase` is a &nbsp;
-<a href="https://julialang.org">
-    <img src="https://julialang.org/assets/infra/julia.ico" width="16em">
-    Julia Language
-</a>
-&nbsp; package. To install `CrystallographyBase`,
-please <a href="https://docs.julialang.org/en/v1/manual/getting-started/">open
-Julia's interactive session (known as REPL)</a> and press <kbd>]</kbd> key in the REPL to use the package mode, then type the following command:
+The package can be installed with the Julia package manager.
+From the Julia REPL, type `]` to enter the Pkg REPL mode and run:
 
-For stable release
-
-```julia
+```
 pkg> add CrystallographyBase
 ```
 
-For current master
+Or, equivalently, via the `Pkg` API:
 
 ```julia
-pkg> add CrystallographyBase#master
+julia> import Pkg; Pkg.add("CrystallographyBase")
 ```
 
 ## Compatibility
 
-- [Julia version: `v1.3.0` to `v1.7.2`](https://julialang.org/downloads/)
+- [Julia version: `v1.3` to `v1.7`](https://julialang.org/downloads/)
 - Dependencies:
   - [`Combinatorics.jl`](https://github.com/JuliaMath/Combinatorics.jl) `v0.7.0` and above
   - [`CoordinateTransformations.jl`](https://github.com/JuliaGeometry/CoordinateTransformations.jl) `v0.5.1` and above
   - [`Counters.jl`](https://github.com/scheinerman/Counters.jl) `v0.3.0` and above
+  - [`EnumX.jl`](https://github.com/fredrikekre/EnumX.jl) `v1.0.0` and above
   - [`Functors.jl`](https://github.com/FluxML/Functors.jl) `v0.1.0` and above
   - [`PeriodicTable.jl`](https://github.com/JuliaPhysics/PeriodicTable.jl) `v0.1.0` and above
   - [`StaticArrays.jl`](https://github.com/JuliaArrays/StaticArrays.jl) `v0.8.3` and above
 - OS: macOS, Linux, Windows, and FreeBSD
 - Architecture: x86, x64, ARM
+
+## Documentation
+
+- [**STABLE**][docs-stable-url] &mdash; **documentation of the most recently tagged version.**
+- [**DEV**][docs-dev-url] &mdash; _documentation of the in-development version._
+
+## Project Status
+
+The package is tested against, and being developed for, Julia `1.6` and above on Linux,
+macOS, and Windows.
+
+## Questions and Contributions
+
+Usage questions can be posted on [our discussion page][discussions-url].
+
+Contributions are very welcome, as are feature requests and suggestions. Please open an
+[issue][issues-url] if you encounter any problems. The [contributing](@ref) page has
+a few guidelines that should be followed when opening pull requests and contributing code.
+
+[discussions-url]: https://github.com/MineralsCloud/CrystallographyBase.jl/discussions
+[issues-url]: https://github.com/MineralsCloud/CrystallographyBase.jl/issues
+[contrib-url]: https://github.com/MineralsCloud/CrystallographyBase.jl/discussions

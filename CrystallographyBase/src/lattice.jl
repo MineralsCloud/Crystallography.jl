@@ -4,6 +4,7 @@ using LinearAlgebra: Diagonal, I
 export CrystalSystem, LatticeSystem, Bravais, Lattice
 export basis_vectors, latticesystem, latticeconstants
 
+"Represent the 7 lattice systems."
 @enumx LatticeSystem begin
     Triclinic = 1
     Monoclinic = 2
@@ -14,6 +15,7 @@ export basis_vectors, latticesystem, latticeconstants
     Cubic = 7
 end
 
+"Represent the 7 crystal systems."
 @enumx CrystalSystem begin
     Triclinic = 1
     Monoclinic = 2
@@ -24,6 +26,7 @@ end
     Cubic = 7
 end
 
+"Represent the 14 Bravais lattices."
 @enumx BravaisArithmeticClass begin
     PrimitiveTriclinic = 1
     PrimitiveMonoclinic = 2
@@ -64,7 +67,13 @@ Lattice(mat::AbstractMatrix) = Lattice(SMatrix{3,3}(mat))
 Construct a `Lattice` from three basis vectors.
 """
 Lattice(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector) = Lattice(hcat(𝐚, 𝐛, 𝐜))
-Lattice(vecs::AbstractVector{<:AbstractVector}) = Lattice(reduce(hcat, vecs))
+"""
+    Lattice(basis_vectors::AbstractVector{<:AbstractVector})
+
+Construct a `Lattice` from a vector of three basis vectors.
+"""
+Lattice(basis_vectors::AbstractVector{<:AbstractVector}) =
+    Lattice(reduce(hcat, basis_vectors))
 """
     Lattice(a, b, c, α, β, γ)
 
