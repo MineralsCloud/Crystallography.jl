@@ -26,3 +26,12 @@ end
     @test latticesystem(2, 2, 2, 90, 120, 90) == LatticeSystem.Hexagonal
     @test latticesystem(1, 2, 3, 75, 40, 81) == LatticeSystem.Triclinic
 end
+
+@testset "Test `latticeconstants`" begin
+    # From https://github.com/LaurentRDC/crystals/blob/7c544fe/crystals/tests/test_lattice.py#L96
+    @test collect(latticeconstants(Lattice(2, 1, 5, 90, 90, 90))) ≈ [2, 1, 5, 90, 90, 90]  # Orthorombic
+    # From https://github.com/LaurentRDC/crystals/blob/7c544fe/crystals/tests/test_lattice.py#L104
+    @test collect(latticeconstants(Lattice(1, 2, 3, 90, 120, 90))) ≈ [1, 2, 3, 90, 120, 90]  # Monoclinic
+    # From https://github.com/LaurentRDC/crystals/blob/7c544fe/crystals/tests/test_lattice.py#L117
+    @test collect(latticeconstants(Lattice(1, 2, 3, 75, 40, 81))) ≈ [1, 2, 3, 75, 40, 81]  # Triclinic
+end
