@@ -15,7 +15,7 @@ export ReciprocalPoint,
 Construct a `ReciprocalLattice`.
 
 !!! warning
-    You should not use this function directly, always use `inv` of a `Lattice`.
+    You should not use this function directly, always use `reciprocal` of a `Lattice`.
 """
 struct ReciprocalLattice{T} <: AbstractLattice{T}
     data::SMatrix{3,3,T,9}
@@ -23,19 +23,19 @@ end
 @functor ReciprocalLattice
 
 """
-    inv(lattice::Lattice)
-    inv(lattice::ReciprocalLattice)
+    reciprocal(lattice::Lattice)
+    reciprocal(lattice::ReciprocalLattice)
 
 Get the reciprocal of a `Lattice` or a `ReciprocalLattice`.
 """
-function Base.inv(lattice::Lattice)
+function reciprocal(lattice::Lattice)
     Ω = det(lattice.data)  # Cannot use `cellvolume`, it takes the absolute value!
     𝐚, 𝐛, 𝐜 = basis_vectors(lattice)
     return ReciprocalLattice(
         inv(Ω) * transpose(hcat(cross(𝐛, 𝐜), cross(𝐜, 𝐚), cross(𝐚, 𝐛))),
     )
 end
-function Base.inv(lattice::ReciprocalLattice)
+function reciprocal(lattice::ReciprocalLattice)
     Ω⁻¹ = det(lattice.data)  # Cannot use `cellvolume`, it takes the absolute value!
     𝐚⁻¹, 𝐛⁻¹, 𝐜⁻¹ = basis_vectors(lattice)
     return Lattice(inv(Ω⁻¹) * hcat(cross(𝐛⁻¹, 𝐜⁻¹), cross(𝐜⁻¹, 𝐚⁻¹), cross(𝐚⁻¹, 𝐛⁻¹)))
