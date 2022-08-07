@@ -16,7 +16,7 @@ cellvolume(a, b, c, α, β, γ) =
 Calculate the cell volume from a `Lattice` or a `Cell`.
 """
 cellvolume(lattice::AbstractLattice) = abs(det(lattice.data))
-cellvolume(cell::Cell) = abs(det(Lattice(cell)))
+cellvolume(cell::Cell) = cellvolume(Lattice(cell))
 """
     cellvolume(g::MetricTensor)
 
