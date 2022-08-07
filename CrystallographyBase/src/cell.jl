@@ -11,7 +11,6 @@ end
 function Cell(lattice, positions, atoms)
     if !(lattice isa Lattice)
         lattice = Lattice(lattice)
-        L = eltype(lattice)
     end
     if positions isa AbstractVector
         P = eltype(Base.promote_typeof(positions...))
@@ -19,7 +18,7 @@ function Cell(lattice, positions, atoms)
     else
         throw(ArgumentError("`positions` must be a `Vector` of `Vector`s!"))
     end
-    T = eltype(atoms)
+    L, T = eltype(lattice), eltype(atoms)
     return Cell{L,P,T}(lattice, positions, atoms)
 end
 
