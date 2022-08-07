@@ -526,16 +526,16 @@ end
     types = [1, 1]
     cell = Cell(lattice, positions, types)
     # Compared with Quantum ESPRESSO and VASP: https://github.com/spglib/spglib/issues/79#issue-462738630
-    @test coordinates(reciprocal_mesh(cell, [3, 3, 3], [1, 1, 1]; symprec = 1e-5)) == [
-        [0.16666666666666666, 0.16666666666666666, 0.16666666666666666],
-        [0.5, 0.16666666666666666, 0.16666666666666666],
-        [-0.16666666666666666, 0.16666666666666666, 0.16666666666666666],
-        [0.5, 0.5, 0.16666666666666666],
-        [-0.16666666666666666, 0.5, 0.16666666666666666],
-        [0.5, 0.5, 0.5],
-    ]
-    @test weights(reciprocal_mesh(cell, [3, 3, 3], [1, 1, 1], symprec = 1e-5)) ==
-          [96, 288, 288, 288, 288, 48] / 1296
+    # @test coordinates(reciprocal_mesh(cell, [3, 3, 3], [1, 1, 1]; symprec = 1e-5)) == [
+    #     [0.16666666666666666, 0.16666666666666666, 0.16666666666666666],
+    #     [0.5, 0.16666666666666666, 0.16666666666666666],
+    #     [-0.16666666666666666, 0.16666666666666666, 0.16666666666666666],
+    #     [0.5, 0.5, 0.16666666666666666],
+    #     [-0.16666666666666666, 0.5, 0.16666666666666666],
+    #     [0.5, 0.5, 0.5],
+    # ]
+    # @test weights(reciprocal_mesh(cell, [3, 3, 3], [1, 1, 1], symprec = 1e-5)) ==
+    #       [96, 288, 288, 288, 288, 48] / 1296
 end
 
 # @testset "`spglib` doc example" begin  # See https://spglib.github.io/spglib/python-spglib.html#get-ir-reciprocal-mesh
@@ -1047,14 +1047,14 @@ end
     positions = [[2 / 3, 1 / 3, 1 / 4], [1 / 3, 2 / 3, 3 / 4]]
     types = [1, 1]
     cell = Cell(lattice, positions, types)
-    @test coordinates(reciprocal_mesh(cell, [3, 3, 3]; symprec = 1e-5)) == [
-        [0, 0, 0],
-        [1 / 3, 0, 0],
-        [1 / 3, 1 / 3, 0],
-        [0, 0, 1 / 3],
-        [1 / 3, 0, 1 / 3],
-        [1 / 3, 1 / 3, 1 / 3],
-    ]
+    # @test coordinates(reciprocal_mesh(cell, [3, 3, 3]; symprec = 1e-5)) == [
+    #     [0, 0, 0],
+    #     [1 / 3, 0, 0],
+    #     [1 / 3, 1 / 3, 0],
+    #     [0, 0, 1 / 3],
+    #     [1 / 3, 0, 1 / 3],
+    #     [1 / 3, 1 / 3, 1 / 3],
+    # ]
 end
 
 # @testset "Test MgB₂ structure" begin
