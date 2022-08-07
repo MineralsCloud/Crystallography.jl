@@ -19,6 +19,7 @@ Lattice
 basis_vectors
 latticesystem
 latticeconstants
+periodicity
 supercell
 ```
 
