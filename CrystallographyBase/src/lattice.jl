@@ -174,12 +174,12 @@ Get the crystal system of a `lattice`.
 latticesystem(lattice::Lattice; kwargs...) =
     latticesystem(cellparameters(lattice)...; kwargs...)
 # Auxiliary functions
-≊(θ, φ) = isapprox(θ, φ; rtol = ANGLE_TOLERANCE)
-≅(x, y) = isapprox(x, y; rtol = LENGTH_TOLERANCE)
+≊(θ, φ) = isapprox(θ, φ; atol = ANGLE_TOLERANCE)
+≅(x, y) = isapprox(x, y; atol = LENGTH_TOLERANCE)
 cyclic_perm(vec) = (circshift(vec, i) for i in 1:length(vec))  # See https://stackoverflow.com/a/43035441
-function bilengths(iterable)  # If and only if two lengths are equal.
-    for i in iterable
-        if sum(isapprox(i, j, rtol = LENGTH_TOLERANCE) for j in iterable) == 2
+function bilengths(vec)  # If and only if two lengths are equal.
+    for x in vec
+        if sum(isapprox(x, y; atol = LENGTH_TOLERANCE) for y in vec) == 2
             return true
         end
     end
