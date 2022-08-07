@@ -1,41 +1,5 @@
 using LinearAlgebra: Diagonal, I
 
-export CrystalSystem,
-    Triclinic,
-    Monoclinic,
-    Orthorhombic,
-    Tetragonal,
-    Cubic,
-    Trigonal,
-    Hexagonal,
-    Centering,
-    BaseCentering,
-    Primitive,
-    BodyCentering,
-    FaceCentering,
-    RhombohedralCentering,
-    BaseCentering,
-    Bravais,
-    PrimitiveTriclinic,
-    PrimitiveMonoclinic,
-    ACenteredMonoclinic,
-    BCenteredMonoclinic,
-    CCenteredMonoclinic,
-    PrimitiveOrthorhombic,
-    ACenteredOrthorhombic,
-    BCenteredOrthorhombic,
-    CCenteredOrthorhombic,
-    BodyCenteredOrthorhombic,
-    FaceCenteredOrthorhombic,
-    PrimitiveTetragonal,
-    BodyCenteredTetragonal,
-    PrimitiveCubic,
-    BodyCenteredCubic,
-    FaceCenteredCubic,
-    PrimitiveHexagonal,
-    RCenteredHexagonal,
-    Lattice
-export centering, crystalsystem, basis_vectors, cellparameters
 
 "Represent one of the seven crystal systems."
 abstract type CrystalSystem end
