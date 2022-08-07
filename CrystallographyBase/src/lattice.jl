@@ -94,12 +94,6 @@ Get the three basis vectors from a `lattice`.
 basis_vectors(lattice::Lattice) = lattice[:, 1], lattice[:, 2], lattice[:, 3]
 
 """
-    centering(bravais::Bravais)
-
-Get the centering type of a Bravais type.
-"""
-centering(::Bravais{A,B}) where {A,B} = B()
-
 """
     crystalsystem(bravais::Bravais)
 
