@@ -1,50 +1,6 @@
+using EnumX: @enumx
 using LinearAlgebra: Diagonal, I
 
-
-"Represent one of the seven crystal systems."
-abstract type CrystalSystem end
-"""
-    Triclinic()
-
-Represent the triclinic system.
-"""
-struct Triclinic <: CrystalSystem end
-"""
-    Monoclinic()
-
-Represent the monoclinic system.
-"""
-struct Monoclinic <: CrystalSystem end
-"""
-    Orthorhombic()
-
-Represent the orthorhombic system.
-"""
-struct Orthorhombic <: CrystalSystem end
-"""
-    Tetragonal()
-
-Represent the tetragonal system.
-"""
-struct Tetragonal <: CrystalSystem end
-"""
-    Cubic()
-
-Represent the cubic system.
-"""
-struct Cubic <: CrystalSystem end
-"""
-    Trigonal()
-
-Represent the trigonal system.
-"""
-struct Trigonal <: CrystalSystem end
-"""
-    Hexagonal()
-
-Represent the hexagonal system.
-"""
-struct Hexagonal <: CrystalSystem end
 
 "Represent the centering types."
 abstract type Centering end
@@ -83,6 +39,15 @@ struct BaseCentering{T} <: Centering end
 const ACentering = BaseCentering{:A}
 const BCentering = BaseCentering{:B}
 const CCentering = BaseCentering{:C}
+@enumx CrystalSystem begin
+    Triclinic = 1
+    Monoclinic = 2
+    Orthorhombic = 3
+    Tetragonal = 4
+    Trigonal = 5
+    Hexagonal = 6
+    Cubic = 7
+end
 
 """
     Bravais(a::CrystalSystem, b::Centering, obverse::Bool=true)
