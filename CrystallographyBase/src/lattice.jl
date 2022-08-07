@@ -2,7 +2,8 @@ using EnumX: @enumx
 using LinearAlgebra: Diagonal, I
 
 export CrystalSystem, LatticeSystem, Bravais, Lattice
-export basis_vectors, latticesystem, latticeconstants, periodicity, supercell, vertices
+export basis_vectors,
+    latticesystem, latticeconstants, periodicity, supercell, vertices, faces
 
 "Represent the 7 lattice systems."
 @enumx LatticeSystem begin
@@ -232,6 +233,9 @@ function vertices(lattice::Lattice, 𝐎 = zeros(eltype(lattice), 3))
     unshifted = (0𝐚, 𝐚, 𝐛, 𝐜, 𝐚 + 𝐛, 𝐛 + 𝐜, 𝐚 + 𝐜, 𝐚 + 𝐛 + 𝐜)
     return map(Base.Fix1(+, 𝐎), unshifted)
 end
+
+faces(::Lattice) =
+    [1, 2, 3, 4], [5, 6, 7, 8], [1, 2, 6, 5], [3, 4, 8, 7], [2, 3, 7, 6], [5, 8, 4, 1]
 
 # See https://en.wikipedia.org/wiki/Supercell_(crystal)
 """
