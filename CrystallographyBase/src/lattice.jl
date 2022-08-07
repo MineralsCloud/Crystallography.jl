@@ -134,7 +134,7 @@ Guess the crystal system from the six cell parameters.
 """
 # See https://github.com/LaurentRDC/crystals/blob/2d3a570/crystals/lattice.py#L396-L475
 function latticesystem(a, b, c, α, β, γ)
-    lengths, angles = (a, b, c), (α, β, γ)
+    lengths, angles = Base.vect(a, b, c), Base.vect(α, β, γ)
     unilength = all(x ≅ a for x in lengths)
     uniangle = all(θ ≊ α for θ in angles)
     # Checking for monoclinic system is generalized
@@ -142,7 +142,7 @@ function latticesystem(a, b, c, α, β, γ)
     # i.e., a != c && β != 90 && α == γ == 90
     #   || b != c && α != 90 && β == γ == 90
     #   || a != b && γ != 90 && α == β != 90
-    for (lengths′, angles′) in zip(Iterators.cycle(lengths), Iterators.cycle(angles))
+    for (lengths′, angles′) in zip(cyclic_perm(lengths), cyclic_perm(angles))
         (a′, _, c′), (α′, β′, γ′) = lengths′, angles′
         if !(a′ ≅ c′) && α′ ≊ 90 && γ′ ≊ 90 && !(β′ ≊ 90)
             return LatticeSystem.Monoclinic
@@ -176,6 +176,7 @@ latticesystem(lattice::Lattice; kwargs...) =
 # Auxiliary functions
 ≊(θ, φ) = isapprox(θ, φ; rtol = ANGLE_TOLERANCE)
 ≅(x, y) = isapprox(x, y; rtol = LENGTH_TOLERANCE)
+cyclic_perm(vec) = (circshift(vec, i) for i in 1:length(vec))  # See https://stackoverflow.com/a/43035441
 function bilengths(iterable)  # If and only if two lengths are equal.
     for i in iterable
         if sum(isapprox(i, j, rtol = LENGTH_TOLERANCE) for j in iterable) == 2
