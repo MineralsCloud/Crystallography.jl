@@ -2,7 +2,7 @@ using EnumX: @enumx
 using LinearAlgebra: Diagonal, I
 
 export CrystalSystem, LatticeSystem, Bravais, Lattice
-export latticesystem, basis_vectors, latticeconstants
+export basis_vectors, latticesystem, latticeconstants
 
 @enumx LatticeSystem begin
     Triclinic = 1
