@@ -104,6 +104,24 @@ end
     @test latticesystem(1, 2, 3, 75, 40, 81) == LatticeSystem.Triclinic
 end
 
+@testset "Test `periodicity`" begin
+    # From https://github.com/LaurentRDC/crystals/blob/7c544fe/crystals/tests/test_lattice.py#L117
+    # Compared with Python's results
+    @test collect(
+        periodicity(
+            Lattice(1u"angstrom", 2u"angstrom", 3u"angstrom", 75, 40, 81; axis = :c),
+        ),
+    ) ≈ [0.6413269980200662, 1.975159767026871, 4.283682533324019] * u"angstrom"
+    # From https://github.com/LaurentRDC/crystals/blob/7c544fe/crystals/tests/test_lattice.py#L131
+    # Compared with Python's results
+    @test collect(periodicity(Lattice(3, 4, 20, 45, 90, 126; axis = :c))) ≈
+          [1.6676789107542636, 5.322188751410911, 22.82842712474619]
+    # From https://github.com/LaurentRDC/crystals/blob/7c544fe/crystals/tests/test_lattice.py#L181
+    # Compared with Python's results
+    @test collect(periodicity(Lattice(3, 1, 2, 90, 90, 115; axis = :c))) ≈
+          [2.71892336110995, 2.267854785222098, 2.0000000000000004]
+end
+
 @testset "Test `latticeconstants`" begin
     # From https://github.com/LaurentRDC/crystals/blob/7c544fe/crystals/tests/test_lattice.py#L96
     @test collect(latticeconstants(Lattice(2, 1, 5, 90, 90, 90))) ≈ [2, 1, 5, 90, 90, 90]  # Orthorombic
