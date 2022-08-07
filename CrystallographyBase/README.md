@@ -11,7 +11,7 @@
 [gha-img]: https://github.com/MineralsCloud/CrystallographyBase.jl/workflows/CI/badge.svg
 [gha-url]: https://github.com/MineralsCloud/CrystallographyBase.jl/actions
 [appveyor-img]: https://ci.appveyor.com/api/projects/status/github/MineralsCloud/CrystallographyBase.jl?svg=true
-[appveyor-url]: https://ci.appveyor.com/project/MineralsCloud/CrystallographyBase-jl
+[appveyor-url]: https://ci.appveyor.com/project/singularitti/CrystallographyBase-jl
 [cirrus-img]: https://api.cirrus-ci.com/github/MineralsCloud/CrystallographyBase.jl.svg
 [cirrus-url]: https://cirrus-ci.com/github/MineralsCloud/CrystallographyBase.jl
 [gitlab-img]: https://gitlab.com/singularitti/CrystallographyBase.jl/badges/master/pipeline.svg
