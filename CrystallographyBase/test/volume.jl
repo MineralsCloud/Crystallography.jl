@@ -14,26 +14,26 @@ using Unitful: uconvert
         [0.69542, 0.69542, 0],
     ]
     @testset "Test `Element`s" begin
-        types = elements[[22, 22, 8, 8, 8, 8]]
-        cell = Cell(lattice, positions, types)
+        atoms = elements[[22, 22, 8, 8, 8, 8]]
+        cell = Cell(lattice, positions, atoms)
         @test cellvolume(cell) ≈ 64.29197531534862u"angstrom^3"
-        @test uconvert(u"g/cm^3", crystaldensity(lattice, types)) ≈
+        @test uconvert(u"g/cm^3", crystaldensity(lattice, atoms)) ≈
               4.125526333805304u"g/cm^3"
         @test uconvert(u"g/cm^3", crystaldensity(cell)) ≈ 4.125526333805304u"g/cm^3"
     end
     @testset "Test `AbstractString`s" begin
-        types = elements[["Titanium", "Titanium", "Oxygen", "Oxygen", "Oxygen", "Oxygen"]]
-        cell = Cell(lattice, positions, types)
+        atoms = elements[["Titanium", "Titanium", "Oxygen", "Oxygen", "Oxygen", "Oxygen"]]
+        cell = Cell(lattice, positions, atoms)
         @test uconvert(u"g/cm^3", crystaldensity(cell)) ≈ 4.125526333805304u"g/cm^3"
     end
     @testset "Test `Integer`s" begin
-        types = [22, 22, 8, 8, 8, 8]
-        cell = Cell(lattice, positions, types)
+        atoms = [22, 22, 8, 8, 8, 8]
+        cell = Cell(lattice, positions, atoms)
         @test uconvert(u"g/cm^3", crystaldensity(cell)) ≈ 4.125526333805304u"g/cm^3"
     end
     @testset "Test `Symbol`s" begin
-        types = [:Ti, :Ti, :O, :O, :O, :O]
-        cell = Cell(lattice, positions, types)
+        atoms = [:Ti, :Ti, :O, :O, :O, :O]
+        cell = Cell(lattice, positions, atoms)
         @test uconvert(u"g/cm^3", crystaldensity(cell)) ≈ 4.125526333805304u"g/cm^3"
     end
 end
