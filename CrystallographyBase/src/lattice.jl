@@ -1,7 +1,18 @@
 using EnumX: @enumx
 using LinearAlgebra: Diagonal, I
 
+export CrystalSystem, LatticeSystem, Bravais, Lattice
+export latticesystem, basis_vectors, cellparameters
 
+@enumx LatticeSystem begin
+    Triclinic = 1
+    Monoclinic = 2
+    Orthorhombic = 3
+    Tetragonal = 4
+    Rhombohedral = 5
+    Hexagonal = 6
+    Cubic = 7
+end
 
 @enumx CrystalSystem begin
     Triclinic = 1
