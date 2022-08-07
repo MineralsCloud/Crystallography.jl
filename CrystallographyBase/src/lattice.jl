@@ -75,7 +75,7 @@ Construct a `Lattice` from a vector of three basis vectors.
 Lattice(basis_vectors::AbstractVector{<:AbstractVector}) =
     Lattice(reduce(hcat, basis_vectors))
 """
-    Lattice(a, b, c, α, β, γ, axis = :a)
+    Lattice(a, b, c, α, β, γ; axis = :a)
 
 Construct a `Lattice` from the six cell parameters.
 
@@ -83,9 +83,9 @@ The default convention we used here is that edge vector 𝐚 in the positive x-a
 edge vector 𝐛 in the x-y plane with a positive y-axis component,
 and edge vector 𝐜 with a positive z-axis component in the Cartesian system.
 See [Wikipedia](https://en.wikipedia.org/w/index.php?title=Fractional_coordinates&oldid=961675499#In_crystallography).
-You can also choose `convention = :c`.
+You can also choose `axis = :c`.
 """
-function Lattice(a, b, c, α, β, γ, axis = :a)
+function Lattice(a, b, c, α, β, γ; axis = :a)
     Ω = cellvolume(a, b, c, α, β, γ)
     if axis == :a  # See https://en.wikipedia.org/w/index.php?title=Fractional_coordinates&oldid=961675499#In_crystallography
         sinγ, cosγ, cosα, cosβ = sind(γ), cosd(γ), cosd(α), cosd(β)
