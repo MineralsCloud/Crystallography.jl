@@ -15,7 +15,7 @@ end
 Construct a [Wigner–Seitz cell](https://en.wikipedia.org/wiki/Wigner%E2%80%93Seitz_cell) from an `AbstractLattice`.
 """
 function WignerSeitzCell(lattice::T) where {T<:AbstractLattice}
-    ws = wignerseitz(collect(basis_vectors(lattice)))
+    ws = wignerseitz(collect(latticevectors(lattice)))
     return WignerSeitzCell{length(ws.verts),length(ws.faces),T}(ws.verts, ws.faces, lattice)
 end
 
