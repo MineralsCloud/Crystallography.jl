@@ -2,7 +2,7 @@ using EnumX: @enumx
 using LinearAlgebra: Diagonal, I
 
 export CrystalSystem, LatticeSystem, Bravais, Lattice
-export primitivevectors,
+export latticevectors,
     latticesystem, latticeconstants, periodicity, supercell, vertices, faces
 
 "Represent the 7 lattice systems."
@@ -69,12 +69,12 @@ Construct a `Lattice` from three basis vectors.
 """
 Lattice(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector) = Lattice(hcat(𝐚, 𝐛, 𝐜))
 """
-    Lattice(primitivevectors::AbstractVector{<:AbstractVector})
+    Lattice(latticevectors::AbstractVector{<:AbstractVector})
 
 Construct a `Lattice` from a vector of three basis vectors.
 """
-Lattice(primitivevectors::AbstractVector{<:AbstractVector}) =
-    Lattice(reduce(hcat, primitivevectors))
+Lattice(latticevectors::AbstractVector{<:AbstractVector}) =
+    Lattice(reduce(hcat, latticevectors))
 """
     Lattice(a, b, c, α, β, γ; axis = :a)
 
@@ -112,11 +112,11 @@ end
 @functor Lattice
 
 """
-    primitivevectors(lattice::Lattice)
+    latticevectors(lattice::Lattice)
 
 Get the three primitive vectors from a `lattice`.
 """
-primitivevectors(lattice::Lattice) = lattice[:, 1], lattice[:, 2], lattice[:, 3]
+latticevectors(lattice::Lattice) = lattice[:, 1], lattice[:, 2], lattice[:, 3]
 
 """
     latticesystem(bravais::Bravais)
@@ -210,7 +210,7 @@ cyclic_perm(vec) = (circshift(vec, i) for i in 1:length(vec))  # See https://sta
 Get the six lattice constants from a `lattice`.
 """
 function latticeconstants(lattice::Lattice)
-    𝐚, 𝐛, 𝐜 = primitivevectors(lattice)
+    𝐚, 𝐛, 𝐜 = latticevectors(lattice)
     a, b, c = norm(𝐚), norm(𝐛), norm(𝐜)
     γ, β, α =
         acosd(dot(𝐚, 𝐛) / (a * b)), acosd(dot(𝐚, 𝐜) / (a * c)), acosd(dot(𝐛, 𝐜) / (b * c))
@@ -229,7 +229,7 @@ Get crystal periodicity in ``x``, ``y``, and ``z`` direction from the `Lattice`.
 periodicity(lattice::Lattice) = Tuple(sum(abs, lattice.data; dims = 2))
 
 function vertices(lattice::Lattice, 𝐎 = fill(zero(first(lattice)), 3))
-    𝐚, 𝐛, 𝐜 = primitivevectors(lattice)
+    𝐚, 𝐛, 𝐜 = latticevectors(lattice)
     return map(𝐕 -> 𝐕 + 𝐎, (0 * 𝐚, 𝐚, 𝐛, 𝐜, 𝐚 + 𝐛, 𝐛 + 𝐜, 𝐚 + 𝐜, 𝐚 + 𝐛 + 𝐜))
 end
 

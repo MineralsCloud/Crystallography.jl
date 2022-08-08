@@ -16,7 +16,7 @@ CrystalSystem
 LatticeSystem
 Bravais
 Lattice
-primitivevectors
+latticevectors
 latticesystem
 latticeconstants
 periodicity

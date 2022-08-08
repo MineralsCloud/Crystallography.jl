@@ -30,23 +30,23 @@ Get the reciprocal of a `Lattice` or a `ReciprocalLattice`.
 """
 function reciprocal(lattice::Lattice)
     Ω = det(lattice.data)  # Cannot use `cellvolume`, it takes the absolute value!
-    𝐚, 𝐛, 𝐜 = primitivevectors(lattice)
+    𝐚, 𝐛, 𝐜 = latticevectors(lattice)
     return ReciprocalLattice(
         inv(Ω) * transpose(hcat(cross(𝐛, 𝐜), cross(𝐜, 𝐚), cross(𝐚, 𝐛))),
     )
 end
 function reciprocal(lattice::ReciprocalLattice)
     Ω⁻¹ = det(lattice.data)  # Cannot use `cellvolume`, it takes the absolute value!
-    𝐚⁻¹, 𝐛⁻¹, 𝐜⁻¹ = primitivevectors(lattice)
+    𝐚⁻¹, 𝐛⁻¹, 𝐜⁻¹ = latticevectors(lattice)
     return Lattice(inv(Ω⁻¹) * hcat(cross(𝐛⁻¹, 𝐜⁻¹), cross(𝐜⁻¹, 𝐚⁻¹), cross(𝐚⁻¹, 𝐛⁻¹)))
 end
 
 """
-    primitivevectors(lattice::ReciprocalLattice)
+    latticevectors(lattice::ReciprocalLattice)
 
 Get the three basis vectors from a `ReciprocalLattice`.
 """
-primitivevectors(lattice::ReciprocalLattice) = lattice[1, :], lattice[2, :], lattice[3, :]
+latticevectors(lattice::ReciprocalLattice) = lattice[1, :], lattice[2, :], lattice[3, :]
 
 """
     ReciprocalPoint(x, y, z, w)
@@ -118,7 +118,7 @@ end
 # Construct a `ReciprocalPath` from a `Lattice` or a `Cell`.
 # """
 # function ReciprocalPath(lattice::Lattice, spgnum::Integer)
-#     kpath = irrfbz_path(spgnum, collect(primitivevectors(lattice)))
+#     kpath = irrfbz_path(spgnum, collect(latticevectors(lattice)))
 #     return ReciprocalPath(kpath.points, kpath.paths, lattice)
 # end
 # function ReciprocalPath(cell::Cell)
