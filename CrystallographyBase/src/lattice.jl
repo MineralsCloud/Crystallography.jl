@@ -228,14 +228,17 @@ Get crystal periodicity in ``x``, ``y``, and ``z`` direction from the `Lattice`.
 """
 periodicity(lattice::Lattice) = Tuple(sum(abs, lattice.data; dims = 2))
 
-function vertices(lattice::Lattice, 𝐎 = zeros(eltype(lattice), 3))
+function vertices(lattice::Lattice, 𝐎 = fill(zero(first(lattice)), 3))
     𝐚, 𝐛, 𝐜 = basis_vectors(lattice)
-    unshifted = (0𝐚, 𝐚, 𝐛, 𝐜, 𝐚 + 𝐛, 𝐛 + 𝐜, 𝐚 + 𝐜, 𝐚 + 𝐛 + 𝐜)
-    return map(Base.Fix1(+, 𝐎), unshifted)
+    return map(𝐕 -> 𝐕 + 𝐎, (0 * 𝐚, 𝐚, 𝐛, 𝐜, 𝐚 + 𝐛, 𝐛 + 𝐜, 𝐚 + 𝐜, 𝐚 + 𝐛 + 𝐜))
 end
 
-faces(::Lattice) =
-    [1, 2, 3, 4], [5, 6, 7, 8], [1, 2, 6, 5], [3, 4, 8, 7], [2, 3, 7, 6], [5, 8, 4, 1]
+function faces(lattice::Lattice, 𝐎 = zeros(eltype(lattice), 3))
+    faces =
+        (1, 2, 3, 4), (5, 6, 7, 8), (1, 2, 6, 5), (3, 4, 8, 7), (2, 3, 7, 6), (5, 8, 4, 1)
+    verts = vertices(lattice, 𝐎)
+    return map(face -> [verts[i] for i in face], faces)
+end
 
 # See https://en.wikipedia.org/wiki/Supercell_(crystal)
 """
