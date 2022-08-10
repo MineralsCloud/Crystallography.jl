@@ -56,6 +56,7 @@ julia> import Pkg; Pkg.add("CrystallographyBase")
   - [`Functors.jl`](https://github.com/FluxML/Functors.jl) `v0.1.0` and above
   - [`PeriodicTable.jl`](https://github.com/JuliaPhysics/PeriodicTable.jl) `v0.1.0` and above
   - [`StaticArrays.jl`](https://github.com/JuliaArrays/StaticArrays.jl) `v0.8.3` and above
+  - [`StructHelpers.jl`](https://github.com/jw3126/StructHelpers.jl) `v0.1` and above
 - OS: macOS, Linux, Windows, and FreeBSD
 - Architecture: x86, x64, ARM
 
