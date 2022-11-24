@@ -1,7 +1,7 @@
 module IO
 
 using CrystalInfoFramework: CifBlock, add_to_loop
-using CrystallographyBase: Lattice, Cell, natoms, eachatom, latticeconstants, basis_vectors
+using CrystallographyBase: Lattice, Cell, natoms, eachatom, latticeconstants, latticevectors
 
 export writexyz
 
@@ -65,7 +65,7 @@ function writevasp(io::Base.IO, cell::Cell; scaling_factor=1, cartesian=false, c
     println(io, comment)
     println(io, scaling_factor)
     lattice = Lattice(cell) / scaling_factor
-    for vector in basis_vectors(lattice)
+    for vector in latticevectors(lattice)
         println(io, join(vector, "  "))
     end
 

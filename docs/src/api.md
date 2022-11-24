@@ -31,7 +31,7 @@ Bravais
 Lattice
 centering
 crystalsystem
-basis_vectors
+latticevectors
 cellparameters
 supercell
 ```
