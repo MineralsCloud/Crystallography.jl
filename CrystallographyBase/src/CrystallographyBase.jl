@@ -3,6 +3,7 @@ module CrystallographyBase
 using Functors: @functor
 using LinearAlgebra: det
 using StaticArrays: SVector, SMatrix
+using StructEquality: @struct_hash_equal_isequal_isapprox
 
 import LinearAlgebra: dot, norm
 
