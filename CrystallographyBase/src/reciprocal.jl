@@ -1,5 +1,4 @@
 # using Brillouin: irrfbz_path
-using Counters: counter
 using LinearAlgebra: cross
 
 export ReciprocalPoint,
