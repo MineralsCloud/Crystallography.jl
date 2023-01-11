@@ -2,8 +2,7 @@ using EnumX: @enumx
 using LinearAlgebra: Diagonal, I
 
 export CrystalSystem, LatticeSystem, Bravais, Lattice
-export latticevectors,
-    latticesystem, latticeconstants, periodicity, supercell, vertices, faces
+export latticevectors, latticesystem, latticeconstants, periodicity, supercell
 
 "Represent the 7 lattice systems."
 @enumx LatticeSystem begin
@@ -227,18 +226,6 @@ end
 Get crystal periodicity in ``x``, ``y``, and ``z`` direction from the `Lattice`.
 """
 periodicity(lattice::Lattice) = Tuple(sum(abs, lattice.data; dims = 2))
-
-function vertices(lattice::Lattice)
-    𝐚, 𝐛, 𝐜 = latticevectors(lattice)
-    return 0 * 𝐚, 𝐚, 𝐛, 𝐜, 𝐚 + 𝐛, 𝐛 + 𝐜, 𝐚 + 𝐜, 𝐚 + 𝐛 + 𝐜
-end
-
-function faces(lattice::Lattice)
-    faces =
-        (1, 2, 3, 4), (5, 6, 7, 8), (1, 2, 6, 5), (3, 4, 8, 7), (2, 3, 7, 6), (5, 8, 4, 1)
-    verts = vertices(lattice)
-    return map(face -> [verts[i] for i in face], faces)
-end
 
 # See https://en.wikipedia.org/wiki/Supercell_(crystal)
 """

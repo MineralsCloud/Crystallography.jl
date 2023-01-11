@@ -1,4 +1,4 @@
-export vertices, edge, edges
+export vertices, edge, edges, faces
 
 function vertices(lattice::Lattice)
     O⃗ = zeros(eltype(lattice), 3)
@@ -25,4 +25,11 @@ function edges(lattice::Lattice)
         edge(A⃗B⃗, A⃗B⃗C⃗),
         edge(B⃗C⃗, A⃗B⃗C⃗),
     ]
+end
+
+function faces(lattice::Lattice)
+    faces =
+        (1, 2, 3, 4), (5, 6, 7, 8), (1, 2, 6, 5), (3, 4, 8, 7), (2, 3, 7, 6), (5, 8, 4, 1)
+    verts = vertices(lattice)
+    return map(face -> [verts[i] for i in face], faces)
 end
