@@ -91,7 +91,7 @@ Base.size(::MetricTensor) = (3, 3)
 
 Base.IndexStyle(::Type{<:MetricTensor}) = IndexLinear()
 
-Base.getindex(g::MetricTensor, I::Vararg) = getindex(g.data, I...)
+Base.getindex(g::MetricTensor, i) = getindex(g.data, i)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(g.data))
 
