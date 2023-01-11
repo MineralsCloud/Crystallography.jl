@@ -42,17 +42,17 @@ EachAtom(cell::Cell) = EachAtom(cell.atoms, cell.positions)
 eachatom(cell::Cell) = EachAtom(cell)
 
 # Similar to https://github.com/JuliaCollections/IterTools.jl/blob/0ecaa88/src/IterTools.jl#L1028-L1032
-function Base.iterate(itr::EachAtom, state = 1)
-    if state > length(itr)
+function Base.iterate(iter::EachAtom, state = 1)
+    if state > length(iter)
         return nothing
     else
-        return (itr.atoms[state], itr.positions[state]), state + 1
+        return (iter.atoms[state], iter.positions[state]), state + 1
     end
 end
 
 Base.eltype(::EachAtom{A,B}) where {A,B} = Tuple{A,B}
 
-Base.length(itr::EachAtom) = length(itr.atoms)
+Base.length(iter::EachAtom) = length(iter.atoms)
 
 Base.IteratorSize(::Type{<:EachAtom}) = Base.HasLength()
 
