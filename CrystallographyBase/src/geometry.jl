@@ -1,5 +1,14 @@
 export vertices, edge, edges, faces
 
+const FACES = Base.vect(
+    (1, 2, 3, 4),
+    (5, 6, 7, 8),
+    (1, 2, 6, 5),
+    (3, 4, 8, 7),
+    (2, 3, 7, 6),
+    (5, 8, 4, 1),
+)
+
 function vertices(lattice::Lattice)
     O⃗ = zeros(eltype(lattice), 3)
     A⃗, B⃗, C⃗ = latticevectors(lattice)
@@ -28,8 +37,6 @@ function edges(lattice::Lattice)
 end
 
 function faces(lattice::Lattice)
-    faces =
-        (1, 2, 3, 4), (5, 6, 7, 8), (1, 2, 6, 5), (3, 4, 8, 7), (2, 3, 7, 6), (5, 8, 4, 1)
     verts = vertices(lattice)
-    return map(face -> [verts[i] for i in face], faces)
+    return map(face -> [verts[i] for i in face], FACES)
 end
