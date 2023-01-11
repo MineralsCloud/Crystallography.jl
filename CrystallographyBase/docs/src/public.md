@@ -15,6 +15,7 @@ Depth = 3
 CrystalSystem
 LatticeSystem
 Bravais
+AbstractLattice
 Lattice
 latticevectors
 latticesystem
