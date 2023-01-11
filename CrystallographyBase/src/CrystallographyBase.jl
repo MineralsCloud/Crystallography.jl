@@ -9,6 +9,7 @@ import LinearAlgebra: dot, norm
 include("lattice.jl")
 include("cell.jl")
 include("reciprocal.jl")
+include("geometry.jl")
 # include("wignerseitz.jl")
 include("miller.jl")
 include("metric.jl")
