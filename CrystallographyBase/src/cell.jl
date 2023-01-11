@@ -1,9 +1,8 @@
 using StaticArrays: MVector
-using StructHelpers: @batteries
 
 export Cell, natoms, eachatom
 
-struct Cell{L,P,T}
+@struct_hash_equal_isequal_isapprox struct Cell{L,P,T}
     lattice::Lattice{L}
     positions::Vector{MVector{3,P}}
     atoms::Vector{T}
@@ -21,8 +20,6 @@ function Cell(lattice, positions, atoms)
     L, T = eltype(lattice), eltype(atoms)
     return Cell{L,P,T}(lattice, positions, atoms)
 end
-
-@batteries Cell eq = true hash = true
 
 natoms(cell::Cell) = length(cell.atoms)
 

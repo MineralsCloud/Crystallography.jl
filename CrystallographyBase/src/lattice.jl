@@ -4,7 +4,7 @@ export Lattice, latticevectors, latticesystem, latticeconstants, periodicity, su
 
 "Represent the real lattices and the reciprocal lattices."
 abstract type AbstractLattice{T} end
-struct Lattice{T} <: AbstractLattice{T}
+@struct_hash_equal_isequal_isapprox struct Lattice{T} <: AbstractLattice{T}
     data::SMatrix{3,3,T,9}
 end
 """
@@ -163,7 +163,7 @@ cyclic_perm(vec) = (circshift(vec, i) for i in 1:length(vec))  # See https://sta
 
 Get the six lattice constants from a `lattice`.
 """
-function latticeconstants(lattice::Lattice)
+function latticeconstants(lattice::AbstractLattice)  # Works for `ReciprocalLattice`s, too
     𝐚, 𝐛, 𝐜 = latticevectors(lattice)
     a, b, c = norm(𝐚), norm(𝐛), norm(𝐜)
     γ, β, α =

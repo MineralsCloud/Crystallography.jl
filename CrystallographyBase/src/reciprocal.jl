@@ -17,7 +17,7 @@ Construct a `ReciprocalLattice`.
 !!! warning
     You should not use this function directly, always use `reciprocal` of a `Lattice`.
 """
-struct ReciprocalLattice{T} <: AbstractLattice{T}
+@struct_hash_equal_isequal_isapprox struct ReciprocalLattice{T} <: AbstractLattice{T}
     data::SMatrix{3,3,T,9}
 end
 @functor ReciprocalLattice
