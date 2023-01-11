@@ -257,8 +257,9 @@ function supercell(lattice::Lattice, scaling_factors::AbstractMatrix{<:Integer})
 end
 supercell(lattice::Lattice, scaling_factors::AbstractVector{<:Integer}) =
     supercell(lattice, Diagonal(scaling_factors))
+# See https://stackoverflow.com/a/57270841
 supercell(lattice::Lattice, scaling_factor::Integer) =
-    supercell(lattice, scaling_factor * I)
+    supercell(lattice, Matrix(scaling_factor * I, 3, 3))
 
 Base.iterate(lattice::AbstractLattice) = iterate(lattice.data)
 Base.iterate(lattice::AbstractLattice, state) = iterate(lattice.data, state)
