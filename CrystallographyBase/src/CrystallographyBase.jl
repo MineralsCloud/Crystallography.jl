@@ -6,6 +6,7 @@ using StaticArrays: SVector, SMatrix
 
 import LinearAlgebra: dot, norm
 
+include("systems.jl")
 include("lattice.jl")
 include("cell.jl")
 include("reciprocal.jl")
