@@ -1,4 +1,4 @@
-using StaticArrays: MMatrix, MVector
+using StaticArrays: MVector
 using StructHelpers: @batteries
 
 export Cell, natoms, eachatom
