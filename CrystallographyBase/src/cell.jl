@@ -1,6 +1,6 @@
 using StaticArrays: MVector
 
-export Cell, natoms, eachatom
+export Cell, natoms, atomtypes, eachatom
 
 @struct_hash_equal_isequal_isapprox struct Cell{L,P,T}
     lattice::Lattice{L}
@@ -22,6 +22,8 @@ function Cell(lattice, positions, atoms)
 end
 
 natoms(cell::Cell) = length(cell.atoms)
+
+atomtypes(cell::Cell) = unique(cell.atoms)
 
 """
     Lattice(cell::Cell)
