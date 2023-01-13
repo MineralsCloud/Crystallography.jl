@@ -82,6 +82,11 @@ struct EachAtom{A,B}
 end
 EachAtom(cell::Cell) = EachAtom(cell.atoms, cell.positions)
 
+"""
+    eachatom(cell::Cell)
+
+Create a generator that iterates over the atoms in a `Cell`.
+"""
 eachatom(cell::Cell) = EachAtom(cell)
 
 # Similar to https://github.com/JuliaCollections/IterTools.jl/blob/0ecaa88/src/IterTools.jl#L1028-L1032
