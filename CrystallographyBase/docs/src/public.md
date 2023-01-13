@@ -5,7 +5,7 @@ CurrentModule = CrystallographyBase
 # API
 
 ```@contents
-Pages = ["api.md"]
+Pages = ["public.md"]
 Depth = 3
 ```
 
