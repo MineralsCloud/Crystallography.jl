@@ -55,6 +55,7 @@ a few guidelines that should be followed when opening pull requests and contribu
 ```@contents
 Pages = [
     "installation.md",
+    "definitions.md",
     "developers/contributing.md",
     "developers/style.md",
     "troubleshooting.md",
