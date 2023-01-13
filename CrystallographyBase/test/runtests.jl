@@ -5,6 +5,7 @@ using UnitfulAtomic
 
 @testset "CrystallographyBase.jl" begin
     include("lattice.jl")
+    include("supercell.jl")
     include("volume.jl")
     include("miller.jl")
     include("metric.jl")
