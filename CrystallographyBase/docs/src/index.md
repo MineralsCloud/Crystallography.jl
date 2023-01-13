@@ -55,6 +55,8 @@ a few guidelines that should be followed when opening pull requests and contribu
 ```@contents
 Pages = [
     "installation.md",
+    "definitions.md",
+    "examples.md",
     "developers/contributing.md",
     "developers/style.md",
     "troubleshooting.md",
@@ -66,6 +68,7 @@ Depth = 3
 
 ```@contents
 Pages = ["public.md"]
+Depth = 3
 ```
 
 ### [Index](@id main-index)
