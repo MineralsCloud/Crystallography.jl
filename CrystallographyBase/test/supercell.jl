@@ -1,3 +1,5 @@
+using LinearAlgebra: det
+
 @testset "Test the simplest `supercell` for a `Lattice`" begin
     lattice = Lattice(2, 1, 5, 90, 90, 90)
     a = supercell(lattice, 3)
@@ -27,4 +29,18 @@ end
     @test a ≈ c
     @test reciprocal(a) ≈ reciprocal(c)
     @test inv(transform)(c) ≈ lattice
+end
+
+# Example from https://www.researchgate.net/figure/color-online-a-Body-centered-cubic-structures-described-by-two-atom-cubic-supercell_fig1_261404912
+@testset "Test a two-atom cubic supercell to a four-atom tetragonal supercell" begin
+    lattice = Lattice(2, 2, 2, 90, 90, 90)
+    P = [
+        1 0 0
+        0 1 1
+        0 1 -1
+    ]'  # Note the transpose!
+    @test det(P) == -2
+    a = supercell(lattice, P)  # Four-atom tetragonal supercell
+    b = StandardizedFromPrimitive(P)(lattice)  # Two-atom cell to four-atom tetragonal cell
+    @test a == b
 end
