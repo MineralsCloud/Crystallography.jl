@@ -1,23 +1,33 @@
 using Brillouin: irrfbz_path, cartesianize
 using CrystallographyBase: reciprocal
+using LinearAlgebra: I
 
 @testset "Test `reciprocal`" begin
     @testset "Base centered orthorhombic" begin
         a, b, c = 4, 3, 5
         lattice = Lattice([a, -b, 0] / 2, [a, b, 0] / 2, [0, 0, c])
         @test reciprocal(reciprocal(lattice)) == lattice
+        @test reciprocal(lattice).data * lattice.data ≈
+            lattice.data * reciprocal(lattice).data ≈
+            Matrix(I, 3, 3)
         @test reciprocal(lattice).data == inv(lattice.data)
     end
     @testset "Body centered tetragonal" begin
         a, c = 4, 6
         lattice = Lattice([a, a, -c] / 2, [a, -a, c] / 2, [-a, a, c] / 2)
         @test reciprocal(reciprocal(lattice)) == lattice
+        @test reciprocal(lattice).data * lattice.data ≈
+            lattice.data * reciprocal(lattice).data ≈
+            Matrix(I, 3, 3)
         @test reciprocal(lattice).data == inv(lattice.data)
     end
     @testset "Simple hexagonal" begin
         a, c = 2, 3.2
         lattice = Lattice([a, 0, 0], [a / 2, sqrt(3) / 2 * a, 0], [0, 0, c])
         @test reciprocal(reciprocal(lattice)).data == lattice.data
+        @test reciprocal(lattice).data * lattice.data ≈
+            lattice.data * reciprocal(lattice).data ≈
+            Matrix(I, 3, 3)
         @test reciprocal(lattice).data ≈ inv(lattice.data)
     end
     @testset "Face centered cubic" begin
@@ -28,6 +38,9 @@ using CrystallographyBase: reciprocal
             1 0 1
         ]) * a / 2)
         @test reciprocal(reciprocal(lattice)) == lattice
+        @test reciprocal(lattice).data * lattice.data ≈
+            lattice.data * reciprocal(lattice).data ≈
+            Matrix(I, 3, 3)
         @test reciprocal(lattice).data == inv(lattice.data)
     end
     @testset "Body centered cubic" begin
@@ -38,6 +51,9 @@ using CrystallographyBase: reciprocal
             -1 1 1
         ]) * a / 2
         @test reciprocal(reciprocal(lattice)) == lattice
+        @test reciprocal(lattice).data * lattice.data ≈
+            lattice.data * reciprocal(lattice).data ≈
+            Matrix(I, 3, 3)
         @test reciprocal(lattice).data == inv(lattice.data)
     end
 end
