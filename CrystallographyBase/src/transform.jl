@@ -96,8 +96,8 @@ const PrimitiveToStandardized = StandardizedFromPrimitive
 const StandardizedToPrimitive = PrimitiveFromStandardized
 
 (x::Union{StandardizedFromPrimitive,PrimitiveFromStandardized})(v) = inv(x.tf) * collect(v)
-(x::PrimitiveFromStandardized)(lattice::Lattice) = Lattice(lattice.data * x.tf)
-(x::StandardizedFromPrimitive)(lattice::Lattice) = Lattice(lattice.data * inv(x.tf))
+(x::Union{StandardizedFromPrimitive,PrimitiveFromStandardized})(lattice::Lattice) =
+    Lattice(lattice.data * x.tf)
 
 # PrimitiveFromStandardized(::ACentering) = PrimitiveFromStandardized([
 #     1 0 0
