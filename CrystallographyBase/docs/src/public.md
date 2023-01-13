@@ -9,7 +9,7 @@ Pages = ["api.md"]
 Depth = 3
 ```
 
-### Lattice
+### Lattice and Cell
 
 ```@docs
 CrystalSystem
@@ -21,7 +21,9 @@ latticevectors
 latticesystem
 latticeconstants
 periodicity
+Cell
 supercell
+eachatom
 ```
 
 ### Reciprocal space
