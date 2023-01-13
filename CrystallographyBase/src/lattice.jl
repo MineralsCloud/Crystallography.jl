@@ -40,7 +40,7 @@ and edge vector 𝐜 with a positive z-axis component in the Cartesian system.
 See [Wikipedia](https://en.wikipedia.org/w/index.php?title=Fractional_coordinates&oldid=961675499#In_crystallography).
 You can also choose `axis = :c`.
 """
-function Lattice(a, b, c, α, β, γ; axis = :a)
+function Lattice(a, b, c, α, β, γ; axis=:a)
     Ω = cellvolume(a, b, c, α, β, γ)
     if axis == :a  # See https://en.wikipedia.org/w/index.php?title=Fractional_coordinates&oldid=961675499#In_crystallography
         sinγ, cosγ, cosα, cosβ, 𝟎 = sind(γ), cosd(γ), cosd(α), cosd(β), zero(a)
@@ -55,9 +55,7 @@ function Lattice(a, b, c, α, β, γ; axis = :a)
         cos′ = (cosα * cosβ - cosd(γ)) / (sinα * sinβ)
         sin′ = sqrt(1 - cos′^2)
         return Lattice(
-            [x, -x * cos′ / sin′, a * cosβ],
-            [zero(b), b * sinα, b * cosα],
-            [𝟎, 𝟎, c],
+            [x, -x * cos′ / sin′, a * cosβ], [zero(b), b * sinα, b * cosα], [𝟎, 𝟎, c]
         )
     else
         error("aligning `$axis` axis is not supported!")
@@ -105,15 +103,15 @@ Guess the lattice system from the six lattice constants.
 - `lengthtol=1e-5`: the absolute tolerance of edges (`a`, `b`, `c`).
 """
 # See https://github.com/LaurentRDC/crystals/blob/2d3a570/crystals/lattice.py#L396-L475
-function latticesystem(a, b, c, α, β, γ; angletol = 1e-5, lengthtol = 1e-5)
+function latticesystem(a, b, c, α, β, γ; angletol=1e-5, lengthtol=1e-5)
     lengths, angles = Base.vect(a, b, c), Base.vect(α, β, γ)
-    ≊(θ, φ) = isapprox(θ, φ; atol = angletol)
-    ≅(x, y) = isapprox(x, y; atol = lengthtol)
+    ≊(θ, φ) = isapprox(θ, φ; atol=angletol)
+    ≅(x, y) = isapprox(x, y; atol=lengthtol)
     unilength = all(x ≅ a for x in lengths)
     uniangle = all(θ ≊ α for θ in angles)
     function bilengths(vec)  # If and only if two lengths are equal.
         for x in vec
-            if sum(isapprox(x, y; atol = lengthtol) for y in vec) == 2
+            if sum(isapprox(x, y; atol=lengthtol) for y in vec) == 2
                 return true
             end
         end
@@ -166,8 +164,9 @@ Get the six lattice constants from a `lattice`.
 function latticeconstants(lattice::AbstractLattice)  # Works for `ReciprocalLattice`s, too
     𝐚, 𝐛, 𝐜 = latticevectors(lattice)
     a, b, c = norm(𝐚), norm(𝐛), norm(𝐜)
-    γ, β, α =
-        acosd(dot(𝐚, 𝐛) / (a * b)), acosd(dot(𝐚, 𝐜) / (a * c)), acosd(dot(𝐛, 𝐜) / (b * c))
+    γ, β, α = acosd(dot(𝐚, 𝐛) / (a * b)),
+    acosd(dot(𝐚, 𝐜) / (a * c)),
+    acosd(dot(𝐛, 𝐜) / (b * c))
     return a, b, c, α, β, γ
 end
 
@@ -180,7 +179,7 @@ end
 
 Get crystal periodicity in ``x``, ``y``, and ``z`` direction from the `Lattice`.
 """
-periodicity(lattice::Lattice) = Tuple(sum(abs, lattice.data; dims = 2))
+periodicity(lattice::Lattice) = Tuple(sum(abs, lattice.data; dims=2))
 
 # See https://en.wikipedia.org/wiki/Supercell_(crystal)
 """

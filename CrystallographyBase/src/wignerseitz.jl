@@ -26,7 +26,7 @@ Get the coordinates of the vertices of a Wigner–Seitz cell.
 
 If `cartesian` is `true`, return the coordinates in the Cartesian coordinate system.
 """
-vertices(ws::WignerSeitzCell, cartesian = false) =
+vertices(ws::WignerSeitzCell, cartesian=false) =
     cartesian ? map(CartesianFromFractional(ws.lattice), ws.vertices) : ws.vertices
 
 """
@@ -36,8 +36,7 @@ Get the coordinates of the vertices of each face of a Wigner–Seitz cell.
 
 If `cartesian` is `true`, return the coordinates in the Cartesian coordinate system.
 """
-faces(ws::WignerSeitzCell, cartesian = false) =
-    map(I -> vertices(ws, cartesian)[I], ws.faces)
+faces(ws::WignerSeitzCell, cartesian=false) = map(I -> vertices(ws, cartesian)[I], ws.faces)
 
 # Referenced from https://github.com/thchr/Brillouin.jl/blob/f32a826/src/WignerSeitz.jl#L59-L78
 function Base.show(io::IO, ::MIME"text/plain", x::WignerSeitzCell)

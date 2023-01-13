@@ -40,8 +40,9 @@ end
 end
 
 @testset "Test conversion between reciprocal `Miller` and `MillerBravais`" begin
-    millerreciprocal =
-        [[1, 0, 0], [0, 1, 0], [1, -1, 0], [-1, 0, 0], [0, -1, 0], [-1, 1, 0]]
+    millerreciprocal = [
+        [1, 0, 0], [0, 1, 0], [1, -1, 0], [-1, 0, 0], [0, -1, 0], [-1, 1, 0]
+    ]
     millerbravaisreciprocal = [
         [1, 0, -1, 0],
         [0, 1, -1, 0],
@@ -66,8 +67,9 @@ end
 
 # From https://ssd.phys.strath.ac.uk/wp-content/uploads/Crystallographic_maths.pdf
 @testset "Test conversion between reciprocal `Miller` and `MillerBravais`" begin
-    millerreciprocal =
-        [[1, 1, 0], [1, -2, 0], [-2, 1, 0], [-1, -1, 0], [-1, 2, 0], [2, -1, 0]]
+    millerreciprocal = [
+        [1, 1, 0], [1, -2, 0], [-2, 1, 0], [-1, -1, 0], [-1, 2, 0], [2, -1, 0]
+    ]
     millerbravaisreciprocal = [
         [1, 1, -2, 0],
         [1, -2, 1, 0],
@@ -95,7 +97,7 @@ end
     @testset "Test 1" begin
         m = Miller(-1, 0, 1)
         @test Set(family(m)) == Set(
-            Miller.([[1, 1, 1], [-1, 0, 1], [0, -1, 1], [-1, -1, 1], [1, 0, 1], [0, 1, 1]]),
+            Miller.([[1, 1, 1], [-1, 0, 1], [0, -1, 1], [-1, -1, 1], [1, 0, 1], [0, 1, 1]])
         )
         mb = MillerBravais(-1, -1, 2, 3)
         @test Set(family(mb)) == Set(
@@ -113,12 +115,7 @@ end
         m = ReciprocalMiller(0, 1, 0)
         @test Set(family(m)) == Set(
             ReciprocalMiller.([
-                [1, 0, 0],
-                [0, 1, 0],
-                [1, -1, 0],
-                [-1, 0, 0],
-                [0, -1, 0],
-                [-1, 1, 0],
+                [1, 0, 0], [0, 1, 0], [1, -1, 0], [-1, 0, 0], [0, -1, 0], [-1, 1, 0]
             ]),
         )
         mb = ReciprocalMillerBravais(0, -1, 1, 0)
@@ -137,12 +134,7 @@ end
         m = ReciprocalMiller(1, 1, 0)
         @test Set(family(m)) == Set(
             ReciprocalMiller.([
-                [1, 1, 0],
-                [1, -2, 0],
-                [-2, 1, 0],
-                [-1, -1, 0],
-                [-1, 2, 0],
-                [2, -1, 0],
+                [1, 1, 0], [1, -2, 0], [-2, 1, 0], [-1, -1, 0], [-1, 2, 0], [2, -1, 0]
             ]),
         )
         mb = ReciprocalMillerBravais(-2, 1, 1, 0)

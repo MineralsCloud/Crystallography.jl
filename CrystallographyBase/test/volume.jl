@@ -3,8 +3,9 @@ using Unitful: uconvert
 
 # Data from https://materialsproject.org/materials/mp-2657/
 @testset "Test `crystaldensity`" begin
-    lattice =
-        Lattice(4.653272u"angstrom", 4.653272u"angstrom", 2.969203u"angstrom", 90, 90, 90)
+    lattice = Lattice(
+        4.653272u"angstrom", 4.653272u"angstrom", 2.969203u"angstrom", 90, 90, 90
+    )
     positions = [
         [0, 0, 0],
         [0.5, 0.5, 0.5],

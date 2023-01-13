@@ -3,7 +3,7 @@ using LinearAlgebra: dot, norm, diagm
 
 @testset "Test length in a hexagonal lattice" begin
     g = MetricTensor(1, 1, 2, 90, 90, 120)  # Primitive hexagonal
-    @test g ≈ MetricTensor([1, 0, 0], [-1 // 2, sqrt(3) / 2, 0], [0, 0, 2])
+    @test g ≈ MetricTensor([1, 0, 0], [-1//2, sqrt(3) / 2, 0], [0, 0, 2])
     @test g ≈ MetricTensor(Lattice([
         1.0 -1/2 0.0
         0.0 sqrt(3)/2 0.0
@@ -17,7 +17,7 @@ end
 @testset "Test distance between atoms in a hexagonal lattice" begin
     g = MetricTensor(1, 1, 2, 90, 90, 120)  # Primitive hexagonal
     a = [1, 1, 1]
-    b = [1 // 3, 1 // 3, 1 // 2]
+    b = [1//3, 1//3, 1//2]
     @test distance(a, g, b)^2 == 13 / 9
 end
 

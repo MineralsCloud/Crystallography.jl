@@ -22,14 +22,14 @@ end
 
 # Example from http://ww1.iucr.org/iucr-top/comm/cteach/pamphlets/22/node34.html#SECTION00073300000000000000
 @testset "Refer ZrSiO₄ primitive cell with origin at 2/m" begin
-    𝐚ₚ, 𝐛ₚ, 𝐜ₚ = [1, 0, 0], [0, 1, 0], [1, 1, 1] // 2
+    𝐚ₚ, 𝐛ₚ, 𝐜ₚ = [1, 0, 0], [0, 1, 0], [1, 1, 1]//2
     P = PrimitiveFromStandardized(hcat(𝐚ₚ, 𝐛ₚ, 𝐜ₚ))
-    @test P([0, 1 // 4, 7 // 8]) == [-7, -5, 14] // 8  # The new coordinates of the first Zr atom
-    @test P([0, 1 // 4, 3 // 8]) == [-3, -1, 6] // 8  # The new coordinates of the first Si atom
+    @test P([0, 1//4, 7//8]) == [-7, -5, 14]//8  # The new coordinates of the first Zr atom
+    @test P([0, 1//4, 3//8]) == [-3, -1, 6]//8  # The new coordinates of the first Si atom
     @test P([0, 0.45, 0.215]) ≈ [-0.215, 0.235, 0.43]  # The new coordinates of the first O atom
     P⁻¹ = inv(P)
-    @test P⁻¹([-7, -5, 14] // 8) == [0, 1 // 4, 7 // 8]
-    @test P⁻¹([-3, -1, 6] // 8) == [0, 1 // 4, 3 // 8]
+    @test P⁻¹([-7, -5, 14]//8) == [0, 1//4, 7//8]
+    @test P⁻¹([-3, -1, 6]//8) == [0, 1//4, 3//8]
     @test P⁻¹([-0.215, 0.235, 0.43]) ≈ [0, 0.45, 0.215]
     @test P ∘ P⁻¹ == P⁻¹ ∘ P == IdentityTransformation()
 end
@@ -62,16 +62,16 @@ end
         @test f2c([-1 / 2, 1 / 2, 0]) ≈ [0, 1 / b, 0] ≈ [0, 1.5127156619, 0] / 2pi  # Y'
         @test f2c([0, 0, 1 / 2]) ≈ [0, 0, 1 / 2 / c] ≈ [0, 0, 0.8216151148] / 2pi  # Z
         @test f2c([-1 / 2, 1 / 2, 1 / 2]) ≈
-              [0, 1 / b, 1 / 2 / c] ≈
-              [0, 1.5127156619, 0.8216151148] / 2pi  # T'
+            [0, 1 / b, 1 / 2 / c] ≈
+            [0, 1.5127156619, 0.8216151148] / 2pi  # T'
         @test f2c([0, 1 / 2, 0]) ≈
-              [1 / 2 / a, 1 / 2 / b, 0] ≈
-              [0.8538331021, 0.7563578310, 0] / 2pi  # S
+            [1 / 2 / a, 1 / 2 / b, 0] ≈
+            [0.8538331021, 0.7563578310, 0] / 2pi  # S
         @test f2c([0, 1 / 2, 1 / 2]) ≈
-              [1 / a, 1 / b, 1 / c] / 2 ≈
-              [0.8538331021, 0.7563578310, 0.8216151148] / 2pi # R
+            [1 / a, 1 / b, 1 / c] / 2 ≈
+            [0.8538331021, 0.7563578310, 0.8216151148] / 2pi # R
         @test f2c([-0.4461772527, 0.5538227473, 1 / 2]) ≈
-              [0.1838225731, 1.5127156619, 0.8216151148] / 2pi  # E0
+            [0.1838225731, 1.5127156619, 0.8216151148] / 2pi  # E0
         c2f = FractionalFromCartesian(reci_lattice)
         @test c2f([0, 1 / b, 0]) ≈ [-1 / 2, 1 / 2, 0]
         @test c2f([0, 0, 1 / 2 / c]) ≈ [0, 0, 1 / 2]
@@ -79,7 +79,7 @@ end
         @test c2f([1 / 2 / a, 1 / 2 / b, 0]) ≈ [0, 1 / 2, 0]
         @test c2f([1 / a, 1 / b, 1 / c] / 2) ≈ [0, 1 / 2, 1 / 2]
         @test c2f([0.1838225731, 1.5127156619, 0.8216151148] / 2pi) ≈
-              [-0.4461772527, 0.5538227473, 1 / 2]
+            [-0.4461772527, 0.5538227473, 1 / 2]
         @test c2f ∘ f2c == f2c ∘ c2f == IdentityTransformation()
     end
     # See http://lampx.tugraz.at/~hadley/ss1/bzones/tetbc.php
@@ -103,7 +103,9 @@ end
     # See http://lampx.tugraz.at/~hadley/ss1/bzones/hexagonal.php
     @testset "Simple hexagonal Brillouin zone" begin
         a, c = 2, 3.2
-        reci_lattice = reciprocal(Lattice([a, 0, 0], [a / 2, sqrt(3) / 2 * a, 0], [0, 0, c]))
+        reci_lattice = reciprocal(
+            Lattice([a, 0, 0], [a / 2, sqrt(3) / 2 * a, 0], [0, 0, c])
+        )
         f2c = CartesianFromFractional(reci_lattice)
         @test f2c([0, 0, 0]) == [0, 0, 0]  # Γ
         @test f2c([1 / 2, 0, 0]) ≈ [1 / a, -1 / sqrt(3) / a, 0] / 2  # M
@@ -184,11 +186,11 @@ end
     alat = 8.8097
     reci_lattice = reciprocal(
         Lattice(
-            [
+            u"bohr"([
                 -2.739741805 2.739741805 2.739741805
                 2.739741805 -2.739741805 2.739741805
                 2.592418910 2.592418910 -2.592418910
-            ] / alat * u"angstrom" .|> u"bohr",
+            ] / alat * u"angstrom"),
         ),
     )
     # Compared with Quantum ESPRESSO results

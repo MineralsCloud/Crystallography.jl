@@ -33,8 +33,8 @@ function CartesianFromFractional(a, b, c, α, β, γ)
         [
             a b_cosγ c*cosd(β)
             0 b_sinγ c*_auxiliary(α, β, γ)
-            0 0 Ω/(a*b_sinγ)
-        ],
+            0 0 Ω/(a * b_sinγ)
+        ]
     )
 end
 """
@@ -51,9 +51,9 @@ function FractionalFromCartesian(a, b, c, α, β, γ)
     b_sinγ = b * sind(γ)
     return FractionalFromCartesian(
         [
-            1/a -cotd(γ)/a -b*c*_auxiliary(β, α, γ)/Ω
-            0 1/b_sinγ -a*c*_auxiliary(α, β, γ)/Ω
-            0 0 a*b_sinγ/Ω
+            1/a -cotd(γ)/a -b * c * _auxiliary(β, α, γ)/Ω
+            0 1/b_sinγ -a * c * _auxiliary(α, β, γ)/Ω
+            0 0 a * b_sinγ/Ω
         ],
     )
 end

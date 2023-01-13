@@ -61,7 +61,7 @@ function _indices_str(r::Regex, s::AbstractString)
         throw(ArgumentError("not a valid expression!"))
     else
         brackets = first(m.captures) * last(m.captures)
-        indices = map(filter(x -> x !== nothing, m.captures[2:(end-1)])) do index
+        indices = map(filter(x -> x !== nothing, m.captures[2:(end - 1)])) do index
             parse(Int, index)
         end
         if brackets in ("()", "{}")
@@ -117,8 +117,7 @@ julia> m"(1, 0, -1, 0)"
 ```
 """
 macro m_str(s)
-    r =
-        r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)?[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
+    r = r"([({[<])\s*([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)[\s,]+([-+]?[0-9]+)?[\s,]+([-+]?[0-9]+)[\s,]*([>\]})])"
     return _indices_str(r, s)
 end
 

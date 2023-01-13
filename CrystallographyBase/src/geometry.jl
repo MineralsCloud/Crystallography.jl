@@ -1,12 +1,7 @@
 export vertices, edge, edges, faces
 
 const FACES = Base.vect(
-    (1, 2, 3, 4),
-    (5, 6, 7, 8),
-    (1, 2, 6, 5),
-    (3, 4, 8, 7),
-    (2, 3, 7, 6),
-    (5, 8, 4, 1),
+    (1, 2, 3, 4), (5, 6, 7, 8), (1, 2, 6, 5), (3, 4, 8, 7), (2, 3, 7, 6), (5, 8, 4, 1)
 )
 
 function vertices(lattice::Lattice)

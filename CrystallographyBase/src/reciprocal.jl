@@ -32,7 +32,7 @@ function reciprocal(lattice::Lattice)
     Ω = det(lattice.data)  # Cannot use `cellvolume`, it takes the absolute value!
     𝐚, 𝐛, 𝐜 = latticevectors(lattice)
     return ReciprocalLattice(
-        inv(Ω) * transpose(hcat(cross(𝐛, 𝐜), cross(𝐜, 𝐚), cross(𝐚, 𝐛))),
+        inv(Ω) * transpose(hcat(cross(𝐛, 𝐜), cross(𝐜, 𝐚), cross(𝐚, 𝐛)))
     )
 end
 function reciprocal(lattice::ReciprocalLattice)
