@@ -34,6 +34,23 @@ end
     @test P ∘ P⁻¹ == P⁻¹ ∘ P == IdentityTransformation()
 end
 
+# Example from https://spglib.github.io/spglib/definition.html#examples
+@testset "Test transformation to a primitive cell in `spglib`" begin
+    lattice = Lattice([
+        [7.17851431, 0, 0],  # 𝐚
+        [0, 3.99943947, 0],  # 𝐛
+        [0, 0, 8.57154746],  # 𝐜
+    ])
+    P = PrimitiveFromStandardized([
+        1//2 1//2 0
+        -1//2 1//2 0
+        0 0 1
+    ])
+    @test P(lattice) ≈ Lattice([
+        [3.58925715, -1.99971973, 0], [3.58925715, 1.99971973, 0], [0, 0, 8.57154746]
+    ])
+end
+
 @testset "Special points in the Brillouin zone" begin  # Reciprocal space transformation
     # See http://lampx.tugraz.at/~hadley/ss1/bzones/orthorhombic.php
     @testset "Simple orthorhombic Brillouin zone" begin
