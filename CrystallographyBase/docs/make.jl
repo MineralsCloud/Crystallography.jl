@@ -19,6 +19,7 @@ makedocs(;
         "Manual" => [
             "Installation guide" => "installation.md",
             "Definitions and conventions" => "definitions.md",
+            "Examples" => "examples.md",
         ],
         "API Reference" => "public.md",
         "Developer Docs" => [
