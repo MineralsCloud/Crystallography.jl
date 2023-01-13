@@ -1,7 +1,7 @@
 @testset "Test the simplest `supercell` for a `Lattice`" begin
-    lattice = Lattice(2, 1, 5, 90, 90, 90; axis=:c)
+    lattice = Lattice(2, 1, 5, 90, 90, 90)
     a = supercell(lattice, 3)
-    b = Lattice(6, 3, 15, 90, 90, 90; axis=:c)
+    b = Lattice(6, 3, 15, 90, 90, 90)
     @test a == b
     @test reciprocal(a) == reciprocal(b)
 end
