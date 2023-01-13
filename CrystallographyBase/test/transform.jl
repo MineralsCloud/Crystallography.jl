@@ -186,11 +186,11 @@ end
     alat = 8.8097
     reci_lattice = reciprocal(
         Lattice(
-            u"bohr"([
+            u"bohr".([
                 -2.739741805 2.739741805 2.739741805
                 2.739741805 -2.739741805 2.739741805
                 2.592418910 2.592418910 -2.592418910
-            ] / alat * u"angstrom"),
+            ] / alat .* u"angstrom"),
         ),
     )
     # Compared with Quantum ESPRESSO results
