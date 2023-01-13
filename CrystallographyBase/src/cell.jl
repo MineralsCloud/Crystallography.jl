@@ -34,24 +34,24 @@ function Cell(lattice, positions, atoms)
 end
 
 """
-    supercell(cell::Cell, scaling_factors::AbstractMatrix{<:Integer})
-    supercell(cell::Cell, scaling_factors::AbstractVector{<:Integer})
-    supercell(cell::Cell, scaling_factor::Integer)
+    supercell(cell::Cell, repfactors::AbstractMatrix{<:Integer})
+    supercell(cell::Cell, repfactors::AbstractVector{<:Integer})
+    supercell(cell::Cell, repfactor::Integer)
 
 Create a supercell from `cell`.
 
 !!! note
     Currently, only integral replications are supported.
 """
-function supercell(cell::Cell, scaling_factors::AbstractMatrix{<:Integer})
-    if size(scaling_factors) != (3, 3)
-        throw(ArgumentError("`scaling_factors` must be a 3×3 matrix!"))
+function supercell(cell::Cell, repfactors::AbstractMatrix{<:Integer})
+    if size(repfactors) != (3, 3)
+        throw(ArgumentError("`repfactors` must be a 3×3 matrix!"))
     end
-    @assert isdiag(scaling_factors) "currently not supported!"
-    @assert det(scaling_factors) >= 1
+    @assert isdiag(repfactors) "currently not supported!"
+    @assert det(repfactors) >= 1
     new_atoms = eltype(cell.atoms)[]
     new_positions = eltype(cell.positions)[]
-    l, m, n = diag(scaling_factors)
+    l, m, n = diag(repfactors)
     𝐚, 𝐛, 𝐜 = eachcol(Matrix(I, 3, 3))
     for (atom, position) in eachatom(cell)
         for (i, j, k) in Iterators.product(0:(l - 1), 0:(m - 1), 0:(n - 1))
@@ -61,7 +61,7 @@ function supercell(cell::Cell, scaling_factors::AbstractMatrix{<:Integer})
             push!(new_positions, new_position)
         end
     end
-    new_lattice = supercell(cell.lattice, scaling_factors)
+    new_lattice = supercell(cell.lattice, repfactors)
     return Cell(new_lattice, new_positions, new_atoms)
 end
 

@@ -183,24 +183,24 @@ periodicity(lattice::Lattice) = Tuple(sum(abs, lattice.data; dims=2))
 
 # See https://en.wikipedia.org/wiki/Supercell_(crystal)
 """
-    supercell(lattice::Lattice, scaling_factors::AbstractMatrix{<:Integer})
-    supercell(lattice::Lattice, scaling_factors::AbstractVector{<:Integer})
-    supercell(lattice::Lattice, scaling_factor::Integer)
+    supercell(lattice::Lattice, repfactors::AbstractMatrix{<:Integer})
+    supercell(lattice::Lattice, repfactors::AbstractVector{<:Integer})
+    supercell(lattice::Lattice, repfactor::Integer)
 
 Create a supercell from `lattice`.
 """
-function supercell(lattice::Lattice, scaling_factors::AbstractMatrix{<:Integer})
-    if size(scaling_factors) != (3, 3)
-        throw(ArgumentError("`scaling_factors` must be a 3×3 matrix!"))
+function supercell(lattice::Lattice, repfactors::AbstractMatrix{<:Integer})
+    if size(repfactors) != (3, 3)
+        throw(ArgumentError("`repfactors` must be a 3×3 matrix!"))
     end
-    @assert det(scaling_factors) >= 1
-    return Lattice(lattice.data * scaling_factors)
+    @assert det(repfactors) >= 1
+    return Lattice(lattice.data * repfactors)
 end
-supercell(lattice_or_cell, scaling_factors::AbstractVector{<:Integer}) =
-    supercell(lattice_or_cell, Diagonal(scaling_factors))
+supercell(lattice_or_cell, repfactors::AbstractVector{<:Integer}) =
+    supercell(lattice_or_cell, Diagonal(repfactors))
 # See https://stackoverflow.com/a/57270841
-supercell(lattice_or_cell, scaling_factor::Integer) =
-    supercell(lattice_or_cell, Matrix(scaling_factor * I, 3, 3))
+supercell(lattice_or_cell, repfactor::Integer) =
+    supercell(lattice_or_cell, Matrix(repfactor * I, 3, 3))
 
 Base.iterate(lattice::AbstractLattice) = iterate(lattice.data)
 Base.iterate(lattice::AbstractLattice, state) = iterate(lattice.data, state)
