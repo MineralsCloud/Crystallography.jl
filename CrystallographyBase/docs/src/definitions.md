@@ -92,7 +92,7 @@ or
 \mathbf{r} = \sum_i x_i \mathbf{a}_i.
 ```
 
-## Transformation to the primitive cell
+## [Transformation to the primitive cell](@id primitive)
 
 In the standardized unit cells, there are five different centring
 types available, base centrings of A and C, rhombohedral (R), body-centred (I),
@@ -148,3 +148,49 @@ For rhombohedral lattice systems with the H setting (hexagonal lattice),
 ``\mathrm{P}_\text{R}`` is applied to obtain
 primitive basis vectors. However, with the R setting (rhombohedral lattice),
 no transformation matrix is used because it is already a primitive cell.
+
+## Supercell generation
+
+The basis vectors of unit cell
+``\begin{bmatrix} \mathbf{a}_1 & \mathbf{a}_2 & \mathbf{a}_3 \end{bmatrix}``
+can be transformed to basis vectors of supercell
+``\begin{bmatrix} \mathbf{a}'_1 & \mathbf{a}'_2 & \mathbf{a}'_3 \end{bmatrix}``
+by linear transformation
+
+```math
+\begin{bmatrix} \mathbf{a}'_1 & \mathbf{a}'_2 & \mathbf{a}'_3 \end{bmatrix} =
+\begin{bmatrix} \mathbf{a}_1 & \mathbf{a}_2 & \mathbf{a}_3 \end{bmatrix}
+\mathrm{P},
+```
+
+just as in [primitive cell transformations](@ref primitive).
+
+Usually, all elements ``P_{ij}`` should be integers satisfying ``i \ne 0``
+so that ``\det(\mathrm{P}) \ge 1``.
+When ``\det(\mathrm{P}) = 1``, the transformation preserves volume.
+However, sometimes we could have ``\det(\mathrm{P}) < 0`` if the transformation
+changes the handedness of the lattice.
+See [this post](https://gitlab.com/ase/ase/-/issues/938) for more information.
+
+As stated above, a new (super)cell is produced by replication of the initial one over
+cell vectors ``\mathbf{a}``, ``\mathbf{b}``, and ``\mathbf{c}``.
+The new cell will have a size of
+``l \mathbf{a} \times m \mathbf{b} \times n \mathbf{c}``.
+Each crystallographic site in the initial cell with Cartesian
+coordinates ``\mathbf{r}`` will have a total of ``l m n``
+images in the supercell with Cartesian coordinates
+
+```math
+\mathbf{r}^{i, j, k} = \mathbf{r} + i \mathbf{a} + j \mathbf{b} + k \mathbf{c},
+```
+
+where ``i = 0, 1, \ldots, l - 1``, ``m = 0, 1, \ldots, m - 1``,
+and ``k = 0, 1, \ldots, n - 1``
+(See [this paper](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-016-0129-3)).
+
+It is important to keep in mind that this supercell expansion approach
+is a special case: the simplest one.
+It does not allow, for example, transformations of a primitive cell into a
+conventional (super)cell or the opposite. A more general approach exists, which
+creates supercell vectors on the basis of linear combinations of the initial cell vectors,
+a desirable improvement that will be considered for a future version of the code.
