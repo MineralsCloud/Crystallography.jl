@@ -9,7 +9,7 @@ Pages = ["public.md"]
 Depth = 3
 ```
 
-### Lattice and Cell
+## Lattice and Cell
 
 ```@docs
 CrystalSystem
@@ -26,7 +26,7 @@ supercell
 eachatom
 ```
 
-### Reciprocal space
+## Reciprocal space
 
 Note that we take ``2\pi`` as ``1``, not the solid-state physics convention.
 
@@ -39,7 +39,7 @@ coordinates
 weights
 ```
 
-### Miller and Miller–Bravais indices
+## Miller and Miller–Bravais indices
 
 ```@docs
 Miller
@@ -50,7 +50,7 @@ family
 @m_str
 ```
 
-### Metric tensor
+## Metric tensor
 
 ```@docs
 MetricTensor
@@ -60,7 +60,7 @@ distance
 interplanar_spacing
 ```
 
-### Transformations
+## Transformations
 
 ```@docs
 CartesianFromFractional
@@ -69,7 +69,7 @@ PrimitiveFromStandardized
 StandardizedFromPrimitive
 ```
 
-### Others
+## Others
 
 ```@docs
 cellvolume
