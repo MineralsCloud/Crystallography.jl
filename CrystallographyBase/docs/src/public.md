@@ -2,7 +2,7 @@
 CurrentModule = CrystallographyBase
 ```
 
-# API
+# API Reference
 
 ```@contents
 Pages = ["public.md"]
