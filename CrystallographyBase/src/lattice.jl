@@ -193,7 +193,8 @@ function supercell(lattice::Lattice, repfactors::AbstractMatrix{<:Integer})
     if size(repfactors) != (3, 3)
         throw(ArgumentError("`repfactors` must be a 3×3 matrix!"))
     end
-    @assert det(repfactors) >= 1
+    # Sometimes the matrix can have negative determinant, see https://gitlab.com/ase/ase/-/issues/938
+    @assert abs(det(repfactors)) >= 1
     return Lattice(lattice.data * repfactors)
 end
 supercell(lattice_or_cell, repfactors::AbstractVector{<:Integer}) =
