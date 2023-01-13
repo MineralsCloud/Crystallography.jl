@@ -19,7 +19,7 @@ end
     ]'  # Note the transpose!
     a = supercell(lattice, P)  # Hexagonal to orthorhombic
     b = Lattice([
-        2√3 0 0
+        2*√3 0 0
         0 2 0
         0 0 3
     ])  # The orthorhombic supercell
