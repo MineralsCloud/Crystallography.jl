@@ -44,3 +44,17 @@ end
     b = StandardizedFromPrimitive(P)(lattice)  # Two-atom cell to four-atom tetragonal cell
     @test a == b
 end
+
+# Example from https://gitlab.com/ase/ase/-/issues/938
+@testset "Test ASE issue 938" begin
+    lattice = Lattice([[0, 1.805, 1.805], [1.805, 0, 1.805], [1.805, 1.805, 0]])
+    P = [
+        2 2 -2
+        2 -2 2
+        -2 2 2
+    ]
+    @test det(P) == -32
+    a = supercell(lattice, P)  # Four-atom tetragonal supercell
+    b = StandardizedFromPrimitive(P)(lattice)  # Two-atom cell to four-atom tetragonal cell
+    @test a == b
+end
