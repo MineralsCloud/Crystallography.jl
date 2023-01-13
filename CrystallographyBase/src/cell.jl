@@ -1,7 +1,19 @@
+using LinearAlgebra: isdiag, diag
 using StaticArrays: MVector
 
-export Cell, natoms, eachatom
+export Cell, natoms, atomtypes, eachatom
 
+"""
+    Cell(lattice, positions, atoms)
+
+Create a new cell.
+
+Argument `lattice` is a [`Lattice`](@ref) type.
+Fractional atomic positions `positions` are given
+by a vector of ``N`` vectors with floating point values, where ``N`` is the number of atoms.
+Argument `atoms` is a list of ``N`` values, where the same kind of atoms
+need to be the same type.
+"""
 @struct_hash_equal_isequal_isapprox struct Cell{L,P,T}
     lattice::Lattice{L}
     positions::Vector{MVector{3,P}}
@@ -21,7 +33,41 @@ function Cell(lattice, positions, atoms)
     return Cell{L,P,T}(lattice, positions, atoms)
 end
 
+"""
+    supercell(cell::Cell, scaling_factors::AbstractMatrix{<:Integer})
+    supercell(cell::Cell, scaling_factors::AbstractVector{<:Integer})
+    supercell(cell::Cell, scaling_factor::Integer)
+
+Create a supercell from `cell`.
+
+!!! note
+    Currently, only integral replications are supported.
+"""
+function supercell(cell::Cell, scaling_factors::AbstractMatrix{<:Integer})
+    if size(scaling_factors) != (3, 3)
+        throw(ArgumentError("`scaling_factors` must be a 3×3 matrix!"))
+    end
+    @assert isdiag(scaling_factors) "currently not supported!"
+    @assert det(scaling_factors) >= 1
+    new_atoms = eltype(cell.atoms)[]
+    new_positions = eltype(cell.positions)[]
+    l, m, n = diag(scaling_factors)
+    𝐚, 𝐛, 𝐜 = eachcol(Matrix(I, 3, 3))
+    for (atom, position) in eachatom(cell)
+        for (i, j, k) in Iterators.product(0:(l - 1), 0:(m - 1), 0:(n - 1))
+            push!(new_atoms, atom)
+            new_position = position + i * 𝐚 + j * 𝐛 + k * 𝐜
+            new_position ./= (l, m, n)  # Make them within the boundary of the cell
+            push!(new_positions, new_position)
+        end
+    end
+    new_lattice = supercell(cell.lattice, scaling_factors)
+    return Cell(new_lattice, new_positions, new_atoms)
+end
+
 natoms(cell::Cell) = length(cell.atoms)
+
+atomtypes(cell::Cell) = unique(cell.atoms)
 
 """
     Lattice(cell::Cell)
