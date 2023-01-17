@@ -1,7 +1,6 @@
 using StaticArrays: SHermitianCompact
 
-export MetricTensor
-export directioncosine, directionangle, distance, interplanar_spacing
+export MetricTensor, distance
 
 struct MetricTensor{T} <: AbstractMatrix{T}
     data::SHermitianCompact{3,T,6}
@@ -58,34 +57,11 @@ function latticeconstants(g::MetricTensor)
 end
 
 """
-    directioncosine(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector)
-
-Get the direction cosine of two vectors and a `MetricTensor`.
-"""
-directioncosine(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector) =
-    dot(𝐚, g, 𝐛) / (norm(𝐚, g) * norm(𝐛, g))
-
-"""
-    directionangle(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector)
-
-Get the direction angle of two vectors and a `MetricTensor`.
-"""
-directionangle(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector) =
-    acosd(directioncosine(𝐚, g, 𝐛))
-
-"""
     distance(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector)
 
 Get the distance between two coordinates using a `MetricTensor`.
 """
 distance(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector) = norm(𝐛 - 𝐚, g)
-
-"""
-    interplanar_spacing(𝐚::AbstractVector, g::MetricTensor)
-
-Get the interplanar spacing from a `MetricTensor`.
-"""
-interplanar_spacing(𝐚::AbstractVector, g::MetricTensor) = inv(norm(𝐚, g))
 
 Base.size(::MetricTensor) = (3, 3)
 
