@@ -71,5 +71,4 @@ Base.getindex(g::MetricTensor, i) = getindex(g.data, i)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(g.data))
 
-dot(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector) = 𝐚' * g.data * 𝐛
 norm(𝐚::AbstractVector, g::MetricTensor) = sqrt(dot(𝐚, g, 𝐚))
