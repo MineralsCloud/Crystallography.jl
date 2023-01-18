@@ -30,7 +30,7 @@ cellvolume(g::MetricTensor) = sqrt(_det(g.data))  # `sqrt` is always positive!
 
 Calculate the density of a crystal structure.
 
-Here, `atoms` is an iterable of atomic numbers, element names, symbols, or `PeriodicTable.Element`s.
+Here, `atoms` is an iterable of atomic numbers, element names, symbols, or `Mendeleev.Element`s.
 You can extend the `atomicmass` method to work with custom types.
 """
 function crystaldensity(lattice::Lattice, atoms)
