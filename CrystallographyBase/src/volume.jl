@@ -13,11 +13,11 @@ cellvolume(a, b, c, α, β, γ) =
 
 Calculate the cell volume from a `Lattice` or a `Cell`.
 """
-cellvolume(lattice::AbstractLattice) = abs(det(lattice.data))
+cellvolume(lattice::AbstractLattice) = abs(_det(lattice.data))
 cellvolume(cell::Cell) = cellvolume(Lattice(cell))
 """
     cellvolume(g::MetricTensor)
 
 Calculate the cell volume from a `MetricTensor`.
 """
-cellvolume(g::MetricTensor) = sqrt(det(g.data))  # `sqrt` is always positive!
+cellvolume(g::MetricTensor) = sqrt(_det(g.data))  # `sqrt` is always positive!

@@ -1,7 +1,7 @@
 module CrystallographyBase
 
 using Functors: @functor
-using LinearAlgebra: det, dot
+using LinearAlgebra: dot
 using Requires: @require
 using StaticArrays: SVector, SMatrix
 using StructEquality: @struct_hash_equal_isequal_isapprox
@@ -15,6 +15,12 @@ function __init__()
         @eval using Mendeleev: Element, elements
         include("crystaldensity.jl")
     end
+end
+
+# `LinearAlgebra.det` is much slower and more inaccurate than my simple `_det`.
+function _det(matrix)
+    a, d, g, b, e, h, c, f, i = matrix  # Only works for 3×3 matrices
+    return a * e * i + b * f * g + c * d * h - c * e * g - b * d * i - a * f * h
 end
 
 include("systems.jl")

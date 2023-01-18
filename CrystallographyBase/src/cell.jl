@@ -48,7 +48,7 @@ function supercell(cell::Cell, repfactors::AbstractMatrix{<:Integer})
         throw(ArgumentError("`repfactors` must be a 3×3 matrix!"))
     end
     @assert isdiag(repfactors) "currently not supported!"
-    @assert det(repfactors) >= 1
+    @assert _det(repfactors) >= 1
     new_atoms = eltype(cell.atoms)[]
     new_positions = eltype(cell.positions)[]
     l, m, n = diag(repfactors)

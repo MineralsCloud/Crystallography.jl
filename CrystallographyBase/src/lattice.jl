@@ -76,7 +76,7 @@ The basis vectors are right-handed if and only if
 ```
 """
 function isrighthanded(lattice::Lattice)
-    Δ = det(lattice.data)
+    Δ = _det(lattice.data)
     return Δ > zero(Δ)
 end
 
@@ -211,7 +211,7 @@ function supercell(lattice::Lattice, repfactors::AbstractMatrix{<:Integer})
         throw(ArgumentError("`repfactors` must be a 3×3 matrix!"))
     end
     # Sometimes the matrix can have negative determinant, see https://gitlab.com/ase/ase/-/issues/938
-    @assert abs(det(repfactors)) >= 1
+    @assert abs(_det(repfactors)) >= 1
     return Lattice(lattice.data * repfactors)
 end
 supercell(lattice_or_cell, repfactors::AbstractVector{<:Integer}) =
