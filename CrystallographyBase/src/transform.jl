@@ -1,5 +1,3 @@
-using CoordinateTransformations: IdentityTransformation, Transformation
-
 export FractionalFromCartesian,
     CartesianFromFractional,
     FractionalToCartesian,
@@ -9,10 +7,11 @@ export FractionalFromCartesian,
     PrimitiveToStandardized,
     StandardizedToPrimitive
 
-struct CartesianFromFractional{T} <: Transformation
+abstract type ChangeOfBasis{T} <: AbstractMatrix{T} end
+struct CartesianFromFractional{T} <: ChangeOfBasis{T}
     tf::SMatrix{3,3,T,9}
 end
-struct FractionalFromCartesian{T} <: Transformation
+struct FractionalFromCartesian{T} <: ChangeOfBasis{T}
     tf::SMatrix{3,3,T,9}
 end
 # This requires the a-vector is parallel to the Cartesian x-axis.
@@ -71,13 +70,13 @@ Base.inv(x::FractionalFromCartesian) = CartesianFromFractional(inv(x.tf))
 Base.inv(x::CartesianFromFractional) = FractionalFromCartesian(inv(x.tf))
 Base.:∘(x::CartesianFromFractional, y::FractionalFromCartesian) = ∘(y, x)
 Base.:∘(x::FractionalFromCartesian, y::CartesianFromFractional) =
-    x.tf * y.tf ≈ I ? IdentityTransformation() : error("undefined!")
+    x.tf * y.tf ≈ I ? identity : error("undefined!")
 
 # Idea from https://spglib.github.io/spglib/definition.html#transformation-to-the-primitive-cell
-struct StandardizedFromPrimitive{T} <: Transformation
+struct StandardizedFromPrimitive{T} <: ChangeOfBasis{T}
     tf::SMatrix{3,3,T,9}
 end
-struct PrimitiveFromStandardized{T} <: Transformation
+struct PrimitiveFromStandardized{T} <: ChangeOfBasis{T}
     tf::SMatrix{3,3,T,9}
 end
 """
@@ -103,35 +102,13 @@ Base.inv(x::StandardizedFromPrimitive) = PrimitiveFromStandardized(inv(x.tf))
 Base.inv(x::PrimitiveFromStandardized) = StandardizedFromPrimitive(inv(x.tf))
 Base.:∘(x::PrimitiveFromStandardized, y::StandardizedFromPrimitive) = ∘(y, x)
 Base.:∘(x::StandardizedFromPrimitive, y::PrimitiveFromStandardized) =
-    x.tf * y.tf ≈ I ? IdentityTransformation() : error("undefined!")
-
-const ChangeOfBasis{T} = Union{
-    CartesianFromFractional{T},
-    FractionalFromCartesian{T},
-    StandardizedFromPrimitive{T},
-    PrimitiveFromStandardized{T},
-}
-Base.iterate(x::ChangeOfBasis) = iterate(x.tf)
-Base.iterate(x::ChangeOfBasis, state) = iterate(x.tf, state)
-
-Base.eltype(::Type{<:ChangeOfBasis{T}}) where {T} = T
-
-Base.length(::ChangeOfBasis) = 9
+    x.tf * y.tf ≈ I ? identity : error("undefined!")
 
 Base.size(::ChangeOfBasis) = (3, 3)
-Base.size(::ChangeOfBasis, dim::Integer) = dim <= 2 ? 3 : 1
-
-Base.IteratorSize(::Type{<:ChangeOfBasis}) = Base.HasShape{2}()
-
-# Enables `firstindex(x, dim)` and `x[1, 2:end]` or `x[begin:2, 2]`
-Base.axes(x::ChangeOfBasis, dim::Integer) = axes(x.tf, dim)
 
 Base.getindex(x::ChangeOfBasis, i) = getindex(x.tf, i)
-Base.getindex(x::ChangeOfBasis, I::Vararg) = getindex(x.tf, I...)
 
-Base.firstindex(::ChangeOfBasis) = 1
-
-Base.lastindex(::ChangeOfBasis) = 9
+Base.IndexStyle(::Type{<:ChangeOfBasis}) = IndexLinear()
 
 function Base.show(io::IO, x::ChangeOfBasis)
     if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(x)
