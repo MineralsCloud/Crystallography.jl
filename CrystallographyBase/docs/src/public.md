@@ -18,7 +18,7 @@ Bravais
 AbstractLattice
 Lattice
 isrighthanded
-latticevectors
+basisvectors
 latticesystem
 latticeconstants
 periodicity
