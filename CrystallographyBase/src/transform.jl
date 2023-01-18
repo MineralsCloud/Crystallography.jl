@@ -99,57 +99,6 @@ const StandardizedToPrimitive = PrimitiveFromStandardized
 (x::Union{StandardizedFromPrimitive,PrimitiveFromStandardized})(lattice::Lattice) =
     Lattice(lattice.data * x.tf)
 
-# PrimitiveFromStandardized(::ACentering) = PrimitiveFromStandardized([
-#     1 0 0
-#     0 1//2 -1//2
-#     0 1//2 1//2
-# ])
-# PrimitiveFromStandardized(::CCentering) = PrimitiveFromStandardized([
-#     1//2 1//2 0
-#     -1//2 1//2 0
-#     0 0 1
-# ])
-# PrimitiveFromStandardized(::RhombohedralCentering) = PrimitiveFromStandardized([
-#     2//3 -1//3 -1//3
-#     1//3 1//3 -2//3
-#     1//3 1//3 1//3
-# ])
-# PrimitiveFromStandardized(::BodyCentering) = PrimitiveFromStandardized([
-#     -1//2 1//2 1//2
-#     1//2 -1//2 1//2
-#     1//2 1//2 -1//2
-# ])
-# PrimitiveFromStandardized(::FaceCentering) = PrimitiveFromStandardized([
-#     0 1//2 1//2
-#     1//2 0 1//2
-#     1//2 1//2 0
-# ])
-# StandardizedFromPrimitive(::ACentering) = StandardizedFromPrimitive([
-#     1 0 0
-#     0 1 1
-#     0 -1 1
-# ])
-# StandardizedFromPrimitive(::CCentering) = StandardizedFromPrimitive([
-#     1 -1 0
-#     1 1 0
-#     0 0 1
-# ])
-# StandardizedFromPrimitive(::RhombohedralCentering) = StandardizedFromPrimitive([
-#     1 0 1
-#     -1 1 1
-#     0 -1 1
-# ])
-# StandardizedFromPrimitive(::BodyCentering) = StandardizedFromPrimitive([
-#     0 1 1
-#     1 0 1
-#     1 1 0
-# ])
-# StandardizedFromPrimitive(::FaceCentering) = StandardizedFromPrimitive([
-#     -1 1 1
-#     1 -1 1
-#     1 1 -1
-# ])
-
 Base.inv(x::StandardizedFromPrimitive) = PrimitiveFromStandardized(inv(x.tf))
 Base.inv(x::PrimitiveFromStandardized) = StandardizedFromPrimitive(inv(x.tf))
 Base.:∘(x::PrimitiveFromStandardized, y::StandardizedFromPrimitive) = ∘(y, x)
