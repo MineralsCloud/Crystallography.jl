@@ -10,5 +10,4 @@ using UnitfulAtomic
     include("metric.jl")
     include("reciprocal.jl")
     include("transform.jl")
-    # include("wignerseitz.jl")
 end
