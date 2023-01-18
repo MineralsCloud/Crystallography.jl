@@ -1,4 +1,3 @@
-using Brillouin: irrfbz_path, cartesianize
 using CrystallographyBase: reciprocal
 using LinearAlgebra: I
 
