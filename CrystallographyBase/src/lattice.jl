@@ -1,7 +1,7 @@
 using LinearAlgebra: Diagonal, I, norm
 
 export Lattice,
-    isrighthanded, latticevectors, latticesystem, latticeconstants, periodicity, supercell
+    isrighthanded, basisvectors, latticesystem, latticeconstants, periodicity, supercell
 
 "Represent the real lattices and the reciprocal lattices."
 abstract type AbstractLattice{T} end
@@ -24,12 +24,12 @@ Construct a `Lattice` from three basis vectors.
 """
 Lattice(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector) = Lattice(hcat(𝐚, 𝐛, 𝐜))
 """
-    Lattice(latticevectors::AbstractVector{<:AbstractVector})
+    Lattice(basisvectors::AbstractVector{<:AbstractVector})
 
 Construct a `Lattice` from a vector of three basis vectors.
 """
-Lattice(latticevectors::AbstractVector{<:AbstractVector}) =
-    Lattice(reduce(hcat, latticevectors))
+Lattice(basisvectors::AbstractVector{<:AbstractVector}) =
+    Lattice(reduce(hcat, basisvectors))
 """
     Lattice(a, b, c, α, β, γ; axis = :a)
 
@@ -81,11 +81,11 @@ function isrighthanded(lattice::Lattice)
 end
 
 """
-    latticevectors(lattice::Lattice)
+    basisvectors(lattice::Lattice)
 
 Get the three primitive vectors from a `lattice`.
 """
-latticevectors(lattice::Lattice) = lattice[:, 1], lattice[:, 2], lattice[:, 3]
+basisvectors(lattice::Lattice) = lattice[:, 1], lattice[:, 2], lattice[:, 3]
 
 """
     latticesystem(bravais::Bravais)
@@ -179,7 +179,7 @@ cyclic_perm(vec) = (circshift(vec, i) for i in 1:length(vec))  # See https://sta
 Get the six lattice constants from a `lattice`.
 """
 function latticeconstants(lattice::AbstractLattice)  # Works for `ReciprocalLattice`s, too
-    𝐚, 𝐛, 𝐜 = latticevectors(lattice)
+    𝐚, 𝐛, 𝐜 = basisvectors(lattice)
     a, b, c = norm(𝐚), norm(𝐛), norm(𝐜)
     γ, β, α = acosd(dot(𝐚, 𝐛) / (a * b)),
     acosd(dot(𝐚, 𝐜) / (a * c)),
