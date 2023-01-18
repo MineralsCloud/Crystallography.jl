@@ -64,6 +64,17 @@ function Lattice(a, b, c, α, β, γ; axis=:a)
 end
 @functor Lattice
 
+"""
+    isrighthanded(lattice::Lattice)
+
+Test whether the basis vectors are defined to be right-handed.
+
+The basis vectors are right-handed if and only if
+
+```math
+\\mathbf{a} \\cdot (\\mathbf{b} \\times \\mathbf{c}) > 0.
+```
+"""
 function isrighthanded(lattice::Lattice)
     Δ = det(lattice.data)
     return Δ > zero(Δ)

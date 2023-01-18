@@ -17,6 +17,7 @@ LatticeSystem
 Bravais
 AbstractLattice
 Lattice
+isrighthanded
 latticevectors
 latticesystem
 latticeconstants
