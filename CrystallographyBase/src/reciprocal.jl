@@ -1,13 +1,7 @@
-# using Brillouin: irrfbz_path
 using LinearAlgebra: cross
 
 export ReciprocalPoint,
-    ReciprocalLattice,
-    MonkhorstPackGrid,
-    # ReciprocalPath,
-    reciprocal,
-    coordinates,
-    weights
+    ReciprocalLattice, MonkhorstPackGrid, reciprocal, coordinates, weights
 
 """
     ReciprocalLattice(mat::SMatrix)
@@ -105,35 +99,3 @@ function Base.show(io::IO, x::ReciprocalPoint)
         print(io, " coord = ", x.coord, ", weight = ", x.weight)
     end
 end
-
-# struct ReciprocalPath{N}
-#     special_points::Dict{Symbol,SVector{N,Float64}}
-#     suggested_paths::Vector{Vector{Symbol}}
-#     lattice::Lattice
-# end
-# """
-#     ReciprocalPath(lattice::Lattice, spgnum::Integer)
-#     ReciprocalPath(cell::Cell)
-
-# Construct a `ReciprocalPath` from a `Lattice` or a `Cell`.
-# """
-# function ReciprocalPath(lattice::Lattice, spgnum::Integer)
-#     kpath = irrfbz_path(spgnum, collect(basisvectors(lattice)))
-#     return ReciprocalPath(kpath.points, kpath.paths, lattice)
-# end
-# function ReciprocalPath(cell::Cell)
-#     spg = get_spacegroup_type(cell)
-#     return ReciprocalPath(Lattice(cell), spg.number)
-# end
-
-"""
-    coordinates(path::ReciprocalPath, cartesian = false)
-
-If `cartesian` is `true`, return the coordinates in the Cartesian coordinate system.
-"""
-# coordinates(path::ReciprocalPath, cartesian = false) =
-#     cartesian ?
-#     Dict(
-#         key => CartesianFromFractional(inv(path.lattice))(value) for
-#         (key, value) in path.special_points
-#     ) : path.special_points
