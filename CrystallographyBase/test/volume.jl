@@ -1,4 +1,4 @@
-using PeriodicTable: elements
+using Mendeleev: elements
 using Unitful: uconvert
 
 # Data from https://materialsproject.org/materials/mp-2657/
