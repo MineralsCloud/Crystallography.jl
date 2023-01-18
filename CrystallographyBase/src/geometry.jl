@@ -6,7 +6,7 @@ const FACES = Base.vect(
 
 function vertices(lattice::Lattice)
     O⃗ = zeros(eltype(lattice), 3)
-    A⃗, B⃗, C⃗ = latticevectors(lattice)
+    A⃗, B⃗, C⃗ = basisvectors(lattice)
     A⃗B⃗, A⃗C⃗, B⃗C⃗, A⃗B⃗C⃗ = A⃗ + B⃗, A⃗ + C⃗, B⃗ + C⃗, A⃗ + B⃗ + C⃗
     return Base.vect(O⃗, A⃗, B⃗, C⃗, A⃗B⃗, A⃗C⃗, B⃗C⃗, A⃗B⃗C⃗)
 end
