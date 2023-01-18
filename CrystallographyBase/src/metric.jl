@@ -70,5 +70,3 @@ Base.IndexStyle(::Type{<:MetricTensor}) = IndexLinear()
 Base.getindex(g::MetricTensor, i) = getindex(g.data, i)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(g.data))
-
-norm(𝐚::AbstractVector, g::MetricTensor) = sqrt(dot(𝐚, g, 𝐚))
