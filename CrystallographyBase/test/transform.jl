@@ -1,5 +1,3 @@
-using CoordinateTransformations: IdentityTransformation
-
 @testset "Fractional coordinates to Cartesian coordinates" begin
     lattice = Lattice([
         1/2 0 0
@@ -16,7 +14,7 @@ using CoordinateTransformations: IdentityTransformation
         @test f2c([0, 0, 0]) == [0, 0, 0]  # Ti
         c2f = inv(f2c)
         @test c2f([1.8396994950, 0, 1.9118396175]) ≈ [1 / 2, 1 / 2, 1 / 2]
-        @test c2f ∘ f2c == f2c ∘ c2f == IdentityTransformation()
+        @test c2f ∘ f2c == f2c ∘ c2f == identity
     end
 end
 
@@ -31,7 +29,7 @@ end
     @test P⁻¹([-7, -5, 14]//8) == [0, 1//4, 7//8]
     @test P⁻¹([-3, -1, 6]//8) == [0, 1//4, 3//8]
     @test P⁻¹([-0.215, 0.235, 0.43]) ≈ [0, 0.45, 0.215]
-    @test P ∘ P⁻¹ == P⁻¹ ∘ P == IdentityTransformation()
+    @test P ∘ P⁻¹ == P⁻¹ ∘ P == identity
 end
 
 # Example from https://spglib.github.io/spglib/definition.html#examples
@@ -68,7 +66,7 @@ end
         @test c2f([0, 0, 1 / c] / 2) == [0, 0, 1 / 2]
         @test c2f([0, 1 / b, 1 / c] / 2) == [0, 1 / 2, 1 / 2]
         @test c2f([1 / a, 1 / b, 0] / 2) == [1 / 2, 1 / 2, 0]
-        @test c2f ∘ f2c == f2c ∘ c2f == IdentityTransformation()
+        @test c2f ∘ f2c == f2c ∘ c2f == identity
     end
     # Compared with "SeeK-path" example oC1 (SiTi)
     # The results on http://lampx.tugraz.at/~hadley/ss1/bzones/orthorhombic_bc.php are wrong by a factor of 2.
@@ -97,7 +95,7 @@ end
         @test c2f([1 / a, 1 / b, 1 / c] / 2) ≈ [0, 1 / 2, 1 / 2]
         @test c2f([0.1838225731, 1.5127156619, 0.8216151148] / 2pi) ≈
             [-0.4461772527, 0.5538227473, 1 / 2]
-        @test c2f ∘ f2c == f2c ∘ c2f == IdentityTransformation()
+        @test c2f ∘ f2c == f2c ∘ c2f == identity
     end
     # See http://lampx.tugraz.at/~hadley/ss1/bzones/tetbc.php
     @testset "Body centered tetragonal Brillouin zone" begin
@@ -115,7 +113,7 @@ end
         @test c2f([1 / a, 0, 0]) == [1 / 2, 1 / 2, -1 / 2]
         @test c2f([1 / a, 0, 1 / c] / 2) ≈ [0, 1 / 2, 0]
         @test c2f([1 / a, 1 / a, 1 / c] / 2) == [1, 1, 1] / 4
-        @test c2f ∘ f2c == f2c ∘ c2f == IdentityTransformation()
+        @test c2f ∘ f2c == f2c ∘ c2f == identity
     end
     # See http://lampx.tugraz.at/~hadley/ss1/bzones/hexagonal.php
     @testset "Simple hexagonal Brillouin zone" begin
@@ -137,7 +135,7 @@ end
         @test c2f([2 / 3 / a, 0, 0]) == [2 / 3, 1 / 3, 0]
         @test c2f([2 / 3 / a, 0, 1 / 2 / c]) == [2 / 3, 1 / 3, 1 / 2]
         @test c2f([1 / a, -1 / sqrt(3) / a, 1 / c] / 2) ≈ [1 / 2, 0, 1 / 2]
-        @test c2f ∘ f2c == f2c ∘ c2f == IdentityTransformation()
+        @test c2f ∘ f2c == f2c ∘ c2f == identity
     end
     # See http://lampx.tugraz.at/~hadley/ss1/bzones/sc.php
     @testset "Simple cubic Brillouin zone" begin
@@ -151,7 +149,7 @@ end
         @test c2f([0, 0, 0]) == [0, 0, 0]
         @test c2f([1 / a, 1 / a, 0] / 2) == [1 / 2, 1 / 2, 0]
         @test c2f([1 / a, 1 / a, 1 / a] / 2) == [1 / 2, 1 / 2, 1 / 2]
-        @test c2f ∘ f2c == f2c ∘ c2f == IdentityTransformation()
+        @test c2f ∘ f2c == f2c ∘ c2f == identity
     end
     # See http://lampx.tugraz.at/~hadley/ss1/bzones/fcc.php
     @testset "Face centered cubic Brillouin zone" begin
@@ -175,7 +173,7 @@ end
         @test c2f([1 / 2 / a, 1 / a, 0]) == [1 / 4, 3 / 4, 1 / 2]
         @test c2f([1 / 2 / a, 2 / a, 1 / 2 / a] / 2) == [1 / 4, 5 / 8, 5 / 8]
         @test c2f([3 / 2 / a, 3 / 2 / a, 0] / 2) == [3 / 8, 3 / 4, 3 / 8]
-        @test c2f ∘ f2c == f2c ∘ c2f == IdentityTransformation()
+        @test c2f ∘ f2c == f2c ∘ c2f == identity
     end
     # See http://lampx.tugraz.at/~hadley/ss1/bzones/bcc.php
     @testset "Body centered cubic Brillouin zone" begin
@@ -195,7 +193,7 @@ end
         @test c2f([0, 0, 1 / a]) == [-1 / 2, 1 / 2, 1 / 2]
         @test c2f([1 / a, 1 / a, 1 / a] / 2) == [1 / 4, 1 / 4, 1 / 4]
         @test c2f([0, 1 / a, 1 / a] / 2) == [0, 1 / 2, 0]
-        @test c2f ∘ f2c == f2c ∘ c2f == IdentityTransformation()
+        @test c2f ∘ f2c == f2c ∘ c2f == identity
     end
 end
 

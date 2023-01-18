@@ -1,5 +1,3 @@
-using CoordinateTransformations: IdentityTransformation, Transformation
-
 export FractionalFromCartesian,
     CartesianFromFractional,
     FractionalToCartesian,
@@ -104,7 +102,7 @@ Base.inv(x::StandardizedFromPrimitive) = PrimitiveFromStandardized(inv(x.tf))
 Base.inv(x::PrimitiveFromStandardized) = StandardizedFromPrimitive(inv(x.tf))
 Base.:∘(x::PrimitiveFromStandardized, y::StandardizedFromPrimitive) = ∘(y, x)
 Base.:∘(x::StandardizedFromPrimitive, y::PrimitiveFromStandardized) =
-    x.tf * y.tf ≈ I ? IdentityTransformation() : error("undefined!")
+    x.tf * y.tf ≈ I ? identity : error("undefined!")
 
 Base.iterate(x::ChangeOfBasis) = iterate(x.tf)
 Base.iterate(x::ChangeOfBasis, state) = iterate(x.tf, state)
