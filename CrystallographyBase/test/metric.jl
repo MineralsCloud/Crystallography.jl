@@ -1,7 +1,7 @@
 using LinearAlgebra: dot, norm, diagm
 # using SymPy: symbols
 
-@testset "Test length in a hexagonal lattice" begin
+@testset "Test lengths in a hexagonal lattice" begin
     g = MetricTensor(1, 1, 2, 90, 90, 120)  # Primitive hexagonal
     @test g ≈ MetricTensor([1, 0, 0], [-1//2, sqrt(3) / 2, 0], [0, 0, 2])
     @test g ≈ MetricTensor(Lattice([
@@ -11,7 +11,7 @@ using LinearAlgebra: dot, norm, diagm
     ]))
     a = [1, 2, 1]
     @test dot(a, g, a) ≈ 7
-    @test norm([1, 2, 1], g)^2 ≈ 7
+    @test g([1, 2, 1])^2 ≈ 7
 end
 
 @testset "Test distance between atoms in a hexagonal lattice" begin

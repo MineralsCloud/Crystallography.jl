@@ -37,6 +37,16 @@ function MetricTensor(a, b, c, α, β, γ)
 end
 @functor MetricTensor
 
+(g::MetricTensor)(𝐚::AbstractVector) = sqrt(dot(𝐚, g, 𝐚))
+(g::MetricTensor)(𝐚::AbstractVector, 𝐛::AbstractVector) = g(𝐚 - 𝐛)
+
+"""
+    distance(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector)
+
+Get the distance between two coordinates using a `MetricTensor`.
+"""
+distance(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector) = g(𝐚, 𝐛)
+
 """
     Lattice(g::MetricTensor)
 
@@ -56,13 +66,6 @@ function latticeconstants(g::MetricTensor)
     return a, b, c, α, β, γ
 end
 
-"""
-    distance(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector)
-
-Get the distance between two coordinates using a `MetricTensor`.
-"""
-distance(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector) = norm(𝐛 - 𝐚, g)
-
 Base.size(::MetricTensor) = (3, 3)
 
 Base.IndexStyle(::Type{<:MetricTensor}) = IndexLinear()
@@ -70,6 +73,3 @@ Base.IndexStyle(::Type{<:MetricTensor}) = IndexLinear()
 Base.getindex(g::MetricTensor, i) = getindex(g.data, i)
 
 Base.inv(g::MetricTensor) = MetricTensor(inv(g.data))
-
-dot(𝐚::AbstractVector, g::MetricTensor, 𝐛::AbstractVector) = 𝐚' * g.data * 𝐛
-norm(𝐚::AbstractVector, g::MetricTensor) = sqrt(dot(𝐚, g, 𝐚))
