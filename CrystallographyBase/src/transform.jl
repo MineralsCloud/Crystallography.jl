@@ -104,27 +104,11 @@ Base.:∘(x::PrimitiveFromStandardized, y::StandardizedFromPrimitive) = ∘(y, x
 Base.:∘(x::StandardizedFromPrimitive, y::PrimitiveFromStandardized) =
     x.tf * y.tf ≈ I ? identity : error("undefined!")
 
-Base.iterate(x::ChangeOfBasis) = iterate(x.tf)
-Base.iterate(x::ChangeOfBasis, state) = iterate(x.tf, state)
-
-Base.eltype(::Type{<:ChangeOfBasis{T}}) where {T} = T
-
-Base.length(::ChangeOfBasis) = 9
-
 Base.size(::ChangeOfBasis) = (3, 3)
-Base.size(::ChangeOfBasis, dim::Integer) = dim <= 2 ? 3 : 1
-
-Base.IteratorSize(::Type{<:ChangeOfBasis}) = Base.HasShape{2}()
-
-# Enables `firstindex(x, dim)` and `x[1, 2:end]` or `x[begin:2, 2]`
-Base.axes(x::ChangeOfBasis, dim::Integer) = axes(x.tf, dim)
 
 Base.getindex(x::ChangeOfBasis, i) = getindex(x.tf, i)
-Base.getindex(x::ChangeOfBasis, I::Vararg) = getindex(x.tf, I...)
 
-Base.firstindex(::ChangeOfBasis) = 1
-
-Base.lastindex(::ChangeOfBasis) = 9
+Base.IndexStyle(::Type{<:ChangeOfBasis}) = IndexLinear()
 
 function Base.show(io::IO, x::ChangeOfBasis)
     if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(x)
