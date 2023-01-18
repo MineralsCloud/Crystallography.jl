@@ -9,10 +9,11 @@ export FractionalFromCartesian,
     PrimitiveToStandardized,
     StandardizedToPrimitive
 
-struct CartesianFromFractional{T} <: Transformation
+abstract type ChangeOfBasis{T} <: AbstractMatrix{T} end
+struct CartesianFromFractional{T} <: ChangeOfBasis{T}
     tf::SMatrix{3,3,T,9}
 end
-struct FractionalFromCartesian{T} <: Transformation
+struct FractionalFromCartesian{T} <: ChangeOfBasis{T}
     tf::SMatrix{3,3,T,9}
 end
 # This requires the a-vector is parallel to the Cartesian x-axis.
@@ -71,13 +72,13 @@ Base.inv(x::FractionalFromCartesian) = CartesianFromFractional(inv(x.tf))
 Base.inv(x::CartesianFromFractional) = FractionalFromCartesian(inv(x.tf))
 Base.:∘(x::CartesianFromFractional, y::FractionalFromCartesian) = ∘(y, x)
 Base.:∘(x::FractionalFromCartesian, y::CartesianFromFractional) =
-    x.tf * y.tf ≈ I ? IdentityTransformation() : error("undefined!")
+    x.tf * y.tf ≈ I ? identity : error("undefined!")
 
 # Idea from https://spglib.github.io/spglib/definition.html#transformation-to-the-primitive-cell
-struct StandardizedFromPrimitive{T} <: Transformation
+struct StandardizedFromPrimitive{T} <: ChangeOfBasis{T}
     tf::SMatrix{3,3,T,9}
 end
-struct PrimitiveFromStandardized{T} <: Transformation
+struct PrimitiveFromStandardized{T} <: ChangeOfBasis{T}
     tf::SMatrix{3,3,T,9}
 end
 """
@@ -105,12 +106,6 @@ Base.:∘(x::PrimitiveFromStandardized, y::StandardizedFromPrimitive) = ∘(y, x
 Base.:∘(x::StandardizedFromPrimitive, y::PrimitiveFromStandardized) =
     x.tf * y.tf ≈ I ? IdentityTransformation() : error("undefined!")
 
-const ChangeOfBasis{T} = Union{
-    CartesianFromFractional{T},
-    FractionalFromCartesian{T},
-    StandardizedFromPrimitive{T},
-    PrimitiveFromStandardized{T},
-}
 Base.iterate(x::ChangeOfBasis) = iterate(x.tf)
 Base.iterate(x::ChangeOfBasis, state) = iterate(x.tf, state)
 
