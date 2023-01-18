@@ -1,6 +1,7 @@
 using LinearAlgebra: Diagonal, I, norm
 
-export Lattice, latticevectors, latticesystem, latticeconstants, periodicity, supercell
+export Lattice,
+    isrighthanded, latticevectors, latticesystem, latticeconstants, periodicity, supercell
 
 "Represent the real lattices and the reciprocal lattices."
 abstract type AbstractLattice{T} end
@@ -62,6 +63,11 @@ function Lattice(a, b, c, α, β, γ; axis=:a)
     end
 end
 @functor Lattice
+
+function isrighthanded(lattice::Lattice)
+    Δ = det(lattice.data)
+    return Δ > zero(Δ)
+end
 
 """
     latticevectors(lattice::Lattice)
