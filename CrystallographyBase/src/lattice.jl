@@ -1,4 +1,4 @@
-using LinearAlgebra: Diagonal, I
+using LinearAlgebra: Diagonal, I, norm
 
 export Lattice, latticevectors, latticesystem, latticeconstants, periodicity, supercell
 
