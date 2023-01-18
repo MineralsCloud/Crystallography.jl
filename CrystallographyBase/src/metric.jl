@@ -37,6 +37,9 @@ function MetricTensor(a, b, c, α, β, γ)
 end
 @functor MetricTensor
 
+(g::MetricTensor)(𝐚::AbstractVector) = sqrt(dot(𝐚, g, 𝐚))
+(g::MetricTensor)(𝐚::AbstractVector, 𝐛::AbstractVector) = g(𝐚 - 𝐛)
+
 """
     Lattice(g::MetricTensor)
 
