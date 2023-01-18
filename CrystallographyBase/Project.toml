@@ -1,7 +1,7 @@
 name = "CrystallographyBase"
 uuid = "93b1d1cd-a8ea-4aa5-adb1-b2407ea0ba8d"
 authors = ["singularitti <singularitti@outlook.com>"]
-version = "0.9.0"
+version = "0.10.0"
 
 [deps]
 EnumX = "4e289a0a-7415-4d19-859d-a7e5c4648b56"
