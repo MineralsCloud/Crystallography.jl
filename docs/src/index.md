@@ -6,41 +6,71 @@ CurrentModule = Crystallography
 
 Documentation for [Crystallography](https://github.com/MineralsCloud/Crystallography.jl).
 
-## Package Features
-
-Provides some types and methods for crystallography calculations.
-
 See the [Index](@ref main-index) for the complete list of documented functions
 and types.
 
 The code is [hosted on GitHub](https://github.com/MineralsCloud/Crystallography.jl),
 with some continuous integration services to test its validity.
 
-This repository is created and maintained by [singularitti](https://github.com/singularitti).
+This repository is created and maintained by [@singularitti](https://github.com/singularitti).
 You are very welcome to contribute.
 
-## Compatibility
+## Installation
 
-- [Julia version: `v1.3.0` to `v1.6.1`](https://julialang.org/downloads/)
-- Dependencies:
-  - [`CoordinateTransformations.jl`](https://github.com/JuliaGeometry/CoordinateTransformations.jl) `v0.5.1` and above
-  - [`CrystallographyBase.jl`](https://github.com/MineralsCloud/CrystallographyBase.jl) `v0.1.0` and above
-  - [`StaticArrays.jl`](https://github.com/JuliaArrays/StaticArrays.jl) `v0.8.3` and above
-- OS: macOS, Linux, Windows, and FreeBSD
-- Architecture: x86, x64, ARM
+The package can be installed with the Julia package manager.
+From the Julia REPL, type `]` to enter the Pkg REPL mode and run:
 
-## Manual Outline
+```julia
+pkg> add Crystallography
+```
+
+Or, equivalently, via the `Pkg` API:
+
+```@repl
+import Pkg; Pkg.add("Crystallography")
+```
+
+## Documentation
+
+- [**STABLE**](https://MineralsCloud.github.io/Crystallography.jl/stable) — **documentation of the most recently tagged version.**
+- [**DEV**](https://MineralsCloud.github.io/Crystallography.jl/dev) — _documentation of the in-development version._
+
+## Project status
+
+The package is tested against, and being developed for, Julia `1.6` and above on Linux,
+macOS, and Windows.
+
+## Questions and contributions
+
+Usage questions can be posted on
+[our discussion page](https://github.com/MineralsCloud/Crystallography.jl/discussions).
+
+Contributions are very welcome, as are feature requests and suggestions. Please open an
+[issue](https://github.com/MineralsCloud/Crystallography.jl/issues)
+if you encounter any problems. The [Contributing](@ref) page has
+a few guidelines that should be followed when opening pull requests and contributing code.
+
+## Manual outline
 
 ```@contents
 Pages = [
     "installation.md",
-    "develop.md",
-    "api.md",
+    "developers/contributing.md",
+    "developers/style-guide.md",
+    "developers/design-principles.md",
+    "troubleshooting.md",
 ]
 Depth = 3
 ```
 
-## [Index](@id main-index)
+## Library outline
+
+```@contents
+Pages = ["public.md"]
+```
+
+### [Index](@id main-index)
 
 ```@index
+Pages = ["public.md"]
 ```
