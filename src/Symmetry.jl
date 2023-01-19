@@ -52,12 +52,20 @@ struct RotationAxis{N} <: PointSymmetry end
 struct Inversion <: PointSymmetry end
 struct RotoInversion{N} <: PointSymmetry end
 const Mirror = RotoInversion{2}
-RotationAxis(N::Int) =
-    N ∈ (2, 3, 4, 6) ? RotationAxis{N}() :
-    throw(ArgumentError("rotation axis must be either 2, 3, 4 or 6!"))
-RotoInversion(N::Int) =
-    N ∈ (2, 3, 4, 6) ? RotoInversion{N}() :
-    throw(ArgumentError("rotoinversion axis must be either 2, 3, 4 or 6!"))
+function RotationAxis(N::Integer)
+    if N ∈ (2, 3, 4, 6)
+        return RotationAxis{N}()
+    else
+        throw(ArgumentError("rotation axis must be either 2, 3, 4 or 6!"))
+    end
+end
+function RotoInversion(N::Integer)
+    if N ∈ (2, 3, 4, 6)
+        return RotoInversion{N}()
+    else
+        throw(ArgumentError("rotoinversion axis must be either 2, 3, 4 or 6!"))
+    end
+end
 
 struct PointSymmetryPower{T<:PointSymmetry,N} end
 PointSymmetryPower(X::PointSymmetry, N::Int) = PointSymmetryPower{typeof(X),N}()
@@ -150,7 +158,7 @@ function SeitzOperator(s::SeitzOperator, pos::AbstractVector)
     t = SeitzOperator(Translation(pos))
     return t * s * inv(t)
 end # function SeitzOperator
-(op::SeitzOperator)(v::AbstractVector) = (op.data*[v; 1])[1:3]
+(op::SeitzOperator)(v::AbstractVector) = (op.data * [v; 1])[1:3]
 
 isidentity(op::SeitzOperator) = op.data == I
 
@@ -219,7 +227,7 @@ function genpath(nodes, densities)
             enumerate(zip(nodes, circshift(nodes, -1), densities))
             step = @. (nextnode - thisnode) / density
             for j in 1:density
-                path[s+j] = @. thisnode + j * step
+                path[s + j] = @. thisnode + j * step
             end
             s += density
         end
@@ -232,8 +240,8 @@ function genpath(nodes, densities)
         )
     end
 end
-genpath(nodes, density::Integer, iscircular::Bool = false) =
-    genpath(nodes, (density for _ in 1:(length(nodes)-(iscircular ? 0 : 1))))
+genpath(nodes, density::Integer, iscircular::Bool=false) =
+    genpath(nodes, (density for _ in 1:(length(nodes) - (iscircular ? 0 : 1))))
 
 Base.getindex(A::SeitzOperator, I::Vararg{Int}) = getindex(A.data, I...)
 

@@ -196,7 +196,13 @@ hermann_mauguin(::Td) = "4̄3m"
 hermann_mauguin(::Oh) = "m3̄m"
 const international = hermann_mauguin
 
-schönflies(g::PointGroup) = isconcretetype(typeof(g)) ? string(nameof(typeof(g))) : throw(ArgumentError("$g is not a specific point group!"))
+function schönflies(g::PointGroup)
+    if isconcretetype(typeof(g))
+        return string(nameof(typeof(g)))
+    else
+        throw(ArgumentError("$g is not a specific point group!"))
+    end
+end
 const schoenflies = schönflies
 
 orderof(::C1) = 1
