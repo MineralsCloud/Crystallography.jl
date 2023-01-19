@@ -2,16 +2,12 @@ module PointGroups
 
 using MLStyle: @match
 
-using ..Crystallography: Triclinic,
-    Monoclinic,
-    Orthorhombic,
-    Tetragonal,
-    Cubic,
-    Trigonal,
-    Hexagonal
+using CrystallographyBase.CrystalSystem:
+    Triclinic, Monoclinic, Orthorhombic, Tetragonal, Cubic, Trigonal, Hexagonal
 
 export PointGroup
-export pointgroups, hermann_mauguin, international, schönflies, schoenflies, orderof, laueclasses
+export pointgroups,
+    hermann_mauguin, international, schönflies, schoenflies, orderof, laueclasses
 
 abstract type PointGroup end
 abstract type CyclicGroup <: PointGroup end
