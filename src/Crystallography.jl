@@ -80,6 +80,6 @@ export Bravais,
     weights
 
 # include("Symmetry.jl")
-include("PointGroups.jl")
+# include("PointGroups.jl")
 
 end
