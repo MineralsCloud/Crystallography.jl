@@ -103,8 +103,6 @@ Base.eltype(::EachAtom{A,B}) where {A,B} = Tuple{A,B}
 
 Base.length(iter::EachAtom) = length(iter.atoms)
 
-Base.IteratorSize(::Type{<:EachAtom}) = Base.HasLength()
-
 function Base.show(io::IO, cell::Cell)
     if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(cell)
         Base.show_default(IOContext(io, :limit => true), cell)  # From https://github.com/mauro3/Parameters.jl/blob/ecbf8df/src/Parameters.jl#L556
