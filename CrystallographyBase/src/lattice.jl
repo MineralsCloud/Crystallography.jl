@@ -16,7 +16,7 @@ Construct a `Lattice` from a matrix.
 !!! note
     The basis vectors of the matrix are stored as columns.
 """
-Lattice(mat::AbstractMatrix) = Lattice(MMatrix{3,3}(mat))
+Lattice(data::AbstractMatrix) = Lattice(MMatrix{3,3}(data))
 """
     Lattice(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector)
 
