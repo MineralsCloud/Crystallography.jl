@@ -9,10 +9,10 @@ export FractionalFromCartesian,
 
 abstract type ChangeOfBasis{T} <: AbstractMatrix{T} end
 struct CartesianFromFractional{T} <: ChangeOfBasis{T}
-    tf::SMatrix{3,3,T,9}
+    tf::MMatrix{3,3,T,9}
 end
 struct FractionalFromCartesian{T} <: ChangeOfBasis{T}
-    tf::SMatrix{3,3,T,9}
+    tf::MMatrix{3,3,T,9}
 end
 # This requires the a-vector is parallel to the Cartesian x-axis.
 # See https://en.wikipedia.org/wiki/Fractional_coordinates
@@ -74,10 +74,10 @@ Base.:∘(x::FractionalFromCartesian, y::CartesianFromFractional) =
 
 # Idea from https://spglib.github.io/spglib/definition.html#transformation-to-the-primitive-cell
 struct StandardizedFromPrimitive{T} <: ChangeOfBasis{T}
-    tf::SMatrix{3,3,T,9}
+    tf::MMatrix{3,3,T,9}
 end
 struct PrimitiveFromStandardized{T} <: ChangeOfBasis{T}
-    tf::SMatrix{3,3,T,9}
+    tf::MMatrix{3,3,T,9}
 end
 """
     PrimitiveFromStandardized(tf::AbstractMatrix)
