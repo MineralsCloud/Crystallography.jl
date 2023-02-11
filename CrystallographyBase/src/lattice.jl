@@ -62,7 +62,6 @@ function Lattice(a, b, c, α, β, γ; axis=:a)
         error("aligning `$axis` axis is not supported!")
     end
 end
-@functor Lattice
 
 """
     isrighthanded(lattice::Lattice)

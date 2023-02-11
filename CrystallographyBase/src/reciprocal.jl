@@ -14,7 +14,6 @@ Construct a `ReciprocalLattice`.
 struct ReciprocalLattice{T} <: AbstractLattice{T}
     data::MMatrix{3,3,T,9}
 end
-@functor ReciprocalLattice
 
 Base.BroadcastStyle(::Type{<:ReciprocalLattice}) = Broadcast.ArrayStyle{ReciprocalLattice}()
 Base.similar(
