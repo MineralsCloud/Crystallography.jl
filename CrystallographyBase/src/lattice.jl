@@ -5,8 +5,8 @@ export Lattice,
 
 "Represent the real lattices and the reciprocal lattices."
 abstract type AbstractLattice{T} <: AbstractMatrix{T} end
-@struct_hash_equal_isequal_isapprox struct Lattice{T} <: AbstractLattice{T}
-    data::SMatrix{3,3,T,9}
+struct Lattice{T} <: AbstractLattice{T}
+    data::MMatrix{3,3,T,9}
 end
 """
     Lattice(mat::AbstractMatrix)
@@ -16,7 +16,7 @@ Construct a `Lattice` from a matrix.
 !!! note
     The basis vectors of the matrix are stored as columns.
 """
-Lattice(mat::AbstractMatrix) = Lattice(SMatrix{3,3}(mat))
+Lattice(mat::AbstractMatrix) = Lattice(MMatrix{3,3}(mat))
 """
     Lattice(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector)
 
