@@ -220,38 +220,16 @@ supercell(lattice_or_cell, repfactors::AbstractVector{<:Integer}) =
 supercell(lattice_or_cell, repfactor::Integer) =
     supercell(lattice_or_cell, Matrix(repfactor * I, 3, 3))
 
-Base.iterate(lattice::AbstractLattice) = iterate(lattice.data)
-Base.iterate(lattice::AbstractLattice, state) = iterate(lattice.data, state)
-
-Base.eltype(::AbstractLattice{T}) where {T} = T
-
-Base.length(::AbstractLattice) = 9
-
 Base.size(::AbstractLattice) = (3, 3)
-Base.size(::AbstractLattice, dim::Integer) = dim <= 2 ? 3 : 1
 
-Base.IteratorSize(::Type{<:AbstractLattice}) = Base.HasShape{2}()
+Base.parent(lattice::AbstractLattice) = lattice.data
 
-Base.axes(lattice::AbstractLattice, dim::Integer) = axes(lattice.data, dim)
+Base.getindex(lattice::AbstractLattice, i) = getindex(parent(lattice), i)
 
-Base.getindex(lattice::AbstractLattice, i) = getindex(lattice.data, i)
-Base.getindex(lattice::AbstractLattice, I::Vararg) = getindex(lattice.data, I...)
+Base.setindex!(lattice::AbstractLattice, v, i) = setindex!(parent(lattice), v, i)
 
-Base.firstindex(::AbstractLattice) = 1
+Base.IndexStyle(::Type{<:AbstractLattice}) = IndexLinear()
 
-Base.lastindex(::AbstractLattice) = 9
-
-for op in (:+, :-)
-    @eval Base.broadcast(::typeof($op), lattice::AbstractLattice, number::Number) =
-        Lattice(broadcast($op, lattice.data, number))
-    @eval Base.broadcast(::typeof($op), number::Number, lattice::AbstractLattice) =
-        broadcast($op, lattice, number)
-end
-for op in (:*, :/, ://)
-    @eval Base.$op(lattice::AbstractLattice, number::Number) =
-        Lattice(($op)(lattice.data, number))
-    @eval Base.$op(number::Number, lattice::AbstractLattice) = ($op)(lattice, number)
-end
 
 function Base.show(io::IO, x::AbstractLattice)
     if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(x)
