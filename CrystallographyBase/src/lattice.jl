@@ -4,7 +4,7 @@ export Lattice,
     isrighthanded, basisvectors, latticesystem, latticeconstants, periodicity, supercell
 
 "Represent the real lattices and the reciprocal lattices."
-abstract type AbstractLattice{T} end
+abstract type AbstractLattice{T} <: AbstractMatrix{T} end
 @struct_hash_equal_isequal_isapprox struct Lattice{T} <: AbstractLattice{T}
     data::SMatrix{3,3,T,9}
 end
