@@ -230,6 +230,11 @@ Base.setindex!(lattice::AbstractLattice, v, i) = setindex!(parent(lattice), v, i
 
 Base.IndexStyle(::Type{<:AbstractLattice}) = IndexLinear()
 
+Base.BroadcastStyle(::Type{<:Lattice}) = Broadcast.ArrayStyle{Lattice}()
+Base.similar(
+    bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{Lattice}}, ::Type{S}
+) where {S} = similar(Lattice{S}, axes(bc))
+Lattice{S}(::UndefInitializer, dims) where {S} = Lattice(Array{S,length(dims)}(undef, dims))
 
 function Base.show(io::IO, x::AbstractLattice)
     if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(x)

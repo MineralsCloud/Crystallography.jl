@@ -16,6 +16,13 @@ struct ReciprocalLattice{T} <: AbstractLattice{T}
 end
 @functor ReciprocalLattice
 
+Base.BroadcastStyle(::Type{<:ReciprocalLattice}) = Broadcast.ArrayStyle{ReciprocalLattice}()
+Base.similar(
+    bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{ReciprocalLattice}}, ::Type{S}
+) where {S} = similar(ReciprocalLattice{S}, axes(bc))
+ReciprocalLattice{S}(::UndefInitializer, dims) where {S} =
+    ReciprocalLattice(Array{S,length(dims)}(undef, dims))
+
 """
     reciprocal(lattice::Lattice)
     reciprocal(lattice::ReciprocalLattice)
