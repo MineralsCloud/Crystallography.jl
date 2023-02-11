@@ -9,7 +9,7 @@ struct Lattice{T} <: AbstractLattice{T}
     data::MMatrix{3,3,T,9}
 end
 """
-    Lattice(mat::AbstractMatrix)
+    Lattice(data::AbstractMatrix)
 
 Construct a `Lattice` from a matrix.
 

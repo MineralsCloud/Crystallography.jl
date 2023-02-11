@@ -4,7 +4,7 @@ export ReciprocalPoint,
     ReciprocalLattice, MonkhorstPackGrid, reciprocal, coordinates, weights
 
 """
-    ReciprocalLattice(mat::SMatrix)
+    ReciprocalLattice(data::MMatrix)
 
 Construct a `ReciprocalLattice`.
 
