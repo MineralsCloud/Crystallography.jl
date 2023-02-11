@@ -22,9 +22,9 @@ end
 
 Get the transformation from fractional coordinates to Cartesian coordinates.
 """
-CartesianFromFractional(lattice::Lattice) = CartesianFromFractional(lattice.data)
+CartesianFromFractional(lattice::Lattice) = CartesianFromFractional(parent(lattice))
 CartesianFromFractional(lattice::ReciprocalLattice) =
-    CartesianFromFractional(transpose(lattice.data))
+    CartesianFromFractional(transpose(parent(lattice)))
 function CartesianFromFractional(a, b, c, α, β, γ)
     Ω = cellvolume(a, b, c, α, β, γ)
     b_sinγ, b_cosγ = b .* (sind(γ), cosd(γ))
@@ -42,9 +42,9 @@ end
 
 Get the transformation from Cartesian coordinates to fractional coordinates.
 """
-FractionalFromCartesian(lattice::Lattice) = FractionalFromCartesian(inv(lattice.data))
+FractionalFromCartesian(lattice::Lattice) = FractionalFromCartesian(inv(parent(lattice)))
 FractionalFromCartesian(lattice::ReciprocalLattice) =
-    FractionalFromCartesian(transpose(inv(lattice.data)))
+    FractionalFromCartesian(transpose(inv(parent(lattice))))
 function FractionalFromCartesian(a, b, c, α, β, γ)
     Ω = cellvolume(a, b, c, α, β, γ)
     b_sinγ = b * sind(γ)
@@ -96,7 +96,7 @@ const StandardizedToPrimitive = PrimitiveFromStandardized
 
 (x::Union{StandardizedFromPrimitive,PrimitiveFromStandardized})(v) = inv(x.tf) * collect(v)
 (x::Union{StandardizedFromPrimitive,PrimitiveFromStandardized})(lattice::Lattice) =
-    Lattice(lattice.data * x.tf)
+    Lattice(parent(lattice) * x.tf)
 
 Base.inv(x::StandardizedFromPrimitive) = PrimitiveFromStandardized(inv(x.tf))
 Base.inv(x::PrimitiveFromStandardized) = StandardizedFromPrimitive(inv(x.tf))
