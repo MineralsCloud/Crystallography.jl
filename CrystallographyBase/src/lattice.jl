@@ -4,19 +4,19 @@ export Lattice,
     isrighthanded, basisvectors, latticesystem, latticeconstants, periodicity, supercell
 
 "Represent the real lattices and the reciprocal lattices."
-abstract type AbstractLattice{T} end
-@struct_hash_equal_isequal_isapprox struct Lattice{T} <: AbstractLattice{T}
-    data::SMatrix{3,3,T,9}
+abstract type AbstractLattice{T} <: AbstractMatrix{T} end
+struct Lattice{T} <: AbstractLattice{T}
+    data::MMatrix{3,3,T,9}
 end
 """
-    Lattice(mat::AbstractMatrix)
+    Lattice(data::AbstractMatrix)
 
 Construct a `Lattice` from a matrix.
 
 !!! note
     The basis vectors of the matrix are stored as columns.
 """
-Lattice(mat::AbstractMatrix) = Lattice(SMatrix{3,3}(mat))
+Lattice(data::AbstractMatrix) = Lattice(MMatrix{3,3}(data))
 """
     Lattice(𝐚::AbstractVector, 𝐛::AbstractVector, 𝐜::AbstractVector)
 
@@ -62,7 +62,6 @@ function Lattice(a, b, c, α, β, γ; axis=:a)
         error("aligning `$axis` axis is not supported!")
     end
 end
-@functor Lattice
 
 """
     isrighthanded(lattice::Lattice)
@@ -220,38 +219,21 @@ supercell(lattice_or_cell, repfactors::AbstractVector{<:Integer}) =
 supercell(lattice_or_cell, repfactor::Integer) =
     supercell(lattice_or_cell, Matrix(repfactor * I, 3, 3))
 
-Base.iterate(lattice::AbstractLattice) = iterate(lattice.data)
-Base.iterate(lattice::AbstractLattice, state) = iterate(lattice.data, state)
-
-Base.eltype(::AbstractLattice{T}) where {T} = T
-
-Base.length(::AbstractLattice) = 9
-
 Base.size(::AbstractLattice) = (3, 3)
-Base.size(::AbstractLattice, dim::Integer) = dim <= 2 ? 3 : 1
 
-Base.IteratorSize(::Type{<:AbstractLattice}) = Base.HasShape{2}()
+Base.parent(lattice::AbstractLattice) = lattice.data
 
-Base.axes(lattice::AbstractLattice, dim::Integer) = axes(lattice.data, dim)
+Base.getindex(lattice::AbstractLattice, i) = getindex(parent(lattice), i)
 
-Base.getindex(lattice::AbstractLattice, i) = getindex(lattice.data, i)
-Base.getindex(lattice::AbstractLattice, I::Vararg) = getindex(lattice.data, I...)
+Base.setindex!(lattice::AbstractLattice, v, i) = setindex!(parent(lattice), v, i)
 
-Base.firstindex(::AbstractLattice) = 1
+Base.IndexStyle(::Type{<:AbstractLattice}) = IndexLinear()
 
-Base.lastindex(::AbstractLattice) = 9
-
-for op in (:+, :-)
-    @eval Base.broadcast(::typeof($op), lattice::AbstractLattice, number::Number) =
-        Lattice(broadcast($op, lattice.data, number))
-    @eval Base.broadcast(::typeof($op), number::Number, lattice::AbstractLattice) =
-        broadcast($op, lattice, number)
-end
-for op in (:*, :/, ://)
-    @eval Base.$op(lattice::AbstractLattice, number::Number) =
-        Lattice(($op)(lattice.data, number))
-    @eval Base.$op(number::Number, lattice::AbstractLattice) = ($op)(lattice, number)
-end
+Base.BroadcastStyle(::Type{<:Lattice}) = Broadcast.ArrayStyle{Lattice}()
+Base.similar(
+    bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{Lattice}}, ::Type{S}
+) where {S} = similar(Lattice{S}, axes(bc))
+Lattice{S}(::UndefInitializer, dims) where {S} = Lattice(Array{S,length(dims)}(undef, dims))
 
 function Base.show(io::IO, x::AbstractLattice)
     if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(x)

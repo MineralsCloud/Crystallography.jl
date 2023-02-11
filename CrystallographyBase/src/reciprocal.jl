@@ -4,17 +4,24 @@ export ReciprocalPoint,
     ReciprocalLattice, MonkhorstPackGrid, reciprocal, coordinates, weights
 
 """
-    ReciprocalLattice(mat::SMatrix)
+    ReciprocalLattice(data::MMatrix)
 
 Construct a `ReciprocalLattice`.
 
 !!! warning
     You should not use this function directly, always use `reciprocal` of a `Lattice`.
 """
-@struct_hash_equal_isequal_isapprox struct ReciprocalLattice{T} <: AbstractLattice{T}
-    data::SMatrix{3,3,T,9}
+struct ReciprocalLattice{T} <: AbstractLattice{T}
+    data::MMatrix{3,3,T,9}
 end
-@functor ReciprocalLattice
+ReciprocalLattice(data::AbstractMatrix) = ReciprocalLattice(MMatrix{3,3}(data))
+
+Base.BroadcastStyle(::Type{<:ReciprocalLattice}) = Broadcast.ArrayStyle{ReciprocalLattice}()
+Base.similar(
+    bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{ReciprocalLattice}}, ::Type{S}
+) where {S} = similar(ReciprocalLattice{S}, axes(bc))
+ReciprocalLattice{S}(::UndefInitializer, dims) where {S} =
+    ReciprocalLattice(Array{S,length(dims)}(undef, dims))
 
 """
     reciprocal(lattice::Lattice)

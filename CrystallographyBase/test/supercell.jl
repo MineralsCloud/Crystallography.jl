@@ -1,5 +1,5 @@
 using LinearAlgebra: det
-using StaticArrays: SMatrix
+using StaticArrays: MMatrix
 
 @testset "Test the simplest `supercell` for a `Lattice`" begin
     lattice = Lattice(2, 1, 5, 90, 90, 90)
@@ -312,7 +312,7 @@ end
     @test natoms(new_cell) == natoms(cell) * 3 * 6 * 2
     @test cellvolume(new_cell) ≈ cellvolume(cell) * 3 * 6 * 2
     @test reciprocal(new_cell.lattice) ≈ ReciprocalLattice(  # Compared with Xtals.jl results
-        SMatrix{3,3}(
+        MMatrix{3,3}(
             [
                 0.028687901451320934 -1.7566273343307443e-18 0.005522861283328621
                 0.0 0.02993994047939833 -2.219893391258545e-18
