@@ -6,5 +6,6 @@ using Reexport: @reexport
 
 # include("Symmetry.jl")
 # include("PointGroups.jl")
+include("read.jl")
 
 end
