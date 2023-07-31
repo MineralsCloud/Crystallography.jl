@@ -4,6 +4,7 @@ authors = ["singularitti <singularitti@outlook.com>"]
 version = "0.10.0"
 
 [deps]
+AnonymousEnums = "1b8a1bdb-a29a-4350-a16c-c7e9322d6a39"
 EnumX = "4e289a0a-7415-4d19-859d-a7e5c4648b56"
 Functors = "d9f16b24-f501-4c13-a1f2-28368ffc5196"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
