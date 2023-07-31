@@ -234,15 +234,3 @@ Base.similar(
     bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{Lattice}}, ::Type{S}
 ) where {S} = similar(Lattice{S}, axes(bc))
 Lattice{S}(::UndefInitializer, dims) where {S} = Lattice(Array{S,length(dims)}(undef, dims))
-
-function Base.show(io::IO, x::AbstractLattice)
-    if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(x)
-        Base.show_default(IOContext(io, :limit => true), x)  # From https://github.com/mauro3/Parameters.jl/blob/ecbf8df/src/Parameters.jl#L556
-    else
-        println(io, string(typeof(x)))
-        for row in eachrow(x.data)
-            println(io, ' ', join(row, "  "))
-        end
-        println(io, " (a, b, c, α, β, γ) = ", latticeconstants(x))
-    end
-end

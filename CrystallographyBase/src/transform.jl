@@ -109,14 +109,3 @@ Base.size(::ChangeOfBasis) = (3, 3)
 Base.getindex(x::ChangeOfBasis, i) = getindex(x.tf, i)
 
 Base.IndexStyle(::Type{<:ChangeOfBasis}) = IndexLinear()
-
-function Base.show(io::IO, x::ChangeOfBasis)
-    if get(io, :compact, false) || get(io, :typeinfo, nothing) == typeof(x)
-        Base.show_default(IOContext(io, :limit => true), x)  # From https://github.com/mauro3/Parameters.jl/blob/ecbf8df/src/Parameters.jl#L556
-    else
-        println(io, string(typeof(x)))
-        for row in eachrow(x.tf)
-            println(io, ' ', join(row, "  "))
-        end
-    end
-end
