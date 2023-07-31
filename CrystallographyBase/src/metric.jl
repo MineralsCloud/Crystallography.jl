@@ -35,7 +35,6 @@ function MetricTensor(a, b, c, α, β, γ)
     g₂₃ = b * c * cosd(α)
     return MetricTensor(SHermitianCompact(SVector(a^2, g₁₂, g₁₃, b^2, g₂₃, c^2)))
 end
-@functor MetricTensor
 
 (g::MetricTensor)(𝐚::AbstractVector) = sqrt(dot(𝐚, g, 𝐚))
 (g::MetricTensor)(𝐚::AbstractVector, 𝐛::AbstractVector) = g(𝐚 - 𝐛)
