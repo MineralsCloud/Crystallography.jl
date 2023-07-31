@@ -3,7 +3,11 @@ using LinearAlgebra: Diagonal, I, norm
 export Lattice,
     isrighthanded, basisvectors, latticesystem, latticeconstants, periodicity, supercell
 
-"Represent the real lattices and the reciprocal lattices."
+"""
+    AbstractLattice{T}
+
+Represent the real lattices and the reciprocal lattices.
+"""
 abstract type AbstractLattice{T} <: AbstractMatrix{T} end
 struct Lattice{T} <: AbstractLattice{T}
     data::MMatrix{3,3,T,9}
