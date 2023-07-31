@@ -1,15 +1,21 @@
-```@meta
-CurrentModule = CrystallographyBase
-```
+# Public API
 
-# API Reference
+## Contents
 
 ```@contents
 Pages = ["public.md"]
 Depth = 3
 ```
 
-## Lattice and Cell
+## Index
+
+```@index
+Pages = ["public.md"]
+```
+
+## Public interface
+
+### Lattice and Cell
 
 ```@docs
 AbstractLattice
@@ -24,7 +30,7 @@ supercell
 eachatom
 ```
 
-## Reciprocal space
+### Reciprocal space
 
 Note that we take ``2\pi`` as ``1``, not the solid-state physics convention.
 
@@ -37,14 +43,14 @@ coordinates
 weights
 ```
 
-## Metric tensor
+### Metric tensor
 
 ```@docs
 MetricTensor
 distance
 ```
 
-## Transformations
+### Transformations
 
 ```@docs
 CartesianFromFractional
@@ -53,7 +59,7 @@ PrimitiveFromStandardized
 StandardizedFromPrimitive
 ```
 
-## Others
+### Others
 
 ```@docs
 cellvolume

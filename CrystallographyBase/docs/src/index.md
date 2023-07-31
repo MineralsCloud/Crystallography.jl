@@ -1,7 +1,3 @@
-```@meta
-CurrentModule = CrystallographyBase
-```
-
 # CrystallographyBase
 
 Documentation for [CrystallographyBase](https://github.com/MineralsCloud/CrystallographyBase.jl).
@@ -9,22 +5,30 @@ Documentation for [CrystallographyBase](https://github.com/MineralsCloud/Crystal
 See the [Index](@ref main-index) for the complete list of documented functions
 and types.
 
-The code is [hosted on GitHub](https://github.com/MineralsCloud/CrystallographyBase.jl),
-with some continuous integration services to test its validity.
+The code, which is [hosted on GitHub](https://github.com/MineralsCloud/CrystallographyBase.jl), is tested
+using various continuous integration services for its validity.
 
-This repository is created and maintained by [@singularitti](https://github.com/singularitti).
-You are very welcome to contribute.
+This repository is created and maintained by
+[@singularitti](https://github.com/singularitti), and contributions are highly welcome.
+
+## Package features
+
+- Define crystal lattices and cells
+- Compute reciprocal lattices
+- Generate supercells and k-point grids
+- Enable math utilities for crystal properties
 
 ## Installation
 
 The package can be installed with the Julia package manager.
-From the Julia REPL, type `]` to enter the Pkg REPL mode and run:
+From [the Julia REPL](https://docs.julialang.org/en/v1/stdlib/REPL/), type `]` to enter
+the [Pkg mode](https://docs.julialang.org/en/v1/stdlib/REPL/#Pkg-mode) and run:
 
-```julia
+```julia-repl
 pkg> add CrystallographyBase
 ```
 
-Or, equivalently, via the `Pkg` API:
+Or, equivalently, via [`Pkg.jl`](https://pkgdocs.julialang.org/v1/):
 
 ```@repl
 import Pkg; Pkg.add("CrystallographyBase")
@@ -37,30 +41,30 @@ import Pkg; Pkg.add("CrystallographyBase")
 
 ## Project status
 
-The package is tested against, and being developed for, Julia `1.6` and above on Linux,
-macOS, and Windows.
+The package is developed for and tested against Julia `v1.6` and above on Linux, macOS, and
+Windows.
 
 ## Questions and contributions
 
-Usage questions can be posted on
+You can post usage questions on
 [our discussion page](https://github.com/MineralsCloud/CrystallographyBase.jl/discussions).
 
-Contributions are very welcome, as are feature requests and suggestions. Please open an
-[issue](https://github.com/MineralsCloud/CrystallographyBase.jl/issues)
-if you encounter any problems. The [Contributing](@ref) page has
+We welcome contributions, feature requests, and suggestions. If you encounter any problems,
+please open an [issue](https://github.com/MineralsCloud/CrystallographyBase.jl/issues).
+The [Contributing](@ref) page has
 a few guidelines that should be followed when opening pull requests and contributing code.
 
 ## Manual outline
 
 ```@contents
 Pages = [
-    "installation.md",
-    "definitions.md",
-    "examples.md",
+    "man/installation.md",
+    "man/troubleshooting.md",
+    "man/definitions.md",
+    "man/examples.md",
     "developers/contributing.md",
     "developers/style-guide.md",
     "developers/design-principles.md",
-    "troubleshooting.md",
 ]
 Depth = 3
 ```
@@ -68,11 +72,11 @@ Depth = 3
 ## Library outline
 
 ```@contents
-Pages = ["public.md"]
+Pages = ["lib/public.md", "lib/internals.md"]
 ```
 
 ### [Index](@id main-index)
 
 ```@index
-Pages = ["public.md"]
+Pages = ["lib/public.md"]
 ```

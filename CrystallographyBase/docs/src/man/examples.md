@@ -9,7 +9,7 @@ end
 
 ```@contents
 Pages = ["examples.md"]
-Depth = 3
+Depth = 2
 ```
 
 ## Creating a `Cell`
@@ -37,7 +37,7 @@ Lattice([
 
 Then we can add atoms and their positions (in crystal coordinates):
 
-```@repl
+```@repl 1
 lattice = [
     -3.0179389205999998 -3.0179389205999998 0.0000000000000000
     -5.2272235447000002 5.2272235447000002 0.0000000000000000
@@ -52,7 +52,7 @@ cell = Cell(lattice, positions, atoms)
 
 To get the reciprocal lattice, we run `reciprocal`:
 
-```@repl
+```@repl 1
 reciprocal(lattice)
 ```
 
@@ -63,7 +63,7 @@ reciprocal(lattice)
 
 We can specify the replication factors in each direction in the following ways:
 
-```@repl
+```@repl 1
 supercell(lattice, [2, 3, 4])
 supercell(lattice, 3)
 supercell(cell, [2, 3, 4])

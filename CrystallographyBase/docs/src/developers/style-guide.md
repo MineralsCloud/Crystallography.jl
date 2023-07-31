@@ -1,10 +1,5 @@
 # [Style Guide](@id style)
 
-```@contents
-Pages = ["style.md"]
-Depth = 3
-```
-
 This section describes the coding style rules that apply to our code and that
 we recommend you to use it also.
 
@@ -16,7 +11,7 @@ Our style guide adopts many recommendations from the
 [BlueStyle](https://github.com/invenia/BlueStyle).
 Please read the [BlueStyle](https://github.com/invenia/BlueStyle)
 before contributing to this package.
-If not following, your pull requests may not be accepted.
+If these guidelines are not followed, your pull requests may not be accepted.
 
 !!! info
     The style guide is always a work in progress, and not all CrystallographyBase code
@@ -27,7 +22,7 @@ If not following, your pull requests may not be accepted.
 
 ## Formatting
 
-### [Run JuliaFormatter](@id formatter)
+### Run JuliaFormatter
 
 CrystallographyBase uses [JuliaFormatter](https://github.com/domluna/JuliaFormatter.jl) as
 an auto-formatting tool.
@@ -36,13 +31,14 @@ We use the options contained in [`.JuliaFormatter.toml`](https://github.com/Mine
 
 To format your code, `cd` to the CrystallographyBase directory, then run:
 
-```@repl
-using Pkg
-Pkg.add("JuliaFormatter")
-using JuliaFormatter: format
-format("docs");
-format("src");
-format("test");
+```julia-repl
+julia> using Pkg
+
+julia> Pkg.add("JuliaFormatter")
+
+julia> using JuliaFormatter: format
+
+julia> format("docs"); format("src"); format("test")
 ```
 
 !!! info
@@ -54,10 +50,10 @@ automatically by JuliaFormatter.
 
 ### Use the Julia extension for Visual Studio Code
 
-Please use [VS Code](https://code.visualstudio.com/) with the
+Please use [Visual Studio Code](https://code.visualstudio.com/) with the
 [Julia extension](https://marketplace.visualstudio.com/items?itemName=julialang.language-julia)
 to edit, format, and test your code.
-We do not recommend using other editors to edit your code for the time being.
+For the time being, we do not recommend using editors other than Visual Studio Code to edit your code.
 
 This extension already has [JuliaFormatter](https://github.com/domluna/JuliaFormatter.jl)
 integrated. So to format your code, follow the steps listed
