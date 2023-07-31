@@ -11,6 +11,7 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 StructEquality = "6ec83bb0-ed9f-11e9-3b4c-2b04cb4e219c"
 
 [compat]
+AnonymousEnums = "0.1"
 Mendeleev = "0.2, 0.3, 1"
 StaticArrays = "0.8.3, 0.9, 0.10, 0.11, 0.12, 1"
 StructEquality = "2"
