@@ -12,9 +12,6 @@ Depth = 3
 ## Lattice and Cell
 
 ```@docs
-CrystalSystem
-LatticeSystem
-Bravais
 AbstractLattice
 Lattice
 isrighthanded
