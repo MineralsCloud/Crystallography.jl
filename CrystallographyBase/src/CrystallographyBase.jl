@@ -1,6 +1,5 @@
 module CrystallographyBase
 
-using Functors: @functor
 using LinearAlgebra: dot
 using StaticArrays: SVector, MMatrix
 using StructEquality: @struct_hash_equal_isequal_isapprox
