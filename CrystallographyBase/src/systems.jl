@@ -1,9 +1,9 @@
-using EnumX: @enumx
+using AnonymousEnums: @anonymousenum
 
 export CrystalSystem, LatticeSystem, Bravais
 
 "Represent the 7 lattice systems."
-@enumx LatticeSystem begin
+@anonymousenum LatticeSystem begin
     Triclinic = 1
     Monoclinic = 2
     Orthorhombic = 3
@@ -14,7 +14,7 @@ export CrystalSystem, LatticeSystem, Bravais
 end
 
 "Represent the 7 crystal systems."
-@enumx CrystalSystem begin
+@anonymousenum CrystalSystem begin
     Triclinic = 1
     Monoclinic = 2
     Orthorhombic = 3
@@ -25,7 +25,7 @@ end
 end
 
 "Represent the 14 Bravais lattices."
-@enumx BravaisArithmeticClass begin
+@anonymousenum BravaisArithmeticClass begin
     PrimitiveTriclinic = 1
     PrimitiveMonoclinic = 2
     BaseCenteredMonoclinic = 3
