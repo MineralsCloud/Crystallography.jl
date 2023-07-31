@@ -61,7 +61,6 @@ end
 ReciprocalPoint(coord::AbstractVector{T}, weight) where {T} =
     ReciprocalPoint{T}(SVector{3}(coord), weight)
 ReciprocalPoint(x, y, z, w) = ReciprocalPoint(SVector(x, y, z), w)
-@functor ReciprocalPoint (coord,)
 
 """
     MonkhorstPackGrid(mesh, is_shift)
