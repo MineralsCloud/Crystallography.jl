@@ -91,22 +91,22 @@ basisvectors(lattice::Lattice) = lattice[:, 1], lattice[:, 2], lattice[:, 3]
 
 Get the lattice system of a Bravais lattice.
 """
-function latticesystem(bravais::Bravais.T)
+function latticesystem(bravais::Bravais)
     index = Int(bravais)
     if index == 1
-        return LatticeSystem.Triclinic
+        return LatticeSystem(:Triclinic)
     elseif 2 <= index <= 3
-        return LatticeSystem.Monoclinic
+        return LatticeSystem(:Monoclinic)
     elseif 4 <= index <= 7
-        return LatticeSystem.Orthorhombic
+        return LatticeSystem(:Orthorhombic)
     elseif 8 <= index <= 9
-        return LatticeSystem.Tetragonal
+        return LatticeSystem(:Tetragonal)
     elseif index == 10
-        return LatticeSystem.Hexagonal
+        return LatticeSystem(:Hexagonal)
     elseif index == 11
-        return LatticeSystem.Rhombohedral
+        return LatticeSystem(:Rhombohedral)
     else  # 12 <= index <= 14
-        return LatticeSystem.Cubic
+        return LatticeSystem(:Cubic)
     end
 end
 """
@@ -141,25 +141,25 @@ function latticesystem(a, b, c, α, β, γ; angletol=1e-5, lengthtol=1e-5)
     for (lengths′, angles′) in zip(cyclic_perm(lengths), cyclic_perm(angles))
         (a′, _, c′), (α′, β′, γ′) = lengths′, angles′
         if !(a′ ≅ c′) && α′ ≊ 90 && γ′ ≊ 90 && !(β′ ≊ 90)
-            return LatticeSystem.Monoclinic
+            return LatticeSystem(:Monoclinic)
         end
     end
     if unilength && uniangle
-        return α ≊ 90 ? LatticeSystem.Cubic : LatticeSystem.Rhombohedral
+        return α ≊ 90 ? LatticeSystem(:Cubic) : LatticeSystem(:Rhombohedral)
     end
     if unilength && !uniangle  # Technically, a hexagonal system could have all 3 lengths equal.
         if any(θ ≊ 120 for θ in angles) && sum(θ ≊ 90 for θ in angles) == 2
-            return LatticeSystem.Hexagonal
+            return LatticeSystem(:Hexagonal)
         end
     end
     if bilengths(lengths)  # At this point, two lengths are equal at most.
         if uniangle && α ≊ 90
-            return LatticeSystem.Tetragonal
+            return LatticeSystem(:Tetragonal)
         elseif any(θ ≊ 120 for θ in angles) && sum(θ ≊ 90 for θ in angles) == 2
-            return LatticeSystem.Hexagonal
+            return LatticeSystem(:Hexagonal)
         end
     else  # At this point, all lengths are not equal.
-        return uniangle && α ≊ 90 ? LatticeSystem.Orthorhombic : LatticeSystem.Triclinic
+        return uniangle && α ≊ 90 ? LatticeSystem(:Orthorhombic) : LatticeSystem(:Triclinic)
     end
 end
 """

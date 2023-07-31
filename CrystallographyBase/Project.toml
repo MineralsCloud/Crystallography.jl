@@ -4,7 +4,7 @@ authors = ["singularitti <singularitti@outlook.com>"]
 version = "0.10.0"
 
 [deps]
-EnumX = "4e289a0a-7415-4d19-859d-a7e5c4648b56"
+AnonymousEnums = "1b8a1bdb-a29a-4350-a16c-c7e9322d6a39"
 Functors = "d9f16b24-f501-4c13-a1f2-28368ffc5196"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Mendeleev = "c116f080-063d-490a-9873-2b5b2cce4c34"
@@ -12,7 +12,6 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 StructEquality = "6ec83bb0-ed9f-11e9-3b4c-2b04cb4e219c"
 
 [compat]
-EnumX = "1"
 Functors = "0.1, 0.2, 0.3, 0.4"
 Mendeleev = "0.2, 0.3, 1"
 StaticArrays = "0.8.3, 0.9, 0.10, 0.11, 0.12, 1"

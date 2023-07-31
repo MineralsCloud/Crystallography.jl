@@ -1,9 +1,8 @@
-using EnumX: @enumx
+using AnonymousEnums: @anonymousenum
 
-export CrystalSystem, LatticeSystem, Bravais
+export CrystalSystem, LatticeSystem, BravaisArithmeticClass, Bravais
 
-"Represent the 7 lattice systems."
-@enumx LatticeSystem begin
+@anonymousenum LatticeSystem begin
     Triclinic = 1
     Monoclinic = 2
     Orthorhombic = 3
@@ -13,8 +12,7 @@ export CrystalSystem, LatticeSystem, Bravais
     Cubic = 7
 end
 
-"Represent the 7 crystal systems."
-@enumx CrystalSystem begin
+@anonymousenum CrystalSystem begin
     Triclinic = 1
     Monoclinic = 2
     Orthorhombic = 3
@@ -24,8 +22,7 @@ end
     Cubic = 7
 end
 
-"Represent the 14 Bravais lattices."
-@enumx BravaisArithmeticClass begin
+@anonymousenum BravaisArithmeticClass begin
     PrimitiveTriclinic = 1
     PrimitiveMonoclinic = 2
     BaseCenteredMonoclinic = 3
@@ -37,7 +34,6 @@ end
     BodyCenteredTetragonal = 9
     PrimitiveHexagonal = 10
     PrimitiveRhombohedral = 11
-    RCentredHexagonal = PrimitiveRhombohedral
     PrimitiveCubic = 12
     BodyCenteredCubic = 13
     FaceCenteredCubic = 14
