@@ -1,6 +1,6 @@
 using AnonymousEnums: @anonymousenum
 
-export CrystalSystem, LatticeSystem, Bravais
+export CrystalSystem, LatticeSystem, BravaisArithmeticClass, Bravais
 
 @anonymousenum LatticeSystem begin
     Triclinic = 1
