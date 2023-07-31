@@ -102,3 +102,5 @@ end
 Base.eltype(::EachAtom{A,B}) where {A,B} = Tuple{A,B}
 
 Base.length(iter::EachAtom) = length(iter.atoms)
+
+Base.IteratorSize(::Type{<:EachAtom}) = Base.HasLength()
