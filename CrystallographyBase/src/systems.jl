@@ -37,7 +37,6 @@ end
     BodyCenteredTetragonal = 9
     PrimitiveHexagonal = 10
     PrimitiveRhombohedral = 11
-    RCentredHexagonal = PrimitiveRhombohedral
     PrimitiveCubic = 12
     BodyCenteredCubic = 13
     FaceCenteredCubic = 14
