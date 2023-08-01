@@ -23,7 +23,7 @@ end
 end
 
 @testset "Test `instances`" begin
-    @test instances(LatticeSystem) == 7
-    @test instances(CrystalSystem) == 7
-    @test instances(Bravais) == 14
+    @test length(instances(LatticeSystem)) == 7
+    @test length(instances(CrystalSystem)) == 7
+    @test length(instances(Bravais)) == 14
 end
