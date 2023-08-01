@@ -18,7 +18,6 @@ Pages = ["public.md"]
 ### Lattice and Cell
 
 ```@docs
-AbstractLattice
 Lattice
 isrighthanded
 basisvectors

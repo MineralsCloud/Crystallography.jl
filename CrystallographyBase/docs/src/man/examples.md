@@ -1,10 +1,3 @@
-```@meta
-DocTestSetup = quote
-    using CrystallographyBase
-    using Unitful, UnitfulAtomic
-end
-```
-
 # Examples
 
 ```@contents
@@ -18,17 +11,15 @@ To create a `Cell`, we first need to create a `Lattice`.
 There are multiple ways of doing it. For example, if we know the six lattice constants,
 we can do
 
-```@repl
-a = 4u"nm"
-b = 180u"bohr"
-c = 3u"angstrom"
-lattice = Lattice(a, b, c, 90, 90, 90)
+```@repl 1
+using CrystallographyBase, Unitful, UnitfulAtomic
+lattice₁ = Lattice(4u"nm", 180u"bohr", 3u"angstrom", 90, 90, 90)
 ```
 
 Or, equivalently,
 
-```@repl
-Lattice([
+```@repl 1
+lattice₁ == Lattice([
     4u"nm" 0u"m" 0.0u"cm"
     0u"cm" 180.0u"bohr" 0u"m"
     0u"bohr" 0u"nm" (3//1)*u"angstrom"
@@ -38,14 +29,14 @@ Lattice([
 Then we can add atoms and their positions (in crystal coordinates):
 
 ```@repl 1
-lattice = [
+lattice₂ = [
     -3.0179389205999998 -3.0179389205999998 0.0000000000000000
     -5.2272235447000002 5.2272235447000002 0.0000000000000000
     0.0000000000000000 0.0000000000000000 -9.7736219469000005
 ]
 positions = [[2 / 3, 1 / 3, 1 / 4], [1 / 3, 2 / 3, 3 / 4]]
 atoms = [1, 1]
-cell = Cell(lattice, positions, atoms)
+cell = Cell(lattice₂, positions, atoms)
 ```
 
 ## Reciprocal space
@@ -53,7 +44,7 @@ cell = Cell(lattice, positions, atoms)
 To get the reciprocal lattice, we run `reciprocal`:
 
 ```@repl 1
-reciprocal(lattice)
+reciprocal(lattice₁)
 ```
 
 !!! note
@@ -64,8 +55,8 @@ reciprocal(lattice)
 We can specify the replication factors in each direction in the following ways:
 
 ```@repl 1
-supercell(lattice, [2, 3, 4])
-supercell(lattice, 3)
+supercell(lattice₁, [2, 3, 4])
+supercell(lattice₁, 3)
 supercell(cell, [2, 3, 4])
 supercell(cell, 3)
 ```
