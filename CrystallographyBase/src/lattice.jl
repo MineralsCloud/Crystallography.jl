@@ -4,7 +4,7 @@ export Lattice,
     isrighthanded, basisvectors, latticesystem, latticeconstants, periodicity, supercell
 
 """
-    AbstractLattice{T}
+    AbstractLattice{T} <: AbstractMatrix{T}
 
 Represent the real lattices and the reciprocal lattices.
 """
