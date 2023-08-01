@@ -1,7 +1,7 @@
 @testset "Test construction from symbols and numbers" begin
     @test LatticeSystem(1) == LatticeSystem(:Triclinic)
     @test LatticeSystem(:Monoclinic) == LatticeSystem(2)
-    @test LatticeSystem(:Rhombohedral) == LatticeSystem(6)
+    @test LatticeSystem(:Rhombohedral) == LatticeSystem(5)
     @test CrystalSystem(:Triclinic) == CrystalSystem(1)
     @test CrystalSystem(4) == CrystalSystem(:Tetragonal)
     @test CrystalSystem(:Trigonal) == CrystalSystem(5)
