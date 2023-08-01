@@ -2,7 +2,7 @@ using AnonymousEnums: @anonymousenum
 
 export CrystalSystem, LatticeSystem, BravaisArithmeticClass, Bravais
 
-@anonymousenum LatticeSystem begin
+@anonymousenum LatticeSystem::UInt8 begin
     Triclinic = 1
     Monoclinic = 2
     Orthorhombic = 3
@@ -12,7 +12,7 @@ export CrystalSystem, LatticeSystem, BravaisArithmeticClass, Bravais
     Cubic = 7
 end
 
-@anonymousenum CrystalSystem begin
+@anonymousenum CrystalSystem::UInt8 begin
     Triclinic = 1
     Monoclinic = 2
     Orthorhombic = 3
@@ -22,7 +22,7 @@ end
     Cubic = 7
 end
 
-@anonymousenum BravaisArithmeticClass begin
+@anonymousenum BravaisArithmeticClass::UInt8 begin
     PrimitiveTriclinic = 1
     PrimitiveMonoclinic = 2
     BaseCenteredMonoclinic = 3
