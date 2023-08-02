@@ -2,8 +2,7 @@ module PointGroups
 
 using MLStyle: @match
 
-using CrystallographyBase.CrystalSystem:
-    Triclinic, Monoclinic, Orthorhombic, Tetragonal, Cubic, Trigonal, Hexagonal
+using CrystallographyBase: CrystalSystem
 
 export PointGroup
 export pointgroups,
@@ -146,21 +145,31 @@ end
 
 struct LaueClass{T<:PointGroup} end
 
-laueclasses(::Triclinic) = (LaueClass{Ci}(),)
-laueclasses(::Monoclinic) = (LaueClass{C2h}(),)
-laueclasses(::Orthorhombic) = (LaueClass{D2h}(),)
-laueclasses(::Tetragonal) = (LaueClass{C4h}(), LaueClass{D4h}())
-laueclasses(::Trigonal) = (LaueClass{C3i}(), LaueClass{D3d}())
-laueclasses(::Hexagonal) = (LaueClass{C6h}(), LaueClass{D6h}())
-laueclasses(::Cubic) = (LaueClass{Th}(), LaueClass{Oh}())
+function laueclasses(system::CrystalSystem)
+    @match system begin
+        CrystalSystem(:Triclinic) => (LaueClass{Ci}(),)
+        CrystalSystem(:Monoclinic) => (LaueClass{C2h}(),)
+        CrystalSystem(:Orthorhombic) => (LaueClass{D2h}(),)
+        CrystalSystem(:Tetragonal) => (LaueClass{C4h}(), LaueClass{D4h}())
+        CrystalSystem(:Trigonal) => (LaueClass{C3i}(), LaueClass{D3d}())
+        CrystalSystem(:Hexagonal) => (LaueClass{C6h}(), LaueClass{D6h}())
+        CrystalSystem(:Cubic) => (LaueClass{Th}(), LaueClass{Oh}())
+        _ => error("Invalid crystal type")
+    end
+end
 
-pointgroups(::Triclinic) = (C1(), S2())
-pointgroups(::Monoclinic) = (C2(), C1h(), C2h())
-pointgroups(::Orthorhombic) = (D2(), C2v(), D2h())
-pointgroups(::Tetragonal) = (C4(), S4(), C4h(), D4(), C4v(), D2d(), D4h())
-pointgroups(::Trigonal) = (C3(), S6(), D3(), C3v(), D3d())
-pointgroups(::Hexagonal) = (C6(), C3h(), C6h(), D6(), C6v(), D3h(), D6h())
-pointgroups(::Cubic) = (T(), Th(), O(), Td(), Oh())
+function pointgroups(crystal)
+    @match crystal begin
+        CrystalSystem(:Triclinic) => (C1(), S2())
+        CrystalSystem(:Monoclinic) => (C2(), C1h(), C2h())
+        CrystalSystem(:Orthorhombic) => (D2(), C2v(), D2h())
+        CrystalSystem(:Tetragonal) => (C4(), S4(), C4h(), D4(), C4v(), D2d(), D4h())
+        CrystalSystem(:Trigonal) => (C3(), S6(), D3(), C3v(), D3d())
+        CrystalSystem(:Hexagonal) => (C6(), C3h(), C6h(), D6(), C6v(), D3h(), D6h())
+        CrystalSystem(:Cubic) => (T(), Th(), O(), Td(), Oh())
+        _ => error("Invalid crystal type")
+    end
+end
 
 hermann_mauguin(::C1) = "1"
 hermann_mauguin(::S2) = "1̄"
