@@ -89,10 +89,6 @@ Base.setindex!(op::SeitzOperator, v, i) = setindex!(parent(op), v, i)
 
 Base.IndexStyle(::Type{SeitzOperator{T}}) where {T} = IndexLinear()
 
-Base.similar(
-    bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{SeitzOperator}}, ::Type{T}
-) where {T} = similar(SeitzOperator{T}, axes(bc))
-
 function Base.inv(op::SeitzOperator)
     𝐑, 𝐭 = getpointsymmetry(op), gettranslation(op)
     𝐑⁻¹ = inv(𝐑)
@@ -114,5 +110,12 @@ struct SeitzOperatorStyle <: Broadcast.AbstractArrayStyle{2} end
 SeitzOperatorStyle(::Val{N}) where {N} = SeitzOperatorStyle()
 
 Base.BroadcastStyle(::Type{<:SeitzOperator}) = SeitzOperatorStyle()
+
+Base.similar(::Broadcast.Broadcasted{SeitzOperatorStyle}, ::Type{T}) where {T} =
+    similar(SeitzOperator{T})
+# Override https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/base/abstractarray.jl#L874
+Base.similar(::Type{SeitzOperator{T}}, dims::Dims) where {T} = SeitzOperator{T}(undef)
+# Override https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/base/abstractarray.jl#L839C1-L839C93
+Base.similar(::SeitzOperator, ::Type{T}, ::Dims{N}) where {T,N} = SeitzOperator{T}(undef)
 
 # end
