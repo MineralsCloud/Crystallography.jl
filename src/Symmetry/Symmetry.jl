@@ -1,4 +1,4 @@
-module Symmetry
+# module Symmetry
 
 using LinearAlgebra: I, diagm, det
 using StaticArrays: MMatrix
@@ -99,4 +99,4 @@ function Base.inv(op::SeitzOperator)
     return SeitzOperator(𝐑⁻¹, -𝐑⁻¹ * 𝐭)
 end
 
-end
+# end
