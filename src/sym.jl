@@ -5,7 +5,7 @@ using StaticArrays: MMatrix
 
 import StaticArrays: similar_type
 
-export SeitzOperator, istranslation, ispointsymmetry
+export SeitzOperator, istranslation, ispointsymmetry, isidentity
 
 struct SeitzOperator{T} <: AbstractMatrix{T}
     data::MMatrix{4,4,T,16}
@@ -46,6 +46,8 @@ function ispointsymmetry(op::SeitzOperator)
         false
     end
 end
+
+isidentity(op::SeitzOperator) = op.data == I
 
 similar_type(::SeitzOperator, ::Type{T}) where {T} = similar_type(SeitzOperator, T)
 similar_type(::Type{<:SeitzOperator}, ::Type{T}) where {T} = SeitzOperator{T}
