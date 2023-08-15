@@ -28,26 +28,24 @@ SeitzOperator(m::AbstractMatrix, t::AbstractVector) =
     SeitzOperator(MMatrix{4,4}(vcat(hcat(m, t), [zeros(eltype(m), 3)... one(eltype(t))])))
 
 function istranslation(op::SeitzOperator)
-    m = op.data
-    if m[1:3, 1:3] != I || !(iszero(m[4, 1:3]) && isone(m[4, 4]))
+    if op[1:3, 1:3] != I || !(iszero(op[4, 1:3]) && isone(op[4, 4]))
         return false
     end
     return true
 end
 
 function ispointsymmetry(op::SeitzOperator)
-    m = op.data
-    if iszero(m[4, 1:3]) &&
-        iszero(m[1:3, 4]) &&
-        isone(m[4, 4]) &&
-        abs(det(m[1:3, 1:3])) == 1
+    if iszero(op[4, 1:3]) &&
+        iszero(op[1:3, 4]) &&
+        isone(op[4, 4]) &&
+        abs(det(op[1:3, 1:3])) == 1
         return true
     else
         false
     end
 end
 
-isidentity(op::SeitzOperator) = op.data == I
+isidentity(op::SeitzOperator) = op == I
 
 similar_type(::SeitzOperator, ::Type{T}) where {T} = similar_type(SeitzOperator, T)
 similar_type(::Type{<:SeitzOperator}, ::Type{T}) where {T} = SeitzOperator{T}
