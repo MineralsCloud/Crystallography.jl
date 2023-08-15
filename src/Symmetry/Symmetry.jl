@@ -105,7 +105,7 @@ Base.similar(::Broadcast.Broadcasted{SeitzOperatorStyle}, ::Type{T}) where {T} =
     similar(SeitzOperator{T})
 # Override https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/base/abstractarray.jl#L874
 Base.similar(::Type{SeitzOperator{T}}, dims::Dims) where {T} = SeitzOperator{T}(undef)
-# Override https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/base/abstractarray.jl#L839C1-L839C93
-Base.similar(::SeitzOperator, ::Type{T}, ::Dims{N}) where {T,N} = SeitzOperator{T}(undef)
+# Override https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/base/abstractarray.jl#L827
+Base.similar(::SeitzOperator, ::Type{T}) where {T} = SeitzOperator{T}(undef)
 
 # end
