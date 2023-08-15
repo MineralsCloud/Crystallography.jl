@@ -5,8 +5,7 @@ using StaticArrays: MMatrix
 
 import StaticArrays: similar_type
 
-export SeitzOperator,
-    istranslation, ispointsymmetry, isidentity, gettranslation, getpointsymmetry
+export SeitzOperator, istranslation, ispointsymmetry, gettranslation, getpointsymmetry
 
 """
     SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector)
@@ -67,8 +66,6 @@ function ispointsymmetry(op::SeitzOperator)
         false
     end
 end
-
-isidentity(op::SeitzOperator) = op == I
 
 gettranslation(op::SeitzOperator) = op[1:3, 4]
 
