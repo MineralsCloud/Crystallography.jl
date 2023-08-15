@@ -66,4 +66,10 @@ Base.similar(
     bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{SeitzOperator}}, ::Type{T}
 ) where {T} = similar(SeitzOperator{T}, axes(bc))
 
+function Base.inv(op::SeitzOperator)
+    𝐑, 𝐭 = getpointsymmetry(op), gettranslation(op)
+    𝐑⁻¹ = inv(𝐑)
+    return SeitzOperator(𝐑⁻¹, -𝐑⁻¹ * 𝐭)
+end
+
 end
