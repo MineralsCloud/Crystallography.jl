@@ -35,17 +35,17 @@ struct SeitzOperator{T} <: AbstractMatrix{T}
 end
 SeitzOperator{T}(::UndefInitializer, dims) where {T} =
     SeitzOperator(MMatrix{4,4,T,16}(undef, dims))
-function SeitzOperator(matrix::AbstractMatrix)
-    @assert size(matrix) == (3, 3)
-    data = diagm(ones(eltype(matrix), 4))
-    data[1:3, 1:3] = matrix
-    return SeitzOperator(data)
+function SeitzOperator(𝐑::AbstractMatrix)
+    @assert size(𝐑) == (3, 3)
+    data = diagm(ones(eltype(𝐑), 4))
+    data[1:3, 1:3] = 𝐑
+    return SeitzOperator(MMatrix{4,4}(data))
 end
-function SeitzOperator(vector::AbstractVector)
-    @assert length(vector) == 3
-    data = diagm(ones(eltype(vector), 4))
-    data[1:3, 4] = vector
-    return SeitzOperator(data)
+function SeitzOperator(𝐭::AbstractVector)
+    @assert length(𝐭) == 3
+    data = diagm(ones(eltype(𝐭), 4))
+    data[1:3, 4] = 𝐭
+    return SeitzOperator(MMatrix{4,4}(data))
 end
 SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector) =
     SeitzOperator(MMatrix{4,4}(vcat(hcat(𝐑, 𝐭), [zeros(eltype(𝐑), 3)... one(eltype(𝐭))])))
