@@ -13,8 +13,6 @@ This repository is created and maintained by
 
 ## Package features
 
-
-
 ## Installation
 
 The package can be installed with the Julia package manager.
