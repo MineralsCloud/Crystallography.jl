@@ -9,9 +9,22 @@ export SeitzOperator
 struct SeitzOperator{T} <: AbstractMatrix{T}
     data::MMatrix{4,4,T,16}
 end
-SeitzOperator(matrix::AbstractMatrix) = SeitzOperator(MMatrix{4,4}(matrix))
 SeitzOperator{T}(::UndefInitializer, dims) where {T} =
     SeitzOperator(MMatrix{4,4,T,16}(undef, dims))
+function SeitzOperator(m::AbstractMatrix)
+    @assert size(m) == (3, 3)
+    x = diagm(ones(eltype(m), 4))
+    x[1:3, 1:3] = m
+    return SeitzOperator(x)
+end
+function SeitzOperator(t::AbstractVector)
+    @assert length(t) == 3
+    data = diagm(ones(eltype(t), 4))
+    data[1:3, 4] = t
+    return SeitzOperator(data)
+end
+SeitzOperator(m::AbstractMatrix, t::AbstractVector) =
+    SeitzOperator(MMatrix{4,4}(vcat(hcat(m, t), [zeros(eltype(m), 3)... one(eltype(t))])))
 
 similar_type(::SeitzOperator, ::Type{T}) where {T} = similar_type(SeitzOperator, T)
 similar_type(::Type{<:SeitzOperator}, ::Type{T}) where {T} = SeitzOperator{T}
