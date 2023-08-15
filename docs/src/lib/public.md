@@ -1,13 +1,19 @@
-```@meta
-CurrentModule = CrystallographyBase
-```
+# Public API
 
-# API
+## Contents
 
 ```@contents
-Pages = ["api.md"]
-Depth = 3
+Pages = ["public.md"]
+Depth = 2
 ```
+
+## Index
+
+```@index
+Pages = ["public.md"]
+```
+
+## Public interface
 
 ### Lattice
 
@@ -83,4 +89,10 @@ StandardizedFromPrimitive
 
 ```@docs
 cellvolume
+```
+
+### Symmetry
+
+```@docs
+SeitzOperator
 ```

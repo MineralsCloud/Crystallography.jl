@@ -4,7 +4,7 @@ using Reexport: @reexport
 
 @reexport using CrystallographyBase
 
-# include("Symmetry.jl")
+include("sym.jl")
 # include("PointGroups.jl")
 include("read.jl")
 
