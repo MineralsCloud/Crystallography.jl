@@ -32,8 +32,8 @@ where ``\\mathbf{R}`` is a point group operation and ``\\mathbf{t}`` is a transl
 struct SeitzOperator{T} <: AbstractMatrix{T}
     data::MMatrix{4,4,T,16}
 end
-SeitzOperator{T}(::UndefInitializer, dims) where {T} =
-    SeitzOperator(MMatrix{4,4,T,16}(undef, dims))
+# See https://github.com/JuliaArrays/StaticArraysCore.jl/blob/v1.4.2/src/StaticArraysCore.jl#L195-L198
+SeitzOperator{T}(::UndefInitializer) where {T} = SeitzOperator(MMatrix{4,4,T,16}(undef))
 function SeitzOperator(𝐑::AbstractMatrix)
     @assert size(𝐑) == (3, 3)
     data = diagm(ones(eltype(𝐑), 4))
