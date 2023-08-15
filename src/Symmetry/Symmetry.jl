@@ -55,7 +55,7 @@ function (op::SeitzOperator)(𝐫::AbstractVector)
 end
 
 function istranslation(op::SeitzOperator)
-    if op[1:3, 1:3] != I || !(iszero(op[4, 1:3]) && isone(op[4, 4]))
+    if op[1:3, 1:3] != I || !iszero(op[4, 1:3]) || !isone(op[4, 4])
         return false
     end
     return true
