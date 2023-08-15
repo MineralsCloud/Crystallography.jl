@@ -95,12 +95,12 @@ function Base.inv(op::SeitzOperator)
     return SeitzOperator(𝐑⁻¹, -𝐑⁻¹ * 𝐭)
 end
 
-# See https://github.com/JuliaLang/julia/blob/5a922fa/stdlib/LinearAlgebra/src/uniformscaling.jl#L130-L131
+# See https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/stdlib/LinearAlgebra/src/uniformscaling.jl#L130-L131
 Base.one(::Type{SeitzOperator{T}}) where {T} =
     SeitzOperator(MMatrix{4,4}(Diagonal(fill(one(T), 4))))
 Base.one(op::SeitzOperator) = one(typeof(op))
 
-# See https://github.com/JuliaLang/julia/blob/5a922fa/stdlib/LinearAlgebra/src/uniformscaling.jl#L132-L133
+# See https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/stdlib/LinearAlgebra/src/uniformscaling.jl#L132-L133
 Base.oneunit(::Type{SeitzOperator{T}}) where {T} =
     SeitzOperator(MMatrix{4,4}(Diagonal(fill(oneunit(T), 4))))
 Base.oneunit(op::SeitzOperator) = oneunit(typeof(op))
