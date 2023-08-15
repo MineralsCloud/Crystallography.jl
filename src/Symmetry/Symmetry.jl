@@ -89,8 +89,6 @@ Base.setindex!(op::SeitzOperator, v, i) = setindex!(parent(op), v, i)
 
 Base.IndexStyle(::Type{SeitzOperator{T}}) where {T} = IndexLinear()
 
-Base.BroadcastStyle(::Type{<:SeitzOperator}) = Broadcast.ArrayStyle{SeitzOperator}()
-
 Base.similar(
     bc::Broadcast.Broadcasted{Broadcast.ArrayStyle{SeitzOperator}}, ::Type{T}
 ) where {T} = similar(SeitzOperator{T}, axes(bc))
@@ -110,5 +108,11 @@ Base.one(op::SeitzOperator) = one(typeof(op))
 Base.oneunit(::Type{SeitzOperator{T}}) where {T} =
     SeitzOperator(MMatrix{4,4}(Diagonal(fill(oneunit(T), 4))))
 Base.oneunit(op::SeitzOperator) = oneunit(typeof(op))
+
+# See https://github.com/JuliaArrays/StaticArraysCore.jl/blob/v1.4.2/src/StaticArraysCore.jl#L397-L398
+struct SeitzOperatorStyle <: Broadcast.AbstractArrayStyle{2} end
+SeitzOperatorStyle(::Val{N}) where {N} = SeitzOperatorStyle()
+
+Base.BroadcastStyle(::Type{<:SeitzOperator}) = SeitzOperatorStyle()
 
 # end
