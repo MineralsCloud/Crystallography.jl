@@ -79,6 +79,16 @@ getpointsymmetry(op::SeitzOperator) = op[1:3, 1:3]
 similar_type(::SeitzOperator, ::Type{T}) where {T} = similar_type(SeitzOperator, T)
 similar_type(::Type{<:SeitzOperator}, ::Type{T}) where {T} = SeitzOperator{T}
 
+# See https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/stdlib/LinearAlgebra/src/uniformscaling.jl#L130-L131
+Base.one(::Type{SeitzOperator{T}}) where {T} =
+    SeitzOperator(MMatrix{4,4}(Diagonal(fill(one(T), 4))))
+Base.one(op::SeitzOperator) = one(typeof(op))
+
+# See https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/stdlib/LinearAlgebra/src/uniformscaling.jl#L132-L133
+Base.oneunit(::Type{SeitzOperator{T}}) where {T} =
+    SeitzOperator(MMatrix{4,4}(Diagonal(fill(oneunit(T), 4))))
+Base.oneunit(op::SeitzOperator) = oneunit(typeof(op))
+
 Base.size(::SeitzOperator) = (4, 4)
 
 Base.parent(op::SeitzOperator) = op.data
