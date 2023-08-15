@@ -49,6 +49,11 @@ end
 SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector) =
     SeitzOperator(MMatrix{4,4}(vcat(hcat(𝐑, 𝐭), [zeros(eltype(𝐑), 3)... one(eltype(𝐭))])))
 
+function (op::SeitzOperator)(𝐫::AbstractVector)
+    𝐑, 𝐭 = getpointsymmetry(op), gettranslation(op)
+    return 𝐑 * 𝐫 + 𝐭
+end
+
 function istranslation(op::SeitzOperator)
     if op[1:3, 1:3] != I || !(iszero(op[4, 1:3]) && isone(op[4, 4]))
         return false
