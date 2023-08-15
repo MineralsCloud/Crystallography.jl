@@ -29,7 +29,7 @@ The operator is defined by the following equation:
 
 where ``\\mathbf{R}`` is a point group operation and ``\\mathbf{t}`` is a translation.
 """
-struct SeitzOperator{T} <: AbstractMatrix{T}
+mutable struct SeitzOperator{T} <: AbstractMatrix{T}
     data::MMatrix{4,4,T,16}
 end
 # See https://github.com/JuliaArrays/StaticArraysCore.jl/blob/v1.4.2/src/StaticArraysCore.jl#L195-L198
