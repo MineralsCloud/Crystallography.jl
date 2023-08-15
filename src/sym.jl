@@ -12,20 +12,20 @@ struct SeitzOperator{T} <: AbstractMatrix{T}
 end
 SeitzOperator{T}(::UndefInitializer, dims) where {T} =
     SeitzOperator(MMatrix{4,4,T,16}(undef, dims))
-function SeitzOperator(m::AbstractMatrix)
-    @assert size(m) == (3, 3)
-    x = diagm(ones(eltype(m), 4))
-    x[1:3, 1:3] = m
-    return SeitzOperator(x)
-end
-function SeitzOperator(t::AbstractVector)
-    @assert length(t) == 3
-    data = diagm(ones(eltype(t), 4))
-    data[1:3, 4] = t
+function SeitzOperator(matrix::AbstractMatrix)
+    @assert size(matrix) == (3, 3)
+    data = diagm(ones(eltype(matrix), 4))
+    data[1:3, 1:3] = matrix
     return SeitzOperator(data)
 end
-SeitzOperator(m::AbstractMatrix, t::AbstractVector) =
-    SeitzOperator(MMatrix{4,4}(vcat(hcat(m, t), [zeros(eltype(m), 3)... one(eltype(t))])))
+function SeitzOperator(vector::AbstractVector)
+    @assert length(vector) == 3
+    data = diagm(ones(eltype(vector), 4))
+    data[1:3, 4] = vector
+    return SeitzOperator(data)
+end
+SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector) =
+    SeitzOperator(MMatrix{4,4}(vcat(hcat(𝐑, 𝐭), [zeros(eltype(𝐑), 3)... one(eltype(𝐭))])))
 
 function istranslation(op::SeitzOperator)
     if op[1:3, 1:3] != I || !(iszero(op[4, 1:3]) && isone(op[4, 4]))
