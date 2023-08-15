@@ -7,6 +7,28 @@ import StaticArrays: similar_type
 
 export SeitzOperator, istranslation, ispointsymmetry, isidentity
 
+"""
+    SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector)
+    SeitzOperator(𝐑::AbstractMatrix)
+    SeitzOperator(𝐭::AbstractVector)
+
+Construct a Seitz operator from matrices, vectors, or both.
+
+The operator is defined by the following equation:
+
+```math
+\\left[
+\\begin{array}{ccc|c}
+& & & \\\\
+& \\mathbf{R} & & \\mathbf{t} \\\\
+& & & \\\\
+\\hline 0 & 0 & 0 & 1
+\\end{array}
+\\right],
+```
+
+where ``\\mathbf{R}`` is a point group operation and ``\\mathbf{t}`` is a translation.
+"""
 struct SeitzOperator{T} <: AbstractMatrix{T}
     data::MMatrix{4,4,T,16}
 end
