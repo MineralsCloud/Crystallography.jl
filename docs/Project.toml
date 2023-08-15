@@ -1,4 +1,5 @@
 [deps]
 Crystallography = "3bff3928-7a76-11e9-2089-d112443085a5"
 CrystallographyBase = "93b1d1cd-a8ea-4aa5-adb1-b2407ea0ba8d"
+CrystallographyCore = "80545937-1184-4bc9-b283-396e91386b5c"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
