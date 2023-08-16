@@ -52,6 +52,17 @@ function SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector)
     data[1:3, 4] = 𝐭
     return SeitzOperator(data)
 end
+"""
+    SeitzOperator(op::SeitzOperator, 𝐱::AbstractVector)
+
+Construct a `SeitzOperator` that locates at `𝐱` from a `SeitzOperator` passing through the
+origin.
+"""
+function SeitzOperator(op::SeitzOperator, 𝐱::AbstractVector)
+    @assert length(𝐱) == 3
+    op′ = SeitzOperator(𝐱)
+    return op′ * op * inv(op′)
+end
 
 (op::SeitzOperator)(𝐫::AbstractVector) = apply(Size(size(𝐫)), op, 𝐫)
 
