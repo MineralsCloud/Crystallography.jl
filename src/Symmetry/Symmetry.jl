@@ -48,7 +48,7 @@ end
 function SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector)
     @assert isone(abs(det(𝐑)))
     T = promote_type(eltype(𝐑), eltype(𝐭))
-    data = MMatrix{4,4,T,16}(undef)
+    data = zero(MMatrix{4,4,T,16})
     data[1:3, 1:3] = 𝐑
     data[1:3, 4] = 𝐭
     return SeitzOperator(data)
