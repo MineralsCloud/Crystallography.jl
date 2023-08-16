@@ -49,9 +49,25 @@ end
 SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector) =
     SeitzOperator(MMatrix{4,4}(vcat(hcat(𝐑, 𝐭), [zeros(eltype(𝐑), 3)... one(eltype(𝐭))])))
 
-function (op::SeitzOperator)(𝐫::AbstractVector)
+(op::SeitzOperator)(𝐫::AbstractVector) = apply(Size(size(𝐫)), op, 𝐫)
+
+# See https://juliaarrays.github.io/StaticArrays.jl/dev/pages/api/#StaticArraysCore.Size
+# and http://docs.julialang.org/en/v1/base/base/#Base.Val
+struct Size{x} end
+Size(x) = Size{x}()
+
+apply(::Size, ::SeitzOperator, 𝐫::AbstractVector) = throw(
+    DimensionMismatch(
+        "`SeitzOperator` can be only applied onto vectors of lengths 3 or 4!"
+    ),
+)
+function apply(::Size{(3,)}, op::SeitzOperator, 𝐫::AbstractVector)
     𝐑, 𝐭 = getpointsymmetry(op), gettranslation(op)
     return 𝐑 * 𝐫 + 𝐭
+end
+function apply(::Size{(4,)}, op::SeitzOperator, 𝐫::AbstractVector)
+    @assert 𝐫[end] == 1
+    return op * 𝐫
 end
 
 function istranslation(op::SeitzOperator)
