@@ -44,8 +44,13 @@ function SeitzOperator(𝐭::AbstractVector)
     data[1:3, 4] = 𝐭
     return SeitzOperator(MMatrix{4,4}(data))
 end
-SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector) =
-    SeitzOperator(MMatrix{4,4}(vcat(hcat(𝐑, 𝐭), [zeros(eltype(𝐑), 3)... one(eltype(𝐭))])))
+function SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector)
+    T = promote_type(eltype(𝐑), eltype(𝐭))
+    data = MMatrix{4,4,T,16}(undef)
+    data[1:3, 1:3] = 𝐑
+    data[1:3, 4] = 𝐭
+    return SeitzOperator(data)
+end
 
 (op::SeitzOperator)(𝐫::AbstractVector) = apply(Size(size(𝐫)), op, 𝐫)
 
