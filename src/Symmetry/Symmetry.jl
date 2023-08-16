@@ -3,7 +3,8 @@
 using LinearAlgebra: I, diagm, det
 using StaticArrays: MMatrix
 
-export SeitzOperator, istranslation, ispointsymmetry, gettranslation, getpointsymmetry
+export SeitzOperator,
+    istranslation, ispointsymmetry, gettranslation, getpointsymmetry, conjugacy
 
 """
     SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector)
@@ -62,7 +63,7 @@ origin.
 function SeitzOperator(op::SeitzOperator, 𝐱::AbstractVector)
     @assert length(𝐱) == 3
     op′ = SeitzOperator(𝐱)
-    return op′ * op * inv(op′)
+    return conjugacy(op′, op)
 end
 
 (op::SeitzOperator)(𝐫::AbstractVector) = apply(Size(size(𝐫)), op, 𝐫)
@@ -88,6 +89,9 @@ end
 gettranslation(op::SeitzOperator) = op[1:3, 4]
 
 getpointsymmetry(op::SeitzOperator) = op[1:3, 1:3]
+
+# Faster than the other implementation
+conjugacy(op₁::SeitzOperator, op₂::SeitzOperator) = op₁ * op₂ * inv(op₁)
 
 include("misc.jl")
 include("spglib.jl")
