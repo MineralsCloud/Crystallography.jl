@@ -121,4 +121,6 @@ Base.similar(::Type{SeitzOperator{T}}, dims::Dims) where {T} = SeitzOperator{T}(
 # Override https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/base/abstractarray.jl#L827
 Base.similar(::SeitzOperator, ::Type{T}) where {T} = SeitzOperator{T}(undef)
 
+include("spglib.jl")
+
 # end
