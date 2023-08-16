@@ -121,6 +121,7 @@ end
                 0 0 1 0
                 0 0 0 1
             ]
+        @test SeitzOperator(W₆, 𝐱)([3 / 4, 1 / 4, 0]) == [3 / 4, 1 / 2, 0]
     end
     @testset "Along direction [0 0 1]" begin
         C₃ = SeitzOperator([
