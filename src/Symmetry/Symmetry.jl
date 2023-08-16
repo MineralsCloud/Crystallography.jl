@@ -55,7 +55,7 @@ function (op::SeitzOperator)(𝐫::AbstractVector)
 end
 
 function istranslation(op::SeitzOperator)
-    if op[1:3, 1:3] != I || !(iszero(op[4, 1:3]) && isone(op[4, 4]))
+    if op[1:3, 1:3] != I || !iszero(op[4, 1:3]) || !isone(op[4, 4])
         return false
     end
     return true
@@ -76,8 +76,21 @@ gettranslation(op::SeitzOperator) = op[1:3, 4]
 
 getpointsymmetry(op::SeitzOperator) = op[1:3, 1:3]
 
+# Much faster than writing `SeitzOperator(𝐑 * 𝐒, 𝐑 * 𝐮 + 𝐭)`
+Base.:*(op₁::SeitzOperator, op₂::SeitzOperator) = SeitzOperator(parent(op₁) * parent(op₂))
+
 similar_type(::SeitzOperator, ::Type{T}) where {T} = similar_type(SeitzOperator, T)
 similar_type(::Type{<:SeitzOperator}, ::Type{T}) where {T} = SeitzOperator{T}
+
+# See https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/stdlib/LinearAlgebra/src/uniformscaling.jl#L130-L131
+Base.one(::Type{SeitzOperator{T}}) where {T} =
+    SeitzOperator(MMatrix{4,4}(Diagonal(fill(one(T), 4))))
+Base.one(op::SeitzOperator) = one(typeof(op))
+
+# See https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/stdlib/LinearAlgebra/src/uniformscaling.jl#L132-L133
+Base.oneunit(::Type{SeitzOperator{T}}) where {T} =
+    SeitzOperator(MMatrix{4,4}(Diagonal(fill(oneunit(T), 4))))
+Base.oneunit(op::SeitzOperator) = oneunit(typeof(op))
 
 Base.size(::SeitzOperator) = (4, 4)
 
@@ -105,7 +118,7 @@ Base.similar(::Broadcast.Broadcasted{SeitzOperatorStyle}, ::Type{T}) where {T} =
     similar(SeitzOperator{T})
 # Override https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/base/abstractarray.jl#L874
 Base.similar(::Type{SeitzOperator{T}}, dims::Dims) where {T} = SeitzOperator{T}(undef)
-# Override https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/base/abstractarray.jl#L839C1-L839C93
-Base.similar(::SeitzOperator, ::Type{T}, ::Dims{N}) where {T,N} = SeitzOperator{T}(undef)
+# Override https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/base/abstractarray.jl#L827
+Base.similar(::SeitzOperator, ::Type{T}) where {T} = SeitzOperator{T}(undef)
 
 # end
