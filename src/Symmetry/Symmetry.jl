@@ -50,6 +50,7 @@ function SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector)
     data = zero(MMatrix{4,4,T,16})
     data[1:3, 1:3] = 𝐑
     data[1:3, 4] = 𝐭
+    data[4, 4] = one(T)
     return SeitzOperator(data)
 end
 """
