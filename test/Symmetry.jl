@@ -55,12 +55,13 @@ end
     @test result₁ != (op₁ ∘ op₂)(𝐫)
     @testset "Equivalence to matrix multiplication" begin
         op = op₂ * op₁
-        result = op * [𝐫; 1]
+        result = op([𝐫; 1])
         @test result[1:3] == result₁
         op′ = op₁ * op₂
-        result′ = op′ * [𝐫; 1]
+        result′ = op′([𝐫; 1])
         @test result != result′
         @test result′[1:3] == (op₁ ∘ op₂)(𝐫)
+        @test_throws DimensionMismatch op([1, 2, 3, 4, 5])
     end
 end
 
