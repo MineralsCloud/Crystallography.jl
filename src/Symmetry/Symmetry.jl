@@ -90,13 +90,7 @@ gettranslation(op::SeitzOperator) = op[1:3, 4]
 
 getpointsymmetry(op::SeitzOperator) = op[1:3, 1:3]
 
-function conjugacy(op₁::SeitzOperator, op₂::SeitzOperator)
-    𝐑, 𝐭, 𝐒, 𝐮 = getpointsymmetry(op₁),
-    gettranslation(op₁), getpointsymmetry(op₂),
-    gettranslation(op₂)
-    𝐑⁻¹ = inv(𝐑)
-    return SeitzOperator(𝐑⁻¹ * 𝐒 * 𝐑, 𝐑⁻¹ * (𝐮 + 𝐒 * 𝐭 - 𝐭))
-end
+# Faster than the other implementation
 conjugacy(op₁::SeitzOperator, op₂::SeitzOperator) = op₁ * op₂ * inv(op₁)
 
 include("misc.jl")
