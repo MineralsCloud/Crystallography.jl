@@ -30,6 +30,13 @@ using LinearAlgebra: I, diagm
     end
 end
 
+@testset "Test broadcasting" begin
+    𝐑 = diagm([1, 1, 1])
+    𝐭 = [1, 2, 3]
+    op = SeitzOperator(𝐑, 𝐭)
+    @test op .* 1.0 == op ./ 1.0 == SeitzOperator(diagm([1, 1, 1.0]), [1, 2, 3.0])
+end
+
 @testset "Test `ispointsymmetry`" begin
     @test ispointsymmetry(one(SeitzOperator{Int}))
     @test !ispointsymmetry(SeitzOperator([1, 2, 3]))
