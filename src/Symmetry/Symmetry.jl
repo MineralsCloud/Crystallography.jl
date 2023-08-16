@@ -76,6 +76,9 @@ gettranslation(op::SeitzOperator) = op[1:3, 4]
 
 getpointsymmetry(op::SeitzOperator) = op[1:3, 1:3]
 
+# Much faster than writing `SeitzOperator(𝐑 * 𝐒, 𝐑 * 𝐮 + 𝐭)`
+Base.:*(op₁::SeitzOperator, op₂::SeitzOperator) = SeitzOperator(parent(op₁) * parent(op₂))
+
 similar_type(::SeitzOperator, ::Type{T}) where {T} = similar_type(SeitzOperator, T)
 similar_type(::Type{<:SeitzOperator}, ::Type{T}) where {T} = SeitzOperator{T}
 
