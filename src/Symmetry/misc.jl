@@ -21,11 +21,17 @@ function apply(::Size{(4,)}, op::SeitzOperator, 𝐫::AbstractVector)
     return op * 𝐫
 end
 
+similar_type(::SeitzOperator, ::Type{T}) where {T} = similar_type(SeitzOperator, T)
+similar_type(::Type{<:SeitzOperator}, ::Type{T}) where {T} = SeitzOperator{T}
+
 # Much faster than writing `SeitzOperator(𝐑 * 𝐒, 𝐑 * 𝐮 + 𝐭)`
 Base.:*(op₁::SeitzOperator, op₂::SeitzOperator) = SeitzOperator(parent(op₁) * parent(op₂))
 
-similar_type(::SeitzOperator, ::Type{T}) where {T} = similar_type(SeitzOperator, T)
-similar_type(::Type{<:SeitzOperator}, ::Type{T}) where {T} = SeitzOperator{T}
+function Base.inv(op::SeitzOperator)
+    𝐑, 𝐭 = getpointsymmetry(op), gettranslation(op)
+    𝐑⁻¹ = inv(𝐑)
+    return SeitzOperator(𝐑⁻¹, -𝐑⁻¹ * 𝐭)
+end
 
 # See https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/stdlib/LinearAlgebra/src/uniformscaling.jl#L130-L131
 Base.one(::Type{SeitzOperator{T}}) where {T} =
@@ -37,6 +43,7 @@ Base.oneunit(::Type{SeitzOperator{T}}) where {T} =
     SeitzOperator(MMatrix{4,4}(Diagonal(fill(oneunit(T), 4))))
 Base.oneunit(op::SeitzOperator) = oneunit(typeof(op))
 
+# Array interface
 Base.size(::SeitzOperator) = (4, 4)
 
 Base.parent(op::SeitzOperator) = op.data
@@ -47,12 +54,7 @@ Base.setindex!(op::SeitzOperator, v, i) = setindex!(parent(op), v, i)
 
 Base.IndexStyle(::Type{SeitzOperator{T}}) where {T} = IndexLinear()
 
-function Base.inv(op::SeitzOperator)
-    𝐑, 𝐭 = getpointsymmetry(op), gettranslation(op)
-    𝐑⁻¹ = inv(𝐑)
-    return SeitzOperator(𝐑⁻¹, -𝐑⁻¹ * 𝐭)
-end
-
+# Customizing broadcasting
 # See https://github.com/JuliaArrays/StaticArraysCore.jl/blob/v1.4.2/src/StaticArraysCore.jl#L397-L398
 struct SeitzOperatorStyle <: Broadcast.AbstractArrayStyle{2} end
 SeitzOperatorStyle(::Val{N}) where {N} = SeitzOperatorStyle()
