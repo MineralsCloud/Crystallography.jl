@@ -56,8 +56,10 @@ Base.IndexStyle(::Type{SeitzOperator{T}}) where {T} = IndexLinear()
 
 # Customizing broadcasting
 # See https://github.com/JuliaArrays/StaticArraysCore.jl/blob/v1.4.2/src/StaticArraysCore.jl#L397-L398
+# and https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/stdlib/LinearAlgebra/src/structuredbroadcast.jl#L7-L14
 struct SeitzOperatorStyle <: Broadcast.AbstractArrayStyle{2} end
-SeitzOperatorStyle(::Val{N}) where {N} = SeitzOperatorStyle()
+SeitzOperatorStyle(::Val{2}) = SeitzOperatorStyle()
+SeitzOperatorStyle(::Val{N}) where {N} = Broadcast.DefaultArrayStyle{N}()
 
 Base.BroadcastStyle(::Type{<:SeitzOperator}) = SeitzOperatorStyle()
 
