@@ -89,3 +89,16 @@ end
     @test typeof(similar(SeitzOperator{Float64})) == SeitzOperator{Float64}
     @test typeof(similar(SeitzOperator{Float64}, (4, 4))) == SeitzOperator{Float64}
 end
+
+# Example from https://uh.edu/~chembi/lect10sg.PDF
+@testset "Test application of `SeitzOperator`s" begin
+    𝐑 = [
+        1 -1 0
+        1 0 0
+        0 0 1
+    ]
+    𝐭 = [1, 0, 0]
+    op = SeitzOperator(𝐑, 𝐭)
+    x, y, z = rand(3)
+    @test op([x, y, z]) == [x - y + 1, x, z]
+end
