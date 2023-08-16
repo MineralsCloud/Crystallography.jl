@@ -34,11 +34,9 @@ end
 SeitzOperator{T}(::UndefInitializer) where {T} = SeitzOperator(MMatrix{4,4,T,16}(undef))
 function SeitzOperator(𝐑::AbstractMatrix)
     @assert size(𝐑) == (3, 3)
-    @assert isone(abs(det(𝐑)))
-    data = zero(MMatrix{4,4,eltype(𝐑),16})
+    data = diagm(ones(eltype(𝐑), 4))
     data[1:3, 1:3] = 𝐑
-    data[4, 4] = one(eltype(𝐑))
-    return SeitzOperator(data)
+    return SeitzOperator(MMatrix{4,4}(data))
 end
 function SeitzOperator(𝐭::AbstractVector)
     @assert length(𝐭) == 3
