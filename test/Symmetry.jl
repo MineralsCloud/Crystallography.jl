@@ -68,6 +68,7 @@ end
 @testset "Test `inv`" begin
     𝐑 = diagm([1, 1, 1])
     𝐭 = [1, 2, 3]
+    @test inv(SeitzOperator(𝐭)) == SeitzOperator(-𝐭)
     op = SeitzOperator(𝐑, 𝐭)
     @test inv(op) == SeitzOperator(𝐑, -𝐑 \ 𝐭)
     @test inv(inv(op)) ≈ op
