@@ -46,9 +46,9 @@ Base.oneunit(op::SeitzOperator) = oneunit(typeof(op))
 # Array interface
 Base.parent(op::SeitzOperator) = op.data
 
-Base.getindex(op::SeitzOperator, i) = getindex(parent(op), i)
+Base.getindex(op::SeitzOperator, i::Int) = getindex(parent(op), i)
 
-Base.setindex!(op::SeitzOperator, v, i) = setindex!(parent(op), v, i)
+Base.setindex!(op::SeitzOperator, v, i::Int) = setindex!(parent(op), v, i)
 
 # Customizing broadcasting
 # See https://github.com/JuliaArrays/StaticArraysCore.jl/blob/v1.4.2/src/StaticArraysCore.jl#L397-L398
