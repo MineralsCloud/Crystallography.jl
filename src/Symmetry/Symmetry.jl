@@ -1,7 +1,7 @@
 # module Symmetry
 
 using LinearAlgebra: I, diagm, det
-using StaticArrays: StaticMatrix, MMatrix
+using StaticArrays: StaticMatrix, MMatrix, Size
 
 export SeitzOperator,
     istranslation, ispointsymmetry, gettranslation, getpointsymmetry, conjugacy

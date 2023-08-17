@@ -4,9 +4,6 @@ import StaticArrays: similar_type
 
 # See https://juliaarrays.github.io/StaticArrays.jl/dev/pages/api/#StaticArraysCore.Size
 # and http://docs.julialang.org/en/v1/base/base/#Base.Val
-struct Size{x} end
-Size(x) = Size{x}()
-
 apply(::Size, ::SeitzOperator, 𝐫::AbstractVector) = throw(
     DimensionMismatch(
         "`SeitzOperator` can be only applied onto vectors of lengths 3 or 4!"
