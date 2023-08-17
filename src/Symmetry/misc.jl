@@ -1,7 +1,5 @@
 using LinearAlgebra: Diagonal
 
-import StaticArrays: similar_type
-
 # See https://juliaarrays.github.io/StaticArrays.jl/dev/pages/api/#StaticArraysCore.Size
 # and http://docs.julialang.org/en/v1/base/base/#Base.Val
 apply(::Size, ::SeitzOperator, 𝐫::AbstractVector) = throw(
@@ -17,9 +15,6 @@ function apply(::Size{(4,)}, op::SeitzOperator, 𝐫::AbstractVector)
     @assert 𝐫[end] == 1
     return op * 𝐫
 end
-
-similar_type(::SeitzOperator, ::Type{T}) where {T} = similar_type(SeitzOperator, T)
-similar_type(::Type{<:SeitzOperator}, ::Type{T}) where {T} = SeitzOperator{T}
 
 # Much faster than writing `SeitzOperator(𝐑 * 𝐒, 𝐑 * 𝐮 + 𝐭)`
 Base.:*(op₁::SeitzOperator, op₂::SeitzOperator) = SeitzOperator(parent(op₁) * parent(op₂))
