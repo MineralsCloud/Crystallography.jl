@@ -82,7 +82,7 @@ function Base.similar(::Type{<:SeitzOperator}, ::Type{T}, dim, dims...) where {T
     if (dim, dims...) == (4, 4)
         one(SeitzOperator{T})
     else
-        return Array{T}(undef, dims)
+        return Array{T}(undef, dim, dims...)
     end
 end
 
