@@ -1,5 +1,7 @@
 using LinearAlgebra: Diagonal
 
+import Base: +, -, *, /
+
 # See https://juliaarrays.github.io/StaticArrays.jl/dev/pages/api/#StaticArraysCore.Size
 # and http://docs.julialang.org/en/v1/base/base/#Base.Val
 apply(::Size, ::SeitzOperator, 𝐫::AbstractVector) = throw(
@@ -83,3 +85,19 @@ function Base.similar(::Type{<:SeitzOperator}, ::Type{T}, dim, dims...) where {T
         return Array{T}(undef, dims)
     end
 end
+
+# See https://github.com/JuliaArrays/StaticArrays.jl/blob/v1.6.2/src/linalg.jl#L7-L25
+@inline +(op::SeitzOperator) = op
+@inline +(op₁::SeitzOperator, op₂::SeitzOperator) = op₁ .+ op₂
+@inline +(A::AbstractArray, op::SeitzOperator) = A .+ op
+@inline +(op::SeitzOperator, A::AbstractArray) = op .+ A
+
+@inline -(op::SeitzOperator) = -1 .* op
+@inline -(op₁::SeitzOperator, op₂::SeitzOperator) = op₁ .- op₂
+@inline -(A::AbstractArray, op::SeitzOperator) = A .- op
+@inline -(op::SeitzOperator, A::AbstractArray) = op .- A
+
+@inline *(n::Number, op::SeitzOperator) = n .* op
+@inline *(op::SeitzOperator, n::Number) = n .* op
+
+@inline /(op::SeitzOperator, n::Number) = op ./ n
