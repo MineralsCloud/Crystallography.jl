@@ -1,7 +1,7 @@
 # module Symmetry
 
 using LinearAlgebra: I, diagm, det
-using StaticArrays: MMatrix
+using StaticArrays: StaticMatrix, MMatrix, Size
 
 export SeitzOperator,
     istranslation, ispointsymmetry, gettranslation, getpointsymmetry, conjugacy
@@ -28,11 +28,9 @@ The operator is defined by the following equation:
 
 where ``\\mathbf{R}`` is a point group operation and ``\\mathbf{t}`` is a translation.
 """
-mutable struct SeitzOperator{T} <: AbstractMatrix{T}
+mutable struct SeitzOperator{T} <: StaticMatrix{4,4,T}
     data::MMatrix{4,4,T,16}
 end
-# See https://github.com/JuliaArrays/StaticArraysCore.jl/blob/v1.4.2/src/StaticArraysCore.jl#L195-L198
-SeitzOperator{T}(::UndefInitializer) where {T} = SeitzOperator(MMatrix{4,4,T,16}(undef))
 function SeitzOperator(𝐑::AbstractMatrix)
     @assert size(𝐑) == (3, 3)
     data = diagm(ones(eltype(𝐑), 4))
