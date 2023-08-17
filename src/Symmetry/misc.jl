@@ -58,7 +58,33 @@ Base.BroadcastStyle(::Type{<:SeitzOperator}) = SeitzOperatorStyle()
 
 Base.similar(::Broadcast.Broadcasted{SeitzOperatorStyle}, ::Type{T}) where {T} =
     similar(SeitzOperator{T})
-# Override https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/base/abstractarray.jl#L874
-Base.similar(::Type{SeitzOperator{T}}, dims::Dims) where {T} = SeitzOperator{T}(undef)
-# Override https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/base/abstractarray.jl#L827
-Base.similar(::SeitzOperator, ::Type{T}) where {T} = SeitzOperator{T}(undef)
+# Override https://github.com/JuliaArrays/StaticArrays.jl/blob/v1.6.2/src/abstractarray.jl#L129
+function Base.similar(op::SeitzOperator, ::Type{T}, _size::Size) where {T}
+    if _size == size(op)
+        one(SeitzOperator{T})
+    else
+        return similar(Array(op), T, _size)
+    end
+end
+# Override https://github.com/JuliaLang/julia/blob/v1.10.0-beta2/base/abstractarray.jl#L839
+function Base.similar(op::SeitzOperator, ::Type{T}, dims::Dims) where {T}
+    if dims == size(op)
+        one(SeitzOperator{T})
+    else
+        return similar(Array(op), T, dims)
+    end
+end
+function Base.similar(::Type{<:SeitzOperator}, ::Type{T}, s::Size) where {T}
+    if s == (4, 4)
+        one(SeitzOperator{T})
+    else
+        return Array{T}(undef, Tuple(s))
+    end
+end
+function Base.similar(::Type{<:SeitzOperator}, ::Type{T}, dim, dims...) where {T}
+    if (dim, dims...) == (4, 4)
+        one(SeitzOperator{T})
+    else
+        return Array{T}(undef, dims)
+    end
+end
