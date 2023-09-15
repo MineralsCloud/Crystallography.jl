@@ -1,7 +1,7 @@
 # module Symmetry
 
 using LinearAlgebra: I, diagm, det
-using StaticArrays: StaticMatrix, MMatrix, Size
+using StaticArrays: MMatrix, Size
 
 export SeitzOperator,
     istranslation, ispointsymmetry, gettranslation, getpointsymmetry, conjugacy
@@ -28,7 +28,7 @@ The operator is defined by the following equation:
 
 where ``\\mathbf{R}`` is a point group operation and ``\\mathbf{t}`` is a translation.
 """
-mutable struct SeitzOperator{T} <: StaticMatrix{4,4,T}
+mutable struct SeitzOperator{T} <: AbstractMatrix{T}
     data::MMatrix{4,4,T,16}
 end
 function SeitzOperator(𝐑::AbstractMatrix)
@@ -91,7 +91,7 @@ getpointsymmetry(op::SeitzOperator) = op[1:3, 1:3]
 # Faster than the other implementation
 conjugacy(op₁::SeitzOperator, op₂::SeitzOperator) = op₁ * op₂ * inv(op₁)
 
-include("misc.jl")
+include("interface.jl")
 include("spglib.jl")
 
 # end
