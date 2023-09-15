@@ -62,7 +62,7 @@ function Base.similar(op::SeitzOperator, ::Type{T}, dims::Dims) where {T}
     if dims == size(op)
         one(SeitzOperator{T})
     else
-        return similar(Array(op), T, dims)
+        return throw(ArgumentError("invalid dimensions `$dims` for `SeitzOperator`!"))
     end
 end
 # Override https://github.com/JuliaLang/julia/blob/v1.10.0-beta1/base/abstractarray.jl#L874
@@ -70,6 +70,6 @@ function Base.similar(::Type{SeitzOperator{T}}, dims::Dims) where {T}
     if dims == (4, 4)
         one(SeitzOperator{T})
     else
-        return similar(Array{T}, dims)
+        return throw(ArgumentError("invalid dimensions `$dims` for `SeitzOperator`!"))
     end
 end
