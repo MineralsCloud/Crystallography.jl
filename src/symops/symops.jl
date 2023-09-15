@@ -1,5 +1,3 @@
-# module Symmetry
-
 using LinearAlgebra: I, diagm, det
 using StaticArrays: MMatrix, Size
 
@@ -93,5 +91,3 @@ conjugacy(op₁::SeitzOperator, op₂::SeitzOperator) = op₁ * op₂ * inv(op�
 
 include("interface.jl")
 include("spglib.jl")
-
-# end
