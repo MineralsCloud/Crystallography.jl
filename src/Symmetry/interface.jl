@@ -40,9 +40,11 @@ Base.parent(op::SeitzOperator) = op.data
 
 Base.size(::SeitzOperator) = (4, 4)
 
-Base.getindex(op::SeitzOperator, i) = getindex(parent(op), i)
+Base.getindex(op::SeitzOperator, i::Int) = getindex(parent(op), i)
+Base.getindex(op::SeitzOperator, I...) = getindex(parent(op), I...)
 
-Base.setindex!(op::SeitzOperator, v, i) = setindex!(parent(op), v, i)
+Base.setindex!(op::SeitzOperator, v, i::Int) = setindex!(parent(op), v, i)
+Base.setindex!(op::SeitzOperator, X, I...) = setindex!(parent(op), X, I...)
 
 Base.IndexStyle(::Type{SeitzOperator{T}}) where {T} = IndexLinear()
 
