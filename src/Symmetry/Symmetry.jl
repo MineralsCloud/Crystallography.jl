@@ -28,7 +28,7 @@ The operator is defined by the following equation:
 
 where ``\\mathbf{R}`` is a point group operation and ``\\mathbf{t}`` is a translation.
 """
-mutable struct SeitzOperator{T} <: StaticMatrix{4,4,T}
+mutable struct SeitzOperator{T} <: AbstractMatrix{T}
     data::MMatrix{4,4,T,16}
 end
 function SeitzOperator(𝐑::AbstractMatrix)
