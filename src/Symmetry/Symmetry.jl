@@ -91,7 +91,7 @@ getpointsymmetry(op::SeitzOperator) = op[1:3, 1:3]
 # Faster than the other implementation
 conjugacy(op₁::SeitzOperator, op₂::SeitzOperator) = op₁ * op₂ * inv(op₁)
 
-include("misc.jl")
+include("interface.jl")
 include("spglib.jl")
 
 # end
