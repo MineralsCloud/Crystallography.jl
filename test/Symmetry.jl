@@ -94,7 +94,7 @@ end
 end
 
 @testset "Test `similar`" begin
-    @test typeof(similar(SeitzOperator{Float64})) == SeitzOperator{Float64}
+    @test_throws ArgumentError similar(SeitzOperator{Float64}), 3, 3
     @test typeof(similar(SeitzOperator{Float64}, (4, 4))) == SeitzOperator{Float64}
 end
 
