@@ -46,7 +46,7 @@ Base.getindex(op::SeitzOperator, I...) = getindex(parent(op), I...)
 Base.setindex!(op::SeitzOperator, v, i::Int) = setindex!(parent(op), v, i)
 Base.setindex!(op::SeitzOperator, X, I...) = setindex!(parent(op), X, I...)
 
-Base.IndexStyle(::Type{SeitzOperator{T}}) where {T} = IndexLinear()
+Base.IndexStyle(::Type{<:SeitzOperator}) = IndexLinear()
 
 # Customizing broadcasting
 # See https://github.com/JuliaArrays/StaticArraysCore.jl/blob/v1.4.2/src/StaticArraysCore.jl#L397-L398
