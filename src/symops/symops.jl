@@ -1,6 +1,8 @@
 using LinearAlgebra: I, diagm, det
 using StaticArrays: MMatrix, Size
 
+import CrystallographyBase: shift
+
 export SeitzOperator,
     shift, istranslation, ispointsymmetry, gettranslation, getpointsymmetry
 
