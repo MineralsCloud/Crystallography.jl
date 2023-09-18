@@ -111,7 +111,7 @@ end
     @test op([x, y, z]) == [x - y + 1, x, z]
 end
 
-@testset "Test `conjugacy`" begin
+@testset "Test `conjugate`" begin
     @testset "Example from Katayun Barmak's lecture notes" begin
         𝐱 = [1 / 2, 1 / 2, 0]
         W𝐭 = SeitzOperator(𝐱)
@@ -121,7 +121,7 @@ end
             0 0 1
         ])  # 6-fold rotation
         @test SeitzOperator(W₆, 𝐱) ==
-            conjugacy(W𝐭, W₆) ==
+            conjugate(W𝐭, W₆) ==
             [
                 0 -1 0 1
                 1 1 0 -1/2
@@ -141,7 +141,7 @@ end
             -1 0 0
             0 0 1
         ])
-        @test conjugacy(C₃, C₃²) == C₃²
+        @test conjugate(C₃, C₃²) == C₃²
     end
     @testset "Along direction [1 1 0]" begin
         C₂ = SeitzOperator([
@@ -154,6 +154,6 @@ end
             -1 0 0
             0 0 1
         ])  # Mirror
-        @test conjugacy(C₂, m) == m
+        @test conjugate(C₂, m) == m
     end
 end
