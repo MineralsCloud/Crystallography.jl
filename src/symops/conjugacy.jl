@@ -1,2 +1,5 @@
+struct ConjugacyOperation{T}
+    op::SeitzOperator{T}
+end
 # Faster than the other implementation
-conjugate(op₁::SeitzOperator, op₂::SeitzOperator) = op₁ * op₂ * inv(op₁)
+(conj::ConjugacyOperation)(op::SeitzOperator) = conj.op * op * inv(conj.op)
