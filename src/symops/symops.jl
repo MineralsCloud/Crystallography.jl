@@ -2,7 +2,7 @@ using LinearAlgebra: I, diagm, det
 using StaticArrays: MMatrix, Size
 
 export SeitzOperator,
-    istranslation, ispointsymmetry, gettranslation, getpointsymmetry, conjugacy
+    shift, istranslation, ispointsymmetry, gettranslation, getpointsymmetry, conjugate
 
 """
     SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector)
@@ -50,16 +50,17 @@ function SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector)
     data[4, 4] = one(T)
     return SeitzOperator(data)
 end
-"""
-    SeitzOperator(op::SeitzOperator, 𝐱::AbstractVector)
 
-Construct a `SeitzOperator` that locates at `𝐱` from a `SeitzOperator` passing through the
+"""
+    shift(op::SeitzOperator, 𝐱::AbstractVector)
+
+Return a `SeitzOperator` that locates at `𝐱` from a `SeitzOperator` passing through the
 origin.
 """
-function SeitzOperator(op::SeitzOperator, 𝐱::AbstractVector)
+function shift(op::SeitzOperator, 𝐱::AbstractVector)
     @assert length(𝐱) == 3
     op′ = SeitzOperator(𝐱)
-    return conjugacy(op′, op)
+    return conjugate(op′, op)
 end
 
 (op::SeitzOperator)(𝐫::AbstractVector) = apply(Size(size(𝐫)), op, 𝐫)
@@ -87,7 +88,7 @@ gettranslation(op::SeitzOperator) = op[1:3, 4]
 getpointsymmetry(op::SeitzOperator) = op[1:3, 1:3]
 
 # Faster than the other implementation
-conjugacy(op₁::SeitzOperator, op₂::SeitzOperator) = op₁ * op₂ * inv(op₁)
+conjugate(op₁::SeitzOperator, op₂::SeitzOperator) = op₁ * op₂ * inv(op₁)
 
 include("interface.jl")
 include("spglib.jl")
