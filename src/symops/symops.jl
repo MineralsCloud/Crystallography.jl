@@ -2,7 +2,7 @@ using LinearAlgebra: I, diagm, det
 using StaticArrays: MMatrix, Size
 
 export SeitzOperator,
-    istranslation, ispointsymmetry, gettranslation, getpointsymmetry, conjugacy
+    shift, istranslation, ispointsymmetry, gettranslation, getpointsymmetry, conjugacy
 
 """
     SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector)
@@ -50,13 +50,14 @@ function SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector)
     data[4, 4] = one(T)
     return SeitzOperator(data)
 end
-"""
-    SeitzOperator(op::SeitzOperator, 𝐱::AbstractVector)
 
-Construct a `SeitzOperator` that locates at `𝐱` from a `SeitzOperator` passing through the
+"""
+    shift(op::SeitzOperator, 𝐱::AbstractVector)
+
+Return a `SeitzOperator` that locates at `𝐱` from a `SeitzOperator` passing through the
 origin.
 """
-function SeitzOperator(op::SeitzOperator, 𝐱::AbstractVector)
+function shift(op::SeitzOperator, 𝐱::AbstractVector)
     @assert length(𝐱) == 3
     op′ = SeitzOperator(𝐱)
     return conjugacy(op′, op)
