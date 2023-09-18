@@ -120,7 +120,7 @@ end
             1 1 0
             0 0 1
         ])  # 6-fold rotation
-        @test SeitzOperator(W₆, 𝐱) ==
+        @test shift(W₆, 𝐱) ==
             ConjugacyOperation(W𝐭)(W₆) ==
             [
                 0 -1 0 1
@@ -128,7 +128,7 @@ end
                 0 0 1 0
                 0 0 0 1
             ]
-        @test SeitzOperator(W₆, 𝐱)([3 / 4, 1 / 4, 0]) == [3 / 4, 1 / 2, 0]
+        @test shift(W₆, 𝐱)([3 / 4, 1 / 4, 0]) == [3 / 4, 1 / 2, 0]
     end
     @testset "Along direction [0 0 1]" begin
         C₃ = SeitzOperator([
