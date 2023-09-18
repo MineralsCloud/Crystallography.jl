@@ -60,7 +60,7 @@ origin.
 function shift(op::SeitzOperator, 𝐱::AbstractVector)
     @assert length(𝐱) == 3
     op′ = SeitzOperator(𝐱)
-    return conjugate(op′, op)
+    return ConjugacyOperation(op′)(op)
 end
 
 (op::SeitzOperator)(𝐫::AbstractVector) = apply(Size(size(𝐫)), op, 𝐫)
