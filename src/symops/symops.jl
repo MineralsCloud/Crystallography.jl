@@ -2,7 +2,7 @@ using LinearAlgebra: I, diagm, det
 using StaticArrays: MMatrix, Size
 
 export SeitzOperator,
-    shift, istranslation, ispointsymmetry, gettranslation, getpointsymmetry, conjugate
+    shift, istranslation, ispointsymmetry, gettranslation, getpointsymmetry
 
 """
     SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector)

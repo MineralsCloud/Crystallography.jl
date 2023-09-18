@@ -1,3 +1,5 @@
+export ConjugacyOperation, conjugacy_class, partition
+
 struct ConjugacyOperation{T}
     op::SeitzOperator{T}
 end
