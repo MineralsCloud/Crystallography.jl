@@ -1,27 +1,27 @@
 using CrystallographyCore: AbstractCell
 using Spglib: get_symmetry
 
-export findsymmetry, findstabilizer, findlittlegroup, findorbit, findstar
+export getsymmetry, getstabilizer, getlittlegroup, getorbit, getstar
 
-function findsymmetry(cell::AbstractCell, symprec=1e-5)
+function getsymmetry(cell::AbstractCell, symprec=1e-5)
     rotations, translations = get_symmetry(cell, symprec)
     return map(rotations, translations) do rotation, translation
         SeitzOperator(rotation, translation)
     end
 end
 
-function findstabilizer(symops, point, rtol=eps())
+function getstabilizer(symops, point, rtol=eps())
     return filter(symops) do symop
         isapprox(symop(point), point; rtol=rtol)
     end
 end
-const findlittlegroup = findstabilizer
+const getlittlegroup = getstabilizer
 
-function findorbit(symops, point)
+function getorbit(symops, point)
     return unique(
         map(symops) do symop
             symop(point)
         end,
     )
 end
-const findstar = findorbit
+const getstar = getorbit
