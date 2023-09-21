@@ -13,9 +13,9 @@ end
 
 const reciprocal_mesh = get_ir_reciprocal_mesh
 
-function getstabilizer(symops, point, rtol=eps())
+function getstabilizer(symops, point)
     return filter(symops) do symop
-        isapprox(symop(point), point; rtol=rtol)
+        symop(point) == point
     end
 end
 const getlittlegroup = getstabilizer
