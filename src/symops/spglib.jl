@@ -1,8 +1,15 @@
 using CrystallographyCore: AbstractCell
-using Spglib: get_symmetry, get_ir_reciprocal_mesh, eachpoint
+using Spglib:
+    get_symmetry, get_ir_reciprocal_mesh, get_stabilized_reciprocal_mesh, eachpoint
 
 export getsymmetry,
-    reciprocal_mesh, eachpoint, getstabilizer, getlittlegroup, getorbit, getstar
+    get_reciprocal_mesh,
+    get_stabilized_reciprocal_mesh,
+    eachpoint,
+    getstabilizer,
+    getlittlegroup,
+    getorbit,
+    getstar
 
 function getsymmetry(cell::AbstractCell, symprec=1e-5)
     rotations, translations = get_symmetry(cell, symprec)
@@ -11,7 +18,7 @@ function getsymmetry(cell::AbstractCell, symprec=1e-5)
     end
 end
 
-const reciprocal_mesh = get_ir_reciprocal_mesh
+const get_reciprocal_mesh = get_ir_reciprocal_mesh
 
 function getstabilizer(symops, point)
     return filter(symops) do symop
