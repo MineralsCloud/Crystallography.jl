@@ -22,7 +22,7 @@ const get_reciprocal_mesh = get_ir_reciprocal_mesh
 
 function getstabilizer(symops, point)
     return filter(symops) do symop
-        symop(point) == point
+        isinvariant(symop, point)
     end
 end
 const getlittlegroup = getstabilizer
@@ -35,3 +35,14 @@ function getorbit(symops, point)
     )
 end
 const getstar = getorbit
+
+function isinvariant(op::SeitzOperator, 𝐫)
+    𝐫′ = op(𝐫)
+    if 𝐫′ == 𝐫
+        return true
+    elseif all(isinteger.(𝐫′ - 𝐫))
+        return true
+    else
+        return false
+    end
+end
