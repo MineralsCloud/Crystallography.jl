@@ -17,7 +17,7 @@
     cell = Cell(lattice, positions, atoms)
     is_shift = trues(3)
     mesh = [6, 6, 6]
-    result = reciprocal_mesh(cell, mesh, 1e-5; is_time_reversal=true, is_shift=is_shift)
+    result = get_reciprocal_mesh(cell, mesh, 1e-5; is_time_reversal=true, is_shift=is_shift)
     allk = eachpoint(result, true)
     symops = getsymmetry(cell, 1e-5)
     for k in allk
@@ -43,7 +43,7 @@ end
     atoms = [14, 14, 14, 14, 14, 14, 14, 14]
     cell = Cell(lattice, positions, atoms)
     mesh = [6, 5, 6]
-    result = reciprocal_mesh(
+    result = get_reciprocal_mesh(
         cell, mesh, 1e-5; is_shift=[true, false, true], is_time_reversal=true
     )
     allk = eachpoint(result, true)
@@ -62,7 +62,7 @@ end
     atoms = [14, 14]
     cell = Cell(lattice, positions, atoms)
     mesh = [11, 11, 11]
-    result = reciprocal_mesh(cell, mesh, 1e-5; is_time_reversal=true)
+    result = get_reciprocal_mesh(cell, mesh, 1e-5; is_time_reversal=true)
     allk = eachpoint(result, true)
     symops = getsymmetry(cell, 1e-5)
     for k in allk
@@ -81,7 +81,7 @@ end
     atoms = [12, 5, 5]
     cell = Cell(lattice, positions, atoms)
     mesh = [7, 7, 7]
-    result = reciprocal_mesh(cell, mesh, 1e-5; is_time_reversal=true)
+    result = get_reciprocal_mesh(cell, mesh, 1e-5; is_time_reversal=true)
     allk = eachpoint(result, true)
     symops = getsymmetry(cell, 1e-5)
     for k in allk
