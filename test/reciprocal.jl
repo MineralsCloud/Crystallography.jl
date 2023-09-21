@@ -1,3 +1,32 @@
+# Example from https://github.com/spglib/spglib/blob/v2.1.0-rc2/example/python_api/example_full.py#L85-L96
+@testset "Test rutile structure" begin
+    lattice = [
+        4 0 0
+        0 4 0
+        0 0 3
+    ]
+    positions = [
+        [0.0, 0.0, 0.0],
+        [0.5, 0.5, 0.5],
+        [0.3, 0.3, 0.0],
+        [0.7, 0.7, 0.0],
+        [0.2, 0.8, 0.5],
+        [0.8, 0.2, 0.5],
+    ]
+    atoms = [14, 14, 8, 8, 8, 8]
+    cell = Cell(lattice, positions, atoms)
+    is_shift = trues(3)
+    mesh = [6, 6, 6]
+    result = reciprocal_mesh(cell, mesh, 1e-5; is_time_reversal=true, is_shift=is_shift)
+    allk = eachpoint(result, true)
+    symops = getsymmetry(cell, 1e-5)
+    for k in allk
+        stabilizer, orbit = getstabilizer(symops, k), getorbit(symops, k)
+        # Lagrange's theorem: | G_s | | O_s | = | G |
+        @test length(stabilizer) * length(orbit) == length(symops)
+    end
+end
+
 # Example from https://github.com/spglib/spglib/blob/v2.1.0-rc2/example/python_api/example_full.py#L61-L77
 @testset "Test distorted silicon structure" begin
     lattice = [(4.01, 0, 0), (0, 4, 0), (0, 0, 3.99)]
