@@ -1,3 +1,20 @@
+# From https://github.com/spglib/spglib/blob/d8c39f6/example/python_api/example_full.py#L259-L266
+@testset "Test the primitive cell of silicon" begin
+    lattice = Lattice([[0, 2, 2], [2, 0, 2], [2, 2, 0]])
+    positions = [[0, 0, 0], [0.25, 0.25, 0.25]]
+    atoms = [14, 14]
+    cell = Cell(lattice, positions, atoms)
+    mesh = [11, 11, 11]
+    result = reciprocal_mesh(cell, mesh, 1e-5; is_time_reversal=true)
+    allk = eachpoint(result, true)
+    symops = getsymmetry(cell, 1e-5)
+    for k in allk
+        stabilizer, orbit = getstabilizer(symops, k), getorbit(symops, k)
+        # Lagrange's theorem: | G_s | | O_s | = | G |
+        @test length(stabilizer) * length(orbit) == length(symops)
+    end
+end
+
 # Example from https://github.com/spglib/spglib/blob/v2.1.0-rc2/example/python_api/example_full.py#L111-L117
 @testset "Test MgB₂ structure" begin
     a = 3.07
