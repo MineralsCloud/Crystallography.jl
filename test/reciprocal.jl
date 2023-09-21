@@ -18,9 +18,9 @@
     is_shift = trues(3)
     mesh = [6, 6, 6]
     result = get_reciprocal_mesh(cell, mesh, 1e-5; is_time_reversal=true, is_shift=is_shift)
-    allk = eachpoint(result, true)
+    irbz = eachpoint(result, true)
     symops = getsymmetry(cell, 1e-5)
-    for k in allk
+    for k in irbz
         stabilizer, orbit = getstabilizer(symops, k), getorbit(symops, k)
         # Lagrange's theorem: | G_s | | O_s | = | G |
         @test length(stabilizer) * length(orbit) == length(symops)
@@ -46,9 +46,9 @@ end
     result = get_reciprocal_mesh(
         cell, mesh, 1e-5; is_shift=[true, false, true], is_time_reversal=true
     )
-    allk = eachpoint(result, true)
+    irbz = eachpoint(result, true)
     symops = getsymmetry(cell, 1e-5)
-    for k in allk
+    for k in irbz
         stabilizer, orbit = getstabilizer(symops, k), getorbit(symops, k)
         # Lagrange's theorem: | G_s | | O_s | = | G |
         @test length(stabilizer) * length(orbit) == length(symops)
@@ -63,9 +63,9 @@ end
     cell = Cell(lattice, positions, atoms)
     mesh = [11, 11, 11]
     result = get_reciprocal_mesh(cell, mesh, 1e-5; is_time_reversal=true)
-    allk = eachpoint(result, true)
+    irbz = eachpoint(result, true)
     symops = getsymmetry(cell, 1e-5)
-    for k in allk
+    for k in irbz
         stabilizer, orbit = getstabilizer(symops, k), getorbit(symops, k)
         # Lagrange's theorem: | G_s | | O_s | = | G |
         @test length(stabilizer) * length(orbit) == length(symops)
@@ -82,9 +82,9 @@ end
     cell = Cell(lattice, positions, atoms)
     mesh = [7, 7, 7]
     result = get_reciprocal_mesh(cell, mesh, 1e-5; is_time_reversal=true)
-    allk = eachpoint(result, true)
+    irbz = eachpoint(result, true)
     symops = getsymmetry(cell, 1e-5)
-    for k in allk
+    for k in irbz
         stabilizer, orbit = getstabilizer(symops, k), getorbit(symops, k)
         # Lagrange's theorem: | G_s | | O_s | = | G |
         @test length(stabilizer) * length(orbit) == length(symops)
