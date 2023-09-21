@@ -1,10 +1,10 @@
 # Example from https://github.com/spglib/spglib/blob/v2.1.0-rc2/example/python_api/example_full.py#L85-L96
 @testset "Test rutile structure" begin
-    lattice = [
+    lattice = Lattice([
         4 0 0
         0 4 0
         0 0 3
-    ]
+    ])
     positions = [
         [0.0, 0.0, 0.0],
         [0.5, 0.5, 0.5],
@@ -29,7 +29,7 @@ end
 
 # Example from https://github.com/spglib/spglib/blob/v2.1.0-rc2/example/python_api/example_full.py#L61-L77
 @testset "Test distorted silicon structure" begin
-    lattice = [(4.01, 0, 0), (0, 4, 0), (0, 0, 3.99)]
+    lattice = Lattice([(4.01, 0, 0), (0, 4, 0), (0, 0, 3.99)])
     positions = [
         (0.001, 0, 0),
         (0, 0.5, 0.5),
