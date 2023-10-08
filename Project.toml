@@ -27,7 +27,7 @@ CrystallographyCore = "0.4"
 MLStyle = "0.2, 0.3, 0.4"
 MillerIndices = "0.2"
 Reexport = "1"
-Spglib = "0.7, 0.8"
+Spglib = "0.8"
 StaticArrays = "1"
 julia = "1"
 
