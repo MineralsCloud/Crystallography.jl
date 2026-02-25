@@ -21,9 +21,9 @@ Crystalline = "ae5e2be0-a263-11e9-351e-f94dad1eb351"
 CrystallineExt = "Crystalline"
 
 [compat]
-CrystalInfoFramework = "0.5, 0.6"
+CrystalInfoFramework = "1, 2"
 CrystallographyBase = "0.14"
-CrystallographyCore = "0.4, 0.5, 0.6"
+CrystallographyCore = "0.6"
 MLStyle = "0.2, 0.3, 0.4"
 MillerIndices = "0.2, 0.3"
 Reexport = "1"
