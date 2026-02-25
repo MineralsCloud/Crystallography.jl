@@ -4,7 +4,7 @@ using StaticArrays: MMatrix, Size
 import CrystallographyBase: shift
 
 export SeitzOperator,
-    shift, istranslation, ispointsymmetry, gettranslation, getpointsymmetry
+    shift, is_translation, is_point_symmetry, get_translation, get_point_symmetry
 
 """
     SeitzOperator(𝐑::AbstractMatrix, 𝐭::AbstractVector)
@@ -67,14 +67,14 @@ end
 
 (op::SeitzOperator)(𝐫::AbstractVector) = apply(Size(size(𝐫)), op, 𝐫)
 
-function istranslation(op::SeitzOperator)
+function is_translation(op::SeitzOperator)
     if op[1:3, 1:3] != I || !iszero(op[4, 1:3]) || !isone(op[4, 4])
         return false
     end
     return true
 end
 
-function ispointsymmetry(op::SeitzOperator)
+function is_point_symmetry(op::SeitzOperator)
     if iszero(op[4, 1:3]) &&
         iszero(op[1:3, 4]) &&
         isone(op[4, 4]) &&
@@ -85,9 +85,9 @@ function ispointsymmetry(op::SeitzOperator)
     end
 end
 
-gettranslation(op::SeitzOperator) = op[1:3, 4]
+get_translation(op::SeitzOperator) = op[1:3, 4]
 
-getpointsymmetry(op::SeitzOperator) = op[1:3, 1:3]
+get_point_symmetry(op::SeitzOperator) = op[1:3, 1:3]
 
 include("interface.jl")
 include("spglib.jl")

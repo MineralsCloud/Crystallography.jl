@@ -1,9 +1,9 @@
 using CrystallographyCore: AbstractCell
 using Spglib: get_symmetry
 
-export findsymmetry
+export list_symmetry
 
-function findsymmetry(cell::AbstractCell, symprec=1e-5)
+function list_symmetry(cell::AbstractCell, symprec=1e-5)
     rotations, translations = get_symmetry(cell, symprec)
     return map(rotations, translations) do rotation, translation
         SeitzOperator(rotation, translation)

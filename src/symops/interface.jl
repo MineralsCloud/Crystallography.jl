@@ -8,7 +8,7 @@ apply(::Size, ::SeitzOperator, 𝐫::AbstractVector) = throw(
     ),
 )
 function apply(::Size{(3,)}, op::SeitzOperator, 𝐫::AbstractVector)
-    𝐑, 𝐭 = getpointsymmetry(op), gettranslation(op)
+    𝐑, 𝐭 = get_point_symmetry(op), get_translation(op)
     return 𝐑 * 𝐫 + 𝐭
 end
 function apply(::Size{(4,)}, op::SeitzOperator, 𝐫::AbstractVector)
@@ -20,7 +20,7 @@ end
 Base.:*(op₁::SeitzOperator, op₂::SeitzOperator) = SeitzOperator(parent(op₁) * parent(op₂))
 
 function Base.inv(op::SeitzOperator)
-    𝐑, 𝐭 = getpointsymmetry(op), gettranslation(op)
+    𝐑, 𝐭 = get_point_symmetry(op), get_translation(op)
     𝐑⁻¹ = inv(𝐑)
     return SeitzOperator(𝐑⁻¹, -𝐑⁻¹ * 𝐭)
 end
