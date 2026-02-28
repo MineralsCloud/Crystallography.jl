@@ -21,11 +21,11 @@ CrystallineExt = "Crystalline"
 
 [compat]
 CrystalInfoFramework = "1, 2"
-CrystallographyBase = "0.14"
+CrystallographyBase = "0.14, 0.15"
 MLStyle = "0.2, 0.3, 0.4"
 MillerIndices = "0.2, 0.3"
 Reexport = "1"
-Spglib = "1"
+Spglib = "1.2"
 StaticArrays = "1"
 julia = "1"
 
