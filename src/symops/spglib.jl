@@ -1,4 +1,4 @@
-using CrystallographyCore: AbstractCell
+using CrystallographyBase: AbstractCell
 using Spglib: get_symmetry
 
 export list_symmetry
